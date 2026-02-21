@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Settings, Bell, ArrowLeft, Info, TriangleIcon, Lightbulb } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Settings, Bell, Info, TriangleIcon, Lightbulb, Sparkles, ZapOff } from "lucide-react";
 import MacroTab from "@/components/MacroTab";
 import { popularStocks, popularETFs, expertFunds, portfolioCoins } from "@/data/mockData";
 import { marketStories } from "@/data/marketStories";
@@ -10,6 +10,18 @@ import InvestmentRow from "@/components/InvestmentRow";
 import StoriesViewer from "@/components/StoriesViewer";
 import AudioSummarySheet from "@/components/AudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
+import { PoolPortfoliosSection } from "@/components/PoolPortfoliosSection";
+
+const AI_ENABLED_KEY = "aiEnabled";
+
+function readAiEnabled(): boolean {
+  try {
+    const stored = localStorage.getItem(AI_ENABLED_KEY);
+    return stored === null ? true : stored === "true";
+  } catch {
+    return true;
+  }
+}
 
 const regions = ["🌍 World", "🇺🇸 USA", "🌍 Europe", "🌍 Emerging"];
 const timeRanges = ["24h", "1W", "1M", "1Y"];
@@ -24,7 +36,16 @@ const Investments = () => {
   const [showAudioSheet, setShowAudioSheet] = useState(false);
   const [showPortfolioAudioSheet, setShowPortfolioAudioSheet] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState<boolean>(readAiEnabled);
   const data = tab === "Stocks" ? popularStocks : popularETFs;
+
+  const toggleAi = () => {
+    setAiEnabled((prev) => {
+      const next = !prev;
+      try { localStorage.setItem(AI_ENABLED_KEY, String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  };
 
   return (
     <motion.div
@@ -186,7 +207,42 @@ const Investments = () => {
       ) : topTab === "Portfolio" ? (
         /* ---- Portfolio Tab ---- */
         <div className="px-4">
-          {/* Portfolio value */}
+
+          {/* ── AI Toggle ─────────────────────────────────────────── */}
+          <div className="flex items-center justify-between bg-secondary rounded-xl px-4 py-3 mb-5">
+            <div className="flex-1 min-w-0 mr-3">
+              <div className="flex items-center gap-1.5">
+                {aiEnabled
+                  ? <Sparkles size={14} className="text-primary shrink-0" />
+                  : <ZapOff size={14} className="text-muted-foreground shrink-0" />
+                }
+                <span className={`text-sm font-semibold ${aiEnabled ? "text-foreground" : "text-muted-foreground"}`}>
+                  {aiEnabled ? "AI Enabled" : "AI Disabled"}
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
+                {aiEnabled ? "News, audio & suggestions are visible." : "News, audio & suggestions are hidden."}
+              </p>
+            </div>
+            {/* Switch */}
+            <button
+              role="switch"
+              aria-checked={aiEnabled}
+              onClick={toggleAi}
+              className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                aiEnabled ? "bg-primary" : "bg-muted-foreground/30"
+              }`}
+            >
+              <motion.div
+                layout
+                transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm"
+                style={{ left: aiEnabled ? "calc(100% - 1.375rem)" : "0.125rem" }}
+              />
+            </button>
+          </div>
+
+          {/* Portfolio value — always visible */}
           <div className="mb-2">
             <p className="text-sm text-muted-foreground mb-1">Your portfolio</p>
             <p className="text-4xl font-bold text-foreground">€926.26</p>
@@ -196,7 +252,7 @@ const Investments = () => {
             </div>
           </div>
 
-          {/* Chart placeholder */}
+          {/* Chart — always visible */}
           <div className="h-40 my-4 flex items-end">
             <svg viewBox="0 0 300 100" className="w-full h-full" preserveAspectRatio="none">
               <polyline
@@ -209,7 +265,7 @@ const Investments = () => {
             </svg>
           </div>
 
-          {/* Time range selector */}
+          {/* Time range — always visible */}
           <div className="flex bg-secondary rounded-lg p-1 mb-6">
             {timeRanges.map((t) => (
               <button
@@ -224,42 +280,64 @@ const Investments = () => {
             ))}
           </div>
 
-          {/* Portfolio Stories */}
-          <div className="mb-6">
-            <h3 className="text-lg font-bold text-foreground mb-3">Your holdings at a glance</h3>
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-              {portfolioStories.map((story, i) => (
+          {/* ── AI-gated: News stories ──────────────────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-stories"
+                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <h3 className="text-lg font-bold text-foreground mb-3">Your holdings at a glance</h3>
+                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+                  {portfolioStories.map((story, i) => (
+                    <button
+                      key={story.id}
+                      onClick={() => {
+                        setActiveStorySource("portfolio");
+                        setActiveStoryIndex(i);
+                      }}
+                      className="flex flex-col items-center gap-1.5 shrink-0"
+                    >
+                      <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
+                        <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
+                          {story.emoji}
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── AI-gated: Audio summary ─────────────────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-audio"
+                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
                 <button
-                  key={story.id}
-                  onClick={() => {
-                    setActiveStorySource("portfolio");
-                    setActiveStoryIndex(i);
-                  }}
-                  className="flex flex-col items-center gap-1.5 shrink-0"
+                  onClick={() => setShowPortfolioAudioSheet(true)}
+                  className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
                 >
-                  <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
-                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
-                      {story.emoji}
-                    </div>
-                  </div>
-                  <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
+                  <span className="text-base">🎧</span>
+                  Audio summary
                 </button>
-              ))}
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Portfolio Audio Summary */}
-          <div className="mb-6">
-            <button
-              onClick={() => setShowPortfolioAudioSheet(true)}
-              className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
-            >
-              <span className="text-base">🎧</span>
-              Audio summary
-            </button>
-          </div>
-
-          {/* Your coins */}
+          {/* Your coins — always visible */}
           <div className="mb-4">
             <div className="flex items-center gap-1.5 mb-3">
               <h3 className="text-lg font-bold text-foreground">Your coins</h3>
@@ -292,7 +370,7 @@ const Investments = () => {
             </div>
           </div>
 
-          {/* Buy / Sell buttons */}
+          {/* Buy / Sell — always visible */}
           <div className="flex gap-3 mt-4">
             <button className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold">
               Buy
@@ -302,23 +380,52 @@ const Investments = () => {
             </button>
           </div>
 
-          {/* Scenarios button */}
-          <button
-            onClick={() => navigate("/scenarios")}
-            className="w-full mt-4 flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
-          >
-            <span className="text-base">🔮</span>
-            Scenarios
-          </button>
+          {/* ── AI-gated: Scenarios ─────────────────────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-scenarios"
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <button
+                  onClick={() => navigate("/scenarios")}
+                  className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+                >
+                  <span className="text-base">🔮</span>
+                  Scenarios
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Suggestions button */}
-          <button
-            onClick={() => setShowSuggestions(true)}
-            className="w-full mt-3 flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
-          >
-            <Lightbulb size={16} className="text-primary" />
-            Suggestions
-          </button>
+          {/* ── AI-gated: Suggestions ───────────────────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-suggestions"
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 12 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <button
+                  onClick={() => setShowSuggestions(true)}
+                  className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+                >
+                  <Lightbulb size={16} className="text-primary" />
+                  Suggestions
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Pool Portfolios — ALWAYS visible, AI-toggle-independent */}
+          <PoolPortfoliosSection />
         </div>
       ) : (
         /* ---- Macro Tab ---- */
@@ -342,16 +449,16 @@ const Investments = () => {
         />
       )}
 
-      {/* Audio Summary Sheet - Portfolio */}
-      {showPortfolioAudioSheet && (
+      {/* Audio Summary Sheet - Portfolio (only when AI enabled) */}
+      {aiEnabled && showPortfolioAudioSheet && (
         <AudioSummarySheet
           stories={portfolioStories}
           onClose={() => setShowPortfolioAudioSheet(false)}
         />
       )}
 
-      {/* Portfolio Suggestions Sheet */}
-      {showSuggestions && (
+      {/* Portfolio Suggestions Sheet (only when AI enabled) */}
+      {aiEnabled && showSuggestions && (
         <PortfolioSuggestionsSheet onClose={() => setShowSuggestions(false)} />
       )}
     </motion.div>
