@@ -1,7 +1,7 @@
 import json
 from typing import List, Literal, Optional
 from pydantic import BaseModel
-from .llm_client import get_client
+from .llm_client import complete_json
 
 class CausalStep(BaseModel):
     step_number: int
@@ -19,48 +19,32 @@ class CausalChainResponse(BaseModel):
     user_connection: str
 
 def generate_causal_chain(article_title: str, article_chunks: str, published_at: str, spend_summary: str) -> CausalChainResponse:
-    client = get_client()
+    system_prompt = """You are a financial analyst explaining macro investment chains to everyday people.
+Your job: trace how a news event ripples through the economy to specific stocks.
 
-    system_prompt = """
-    You are a financial analyst explaining macro investment chains to everyday people.
-    Your job: trace how a news event ripples through the economy to specific stocks.
+Rules:
+1. Maximum 4 steps in the chain (keep it digestible)
+2. Each step must be logically connected to the previous
+3. Only include stocks where the connection is DIRECT and defensible
+4. Set confidence "high" only if this is a well-established causal pattern
+5. Set confidence "medium" if plausible but not certain
+6. Never include a step just because a stock is popular
+7. Respond ONLY in valid JSON matching the schema."""
 
-    Rules:
-    1. Maximum 4 steps in the chain (keep it digestible)
-    2. Each step must be logically connected to the previous
-    3. Only include stocks where the connection is DIRECT and defensible
-    4. Set confidence "high" only if this is a well-established causal pattern
-    5. Set confidence "medium" if plausible but not certain
-    6. Never include a step just because a stock is popular
-    7. Respond ONLY in valid JSON matching the schema.
-    """
+    user_prompt = f"""News event: {article_title}
+Article content: {article_chunks}
+Published: {published_at}
 
-    user_prompt = f"""
-    News event: {article_title}
-    Article content: {article_chunks}
-    Published: {published_at}
+User's spending context: {spend_summary}
 
-    User's spending context: {spend_summary}
+Trace the investment causal chain from this event.
+For each step identify: the mechanism, affected entity, ticker if public, direction, and plain English explanation.
+Then write one sentence connecting the final step to the user's spending.
 
-    Trace the investment causal chain from this event.
-    For each step identify: the mechanism, affected entity, ticker if public, direction, and plain English explanation.
-    Then write one sentence connecting the final step to the user's spending.
-
-    Respond as JSON: {{ "chain": [...], "user_connection": "..." }}
-    """
+Respond as JSON: {{ "chain": [...], "user_connection": "..." }}"""
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            response_format={"type": "json_object"},
-            temperature=0.2, # Low temperature for more deterministic reasoning
-            max_tokens=800,
-        )
-        content = response.choices[0].message.content.strip()
+        content = complete_json(system=system_prompt, user=user_prompt, temperature=0.2, max_tokens=800)
         data = json.loads(content)
         
         # Validation checks
