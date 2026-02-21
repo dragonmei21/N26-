@@ -1,0 +1,89 @@
+import yfinance as yf
+from datetime import date, timedelta
+
+# Mock price data — used when yfinance returns nothing
+# Realistic 30-day curves for hero tickers
+MOCK_PRICES = {
+    "NVDA": [136.2, 138.1, 140.5, 139.8, 142.3, 141.0, 143.7, 145.2, 144.8,
+             147.1, 146.5, 149.3, 148.7, 151.2, 150.6, 153.4, 152.8, 155.1,
+             154.3, 157.6, 156.9, 159.2, 158.4, 161.7, 160.3, 163.8, 162.5,
+             165.1, 164.7, 167.3],
+    "AMZN": [224.5, 225.8, 223.4, 226.7, 228.1, 227.3, 229.6, 231.2, 230.8,
+             232.4, 233.7, 232.1, 234.8, 236.3, 235.7, 237.4, 238.9, 237.6,
+             239.8, 241.3, 240.7, 242.5, 243.8, 242.4, 244.7, 246.2, 245.6,
+             247.9, 249.4, 248.8],
+    "AAPL": [220.1, 221.4, 219.8, 222.3, 223.7, 222.5, 224.8, 226.3, 225.7,
+             227.4, 228.9, 227.6, 229.8, 231.3, 230.7, 232.5, 233.8, 232.4,
+             234.7, 236.2, 235.6, 237.9, 239.4, 238.8, 240.7, 242.3, 241.6,
+             243.8, 245.4, 244.7],
+    "MSFT": [415.2, 417.8, 416.3, 419.5, 421.2, 420.4, 422.8, 424.5, 423.9,
+             426.3, 427.8, 426.4, 428.9, 430.6, 429.8, 431.5, 433.2, 432.6,
+             434.9, 436.7, 435.8, 437.5, 439.3, 438.7, 440.5, 442.1, 441.4,
+             443.8, 445.6, 444.9],
+    "META": [652.3, 655.8, 654.2, 657.6, 659.4, 658.7, 661.2, 663.8, 662.5,
+             665.1, 667.4, 666.3, 668.9, 671.5, 670.8, 672.6, 674.9, 673.4,
+             676.1, 678.7, 677.5, 679.8, 682.4, 681.3, 683.7, 686.2, 685.6,
+             688.1, 690.7, 689.4],
+    "GOOGL": [195.4, 196.8, 195.2, 197.6, 198.9, 198.1, 199.7, 201.3, 200.8,
+              202.4, 203.7, 202.5, 204.8, 206.3, 205.7, 207.4, 208.9, 207.6,
+              209.8, 211.4, 210.8, 212.5, 213.9, 212.7, 214.8, 216.3, 215.7,
+              217.9, 219.5, 218.8],
+}
+
+
+def fetch_price_timeline(ticker: str, event_date: date) -> dict | None:
+    """
+    Fetch 30 days of price history centred on event_date.
+    Returns chart-ready dict or None if ticker is invalid.
+    Falls back to mock data if yfinance returns nothing.
+    """
+    start = event_date - timedelta(days=20)
+    end = event_date + timedelta(days=10)
+
+    try:
+        tk = yf.Ticker(ticker)
+        hist = tk.history(start=start, end=end)
+
+        if not hist.empty:
+            labels = [d.strftime("%b %d") for d in hist.index]
+            values = [round(float(v), 2) for v in hist["Close"]]
+
+            # Index of the first trading day on or after the event
+            event_index = next(
+                (i for i, d in enumerate(hist.index) if d.date() >= event_date),
+                len(labels) - 1,
+            )
+
+            pre = hist["Close"].iloc[max(0, event_index - 5)]
+            post = hist["Close"].iloc[min(len(hist) - 1, event_index + 3)]
+            pct_change = round(((post - pre) / pre) * 100, 2)
+
+            return {
+                "labels": labels,
+                "values": values,
+                "event_index": event_index,
+                "pct_change": pct_change,
+            }
+    except Exception:
+        pass
+
+    # Fallback: mock data
+    mock = MOCK_PRICES.get(ticker.upper())
+    if mock:
+        labels = [
+            (event_date - timedelta(days=20) + timedelta(days=i)).strftime("%b %d")
+            for i in range(len(mock))
+        ]
+        event_index = 20  # event_date lands at index 20 in the 30-day window
+        pre = mock[max(0, event_index - 5)]
+        post = mock[min(len(mock) - 1, event_index + 3)]
+        pct_change = round(((post - pre) / pre) * 100, 2)
+
+        return {
+            "labels": labels,
+            "values": mock,
+            "event_index": event_index,
+            "pct_change": pct_change,
+        }
+
+    return None
