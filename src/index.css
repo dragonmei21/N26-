@@ -46,6 +46,16 @@
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 155 5% 18%;
     --sidebar-ring: 168 80% 45%;
+
+    /* N26 Brand Colors */
+    --n26-teal: #00D4A8;
+    --n26-dark: #1A1A2E;
+    --n26-white: #FFFFFF;
+    --n26-gray-light: #F5F5F5;
+    --n26-amber: #F59E0B;
+    --n26-bitcoin: #F7931A;
+    --n26-positive: #4CAF50;
+    --n26-negative: #EF4444;
   }
 }
 
@@ -80,4 +90,16 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  .text-n26-teal { color: var(--n26-teal); }
+  .text-n26-amber { color: var(--n26-amber); }
+  .text-n26-bitcoin { color: var(--n26-bitcoin); }
+  .text-n26-positive { color: var(--n26-positive); }
+  .text-n26-negative { color: var(--n26-negative); }
+  .bg-n26-teal { background-color: var(--n26-teal); }
+  .bg-n26-dark { background-color: var(--n26-dark); }
+  .bg-n26-amber { background-color: var(--n26-amber); }
+  .bg-n26-bitcoin { background-color: var(--n26-bitcoin); }
+  .bg-n26-positive { background-color: var(--n26-positive); }
+  .bg-n26-negative { background-color: var(--n26-negative); }
+  .border-n26-teal { border-color: var(--n26-teal); }
 }

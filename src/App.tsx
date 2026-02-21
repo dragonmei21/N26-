@@ -10,6 +10,7 @@ import Investments from "./pages/Investments";
 import Benefits from "./pages/Benefits";
 import Cards from "./pages/Cards";
 import Scenarios from "./pages/Scenarios";
+import SpendMap from "./pages/SpendMap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/benefits" element={<Benefits />} />
             <Route path="/cards" element={<Cards />} />
             <Route path="/scenarios" element={<Scenarios />} />
+            <Route path="/spend-map" element={<SpendMap />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />

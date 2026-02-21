@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, BarChart3, PieChart, Gift, CreditCard } from "lucide-react";
+import { Home, BarChart3, PieChart, MapPin, CreditCard } from "lucide-react";
 import { motion } from "framer-motion";
 
 const tabs = [
   { path: "/", label: "Home", icon: Home },
   { path: "/finances", label: "Finances", icon: BarChart3 },
-  { path: "/investments", label: "Investments", icon: PieChart },
-  { path: "/benefits", label: "Benefits", icon: Gift },
+  { path: "/investments", label: "Invest", icon: PieChart },
+  { path: "/spend-map", label: "Spend Map", icon: MapPin },
   { path: "/cards", label: "Cards", icon: CreditCard },
 ];
 
@@ -28,12 +28,22 @@ const BottomNav = () => {
             >
               <Icon
                 size={22}
-                className={isActive ? "text-primary" : "text-muted-foreground"}
+                className={
+                  isActive
+                    ? "text-primary"
+                    : tab.path === "/spend-map"
+                    ? "text-primary/60"
+                    : "text-muted-foreground"
+                }
                 strokeWidth={isActive ? 2.5 : 1.5}
               />
               <span
                 className={`text-[10px] font-medium ${
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isActive
+                    ? "text-primary"
+                    : tab.path === "/spend-map"
+                    ? "text-primary/60"
+                    : "text-muted-foreground"
                 }`}
               >
                 {tab.label}
