@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+N26/
+.DS_Store
+chroma_db/
+data/frozen_articles.json
+data/mock_prices.json
+*.egg-info/
+dist/
+build/
+.pytest_cache/
