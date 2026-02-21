@@ -1,0 +1,190 @@
+{
+  "4a78a6cfdc3be77a": {
+    "user_connection": "You spend at Amazon, which is deeply invested in AI infrastructure — this event directly affects what you pay for cloud services.",
+    "chain": [
+      {
+        "step_number": 1,
+        "event": "ChatGPT-5 Launch",
+        "mechanism": "OpenAI releases the most capable consumer AI, triggering a global AI arms race and accelerating enterprise AI adoption.",
+        "affected_entity": "NVIDIA",
+        "entity_type": "company",
+        "ticker": "NVDA",
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "Every new AI product needs NVIDIA chips to run. More demand means higher stock price.",
+        "price_data": null,
+        "price_change_pct": 8.3,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 2,
+        "event": "AI Cloud Demand Surge",
+        "mechanism": "Enterprises race to deploy AI. AWS, Azure, and Google Cloud increase GPU cluster orders significantly.",
+        "affected_entity": "Amazon",
+        "entity_type": "company",
+        "ticker": "AMZN",
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "Amazon runs AWS, the biggest AI cloud. More AI adoption equals more AWS revenue.",
+        "price_data": null,
+        "price_change_pct": 3.1,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 3,
+        "event": "Consumer AI Adoption",
+        "mechanism": "Consumers adopt AI-powered apps, boosting subscription and in-app revenue for tech platforms.",
+        "affected_entity": "Apple",
+        "entity_type": "company",
+        "ticker": "AAPL",
+        "direction": "up",
+        "confidence": "medium",
+        "plain_english": "Apple integrates AI into every iPhone app. A more useful phone means more upgrades.",
+        "price_data": null,
+        "price_change_pct": 1.8,
+        "event_date": "2026-02-21"
+      }
+    ]
+  },
+  "937b0457b2a098e0": {
+    "user_connection": "You have savings in N26. The ECB rate hold means your N26 Instant Savings account stays at 2.5% — real interest on your balance.",
+    "chain": [
+      {
+        "step_number": 1,
+        "event": "ECB Rate Hold at 3.5%",
+        "mechanism": "ECB keeps benchmark rate unchanged for the seventh time, signalling rates stay higher for longer.",
+        "affected_entity": "European Banks",
+        "entity_type": "sector",
+        "ticker": null,
+        "direction": "neutral",
+        "confidence": "high",
+        "plain_english": "The ECB controls borrowing costs across Europe. Holding rates means no cheap money yet.",
+        "price_data": null,
+        "price_change_pct": null,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 2,
+        "event": "N26 Savings Rate Maintained",
+        "mechanism": "N26 Instant Savings rate stays at 2.5%, tracking ECB policy. Your money keeps earning.",
+        "affected_entity": "N26",
+        "entity_type": "company",
+        "ticker": null,
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "Your N26 savings account pays 2.5% APY — better than most traditional banks offering 0.1%.",
+        "price_data": null,
+        "price_change_pct": null,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 3,
+        "event": "Bond Market Repricing",
+        "mechanism": "Longer-dated European government bonds reprice as investors extend duration expectations.",
+        "affected_entity": "Euro Bonds",
+        "entity_type": "index",
+        "ticker": null,
+        "direction": "down",
+        "confidence": "medium",
+        "plain_english": "Bond prices fall when rates stay high. This is why stocks sometimes dip on rate hold days.",
+        "price_data": null,
+        "price_change_pct": -0.4,
+        "event_date": "2026-02-21"
+      }
+    ]
+  },
+  "130268006d14a68d": {
+    "user_connection": "Even if you don't hold crypto, this changes the market you live in — Bitcoin ETF approval opens institutional money floodgates.",
+    "chain": [
+      {
+        "step_number": 1,
+        "event": "EU Bitcoin ETF Approved",
+        "mechanism": "ESMA grants approval for the first Bitcoin spot ETF listed on Euronext Amsterdam, opening BTC to retail and institutional EU investors.",
+        "affected_entity": "Bitcoin",
+        "entity_type": "commodity",
+        "ticker": null,
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "Now any EU investor can buy Bitcoin through their regular brokerage — massive new demand incoming.",
+        "price_data": null,
+        "price_change_pct": 12.4,
+        "event_date": "2026-02-20"
+      },
+      {
+        "step_number": 2,
+        "event": "Crypto Exchange Volume Surge",
+        "mechanism": "Retail and institutional inflows drive trading volume higher on crypto exchanges and ETF providers.",
+        "affected_entity": "Coinbase",
+        "entity_type": "company",
+        "ticker": "COIN",
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "More Bitcoin trading means more fees for exchanges like Coinbase. Simple.",
+        "price_data": null,
+        "price_change_pct": 18.2,
+        "event_date": "2026-02-20"
+      },
+      {
+        "step_number": 3,
+        "event": "Institutional Crypto Allocation",
+        "mechanism": "Pension funds and family offices add 1-5% crypto allocation to portfolios, creating sustained buy pressure.",
+        "affected_entity": "Crypto Sector",
+        "entity_type": "sector",
+        "ticker": null,
+        "direction": "up",
+        "confidence": "medium",
+        "plain_english": "Big money is slow but huge. When institutions buy, prices move for months — not days.",
+        "price_data": null,
+        "price_change_pct": null,
+        "event_date": "2026-02-20"
+      }
+    ]
+  },
+  "20fe422209448409": {
+    "user_connection": "NVIDIA powers the AI apps you use daily. Their earnings beat confirms the AI infrastructure boom is real — and your tech subscriptions are part of it.",
+    "chain": [
+      {
+        "step_number": 1,
+        "event": "NVIDIA Earnings Beat +23%",
+        "mechanism": "NVIDIA reports $39.3B revenue, up 78% YoY, driven entirely by AI data center GPU demand from hyperscalers.",
+        "affected_entity": "NVIDIA",
+        "entity_type": "company",
+        "ticker": "NVDA",
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "NVIDIA makes the chips that run all AI. When AI booms, NVIDIA wins. Their numbers prove demand is real.",
+        "price_data": null,
+        "price_change_pct": 11.0,
+        "event_date": "2026-02-19"
+      },
+      {
+        "step_number": 2,
+        "event": "AI Capex Confirmed",
+        "mechanism": "Hyperscalers (AWS, Azure, Google Cloud) reaffirm $200B+ combined AI capex plans for 2026.",
+        "affected_entity": "TSMC",
+        "entity_type": "company",
+        "ticker": "TSM",
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "TSMC makes the chips NVIDIA designs. More NVIDIA orders means more TSMC revenue.",
+        "price_data": null,
+        "price_change_pct": 4.2,
+        "event_date": "2026-02-19"
+      },
+      {
+        "step_number": 3,
+        "event": "Cloud Stock Rally",
+        "mechanism": "Confirmed AI capex cycle drives cloud infrastructure stocks higher as revenue growth visibility improves.",
+        "affected_entity": "Microsoft",
+        "entity_type": "company",
+        "ticker": "MSFT",
+        "direction": "up",
+        "confidence": "medium",
+        "plain_english": "Microsoft Azure is the #2 cloud and a top NVIDIA customer. AI growth lifts all cloud boats.",
+        "price_data": null,
+        "price_change_pct": 2.6,
+        "event_date": "2026-02-19"
+      }
+    ]
+  }
+}
