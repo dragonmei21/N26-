@@ -2,10 +2,30 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from datetime import date
 from typing import List, Optional
+import json as _json
+from pathlib import Path
 
 from rag.event_classifier import classify_event
 from rag.causal_chain import generate_causal_chain
 from rag.price_correlator import enrich_chain_with_prices
+
+_FALLBACK_CHAIN_PATH = Path(__file__).parent.parent.parent / "data" / "fallback_chain.json"
+
+
+def _load_fallback_chain(article_id: str) -> list:
+    try:
+        data = _json.loads(_FALLBACK_CHAIN_PATH.read_text())
+        return data.get(article_id, {}).get("chain", [])
+    except Exception:
+        return []
+
+
+def _load_fallback_connection(article_id: str) -> str:
+    try:
+        data = _json.loads(_FALLBACK_CHAIN_PATH.read_text())
+        return data.get(article_id, {}).get("user_connection", "This event may affect your investments.")
+    except Exception:
+        return "This event may affect your investments."
 
 router = APIRouter(prefix="/causal-chain", tags=["Macro Reasoning"])
 
@@ -91,22 +111,42 @@ async def get_causal_chain(article_id: str, user_id: str = Query(...)):
     except Exception:
         spend_summary = "You rely on technology in your daily spending."
 
-    # 3. Classify Event
-    event_info = classify_event(article["content"], date.fromisoformat(article["published_at"]))
-    
-    if not event_info.is_macro:
-        raise HTTPException(status_code=400, detail="Article is not a macro event capable of generating a causal chain.")
+    # 3. Classify Event + Generate Causal Chain
+    # Wrapped together: any LLM exception triggers the pre-generated fallback chain
+    event_info = None
+    chain_response = None
+    try:
+        event_info = classify_event(article["content"], date.fromisoformat(article["published_at"]))
 
-    # 4. Generate Causal Chain
-    chain_response = generate_causal_chain(
-        article_title=article["title"],
-        article_chunks=article["content"],
-        published_at=article["published_at"],
-        spend_summary=spend_summary
-    )
+        if not event_info.is_macro:
+            raise HTTPException(status_code=400, detail="Article is not a macro event capable of generating a causal chain.")
 
-    if not chain_response.chain:
-         raise HTTPException(status_code=404, detail="Could not derive a confident causal chain.")
+        chain_response = generate_causal_chain(
+            article_title=article["title"],
+            article_chunks=article["content"],
+            published_at=article["published_at"],
+            spend_summary=spend_summary
+        )
+    except HTTPException:
+        raise
+    except Exception:
+        chain_response = None
+
+    # If LLM failed or returned no steps, serve the pre-generated fallback chain
+    if chain_response is None or not chain_response.chain:
+        fallback_steps = _load_fallback_chain(article_id)
+        if fallback_steps:
+            return CausalChainEndpointResponse(
+                trigger_event=article["title"],
+                trigger_date=event_info.event_date if event_info else date.fromisoformat(article["published_at"]),
+                trigger_source_url=article["url"],
+                chain=fallback_steps,
+                user_connection=_load_fallback_connection(article_id),
+                user_relevance_score=0.85,
+                summary=f"Analysis of {article['title']} mapped to your spend profile.",
+                disclaimer="Educational only, not financial advice."
+            )
+        raise HTTPException(status_code=404, detail="Could not derive a confident causal chain.")
 
     # 5. Connect and Enrich with Prices
     priced_chain = enrich_chain_with_prices(
