@@ -13,3 +13,4 @@ chroma_db/
 dist/
 build/
 .pytest_cache/
+node_modules/
