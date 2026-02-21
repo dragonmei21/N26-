@@ -15,6 +15,9 @@ import type {
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
 const USER_ID  = import.meta.env.VITE_API_USER_ID ?? "mock_user_2";
 
+// ngrok free tier shows an interstitial for browser requests — this header bypasses it
+const HEADERS = { "ngrok-skip-browser-warning": "true" };
+
 // ── Category classifier (maps article titles to MacroTab categories) ──
 
 const CATEGORY_KEYWORDS: Record<EventCategory, string[]> = {
@@ -50,7 +53,7 @@ function classifyTitle(title: string): EventCategory {
 // ── Fetch feed → MacroEvent[] ──────────────────────────────────────────
 
 export async function fetchFeedEvents(limit = 8): Promise<MacroEvent[]> {
-  const res = await fetch(`${BASE_URL}/feed?user_id=${USER_ID}&limit=${limit}`);
+  const res = await fetch(`${BASE_URL}/feed?user_id=${USER_ID}&limit=${limit}`, { headers: HEADERS });
   if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
   const data = await res.json();
 
@@ -109,7 +112,7 @@ interface BackendChainResponse {
 }
 
 export async function fetchCausalChain(articleId: string): Promise<CausalChainResponse> {
-  const res = await fetch(`${BASE_URL}/causal-chain/${articleId}?user_id=${USER_ID}`);
+  const res = await fetch(`${BASE_URL}/causal-chain/${articleId}?user_id=${USER_ID}`, { headers: HEADERS });
   if (!res.ok) throw new Error(`Chain fetch failed: ${res.status}`);
   const r: BackendChainResponse = await res.json();
 
