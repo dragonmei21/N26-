@@ -1,0 +1,137 @@
+import re
+import os
+from openai import AsyncOpenAI
+from models.podcast import PodcastScript, PodcastSegment
+
+# Spec used AsyncAnthropic — adapted to AsyncOpenAI (same project stack)
+_client: AsyncOpenAI | None = None
+
+def get_async_client() -> AsyncOpenAI:
+    global _client
+    if _client is None:
+        _client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    return _client
+
+
+SCRIPT_SYSTEM_PROMPT = """You are a financial podcast host. Warm, clear, conversational —
+like a knowledgeable friend explaining markets, not a Bloomberg anchor.
+
+Rules:
+1. Write for the ear. No bullet points, no headers, no markdown.
+2. Short sentences. Max 20 words each.
+3. Spell out numbers: "three point five percent" not "3.5%"
+4. Connect macro events to the listener's real life
+5. Never use jargon without immediately explaining it
+6. Do not fabricate any data — only use what's provided
+7. Transitions between segments must feel natural
+8. Mark each segment with [SEGMENT: segment_name] on its own line"""
+
+
+LENGTH_CONFIGS = {
+    "flash": {
+        "target_words": 300,
+        "segments": ["intro", "portfolio_snapshot", "top_story", "close"],
+        "max_stories": 1
+    },
+    "brief": {
+        "target_words": 1500,
+        "segments": ["intro", "portfolio_overview", "story_1", "story_2", "story_3", "spending_connection", "close"],
+        "max_stories": 3
+    },
+    "deep_dive": {
+        "target_words": 4500,
+        "segments": ["intro", "market_overview", "story_1", "story_2", "story_3",
+                     "big_funds", "crypto", "personal_wrap", "close"],
+        "max_stories": 5
+    }
+}
+
+
+async def generate_podcast_script(
+    length: str,
+    mode: str,
+    feed_articles: list[dict],
+    trends: list[dict],
+    portfolio: dict,
+    user_name: str = "there"
+) -> PodcastScript:
+
+    config = LENGTH_CONFIGS[length]
+    articles = feed_articles[:config["max_stories"]] if mode == "personal" \
+               else trends[:config["max_stories"]]
+
+    prompt = f"""Create a {length.replace('_', ' ')} financial podcast script ({config['target_words']} words).
+Mode: {mode}
+Listener name: {user_name}
+
+Portfolio:
+{_portfolio_summary(portfolio)}
+
+News to cover:
+{_articles_summary(articles)}
+
+Segments to include: {', '.join(config['segments'])}
+Mark each with [SEGMENT: segment_name] on its own line.
+Target {config['target_words']} words total."""
+
+    response = await get_async_client().chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": SCRIPT_SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.6,
+        max_tokens=6000,
+    )
+
+    raw = response.choices[0].message.content.strip()
+    return _parse_segments(raw, length, mode)
+
+
+def _portfolio_summary(portfolio: dict) -> str:
+    lines = []
+    for p in portfolio.get("positions", []):
+        change = p.get("price_change_24h_pct")
+        suffix = f"({'+' if change and change > 0 else ''}{change}% today)" if change else ""
+        lines.append(f"- {p['name']}: €{p['held_eur']} held {suffix}")
+    return "\n".join(lines) or "No portfolio positions available."
+
+
+def _articles_summary(articles: list[dict]) -> str:
+    out = []
+    for i, a in enumerate(articles, 1):
+        ai = a.get("ai_summary", {})
+        out.append(
+            f"Story {i}: {a.get('title', '')}\n"
+            f"Summary: {ai.get('plain_english', '')}\n"
+            f"User angle: {ai.get('for_you', '')}"
+        )
+    return "\n\n".join(out) or "No stories available."
+
+
+def _parse_segments(raw: str, length: str, mode: str) -> PodcastScript:
+    parts = re.compile(r'\[SEGMENT:\s*(\w+)\]', re.IGNORECASE).split(raw)
+    segments = []
+
+    for i in range(1, len(parts) - 1, 2):
+        name = parts[i].strip()
+        text = parts[i + 1].strip()
+        wc = len(text.split())
+        segments.append(PodcastSegment(
+            name=name,
+            text=text,
+            word_count=wc,
+            estimated_duration_sec=int(wc / 2.5)  # ~150 words/min
+        ))
+
+    total_words = sum(s.word_count for s in segments)
+    full_text = "\n\n".join(s.text for s in segments)
+
+    return PodcastScript(
+        length=length,
+        mode=mode,
+        segments=segments,
+        total_words=total_words,
+        estimated_duration_sec=int(total_words / 2.5),
+        full_text=full_text
+    )
