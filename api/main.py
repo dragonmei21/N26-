@@ -537,12 +537,206 @@ def generate_audio_tts(req: AudioTTSRequest):
 
 
 
+# ── /portfolio-audio-script ──────────────────────────────────────────────────
+
+MACRO_CONTEXT = """Current macro environment (Feb 2026):
+- Fed cut rates 50bp in Feb 2026; market expects 2 more cuts in 2026
+- EU AI Act enforcement began, impacting tech regulation
+- NVIDIA Q4 earnings smashed estimates; AI capex boom continuing
+- China geopolitical tension elevated (Taiwan drills)
+- Gold at all-time highs on central-bank buying
+- Crypto bull market: BTC near $98K, ETH staking record 34M ETH locked
+- European tech re-rating underway (SAP, ASML outperforming)
+"""
+
+MOCK_CHANGES = {
+    "ETH": 23.5, "BTC": -2.99, "SHIB": 5.12,
+    "NVDA": 1.45, "AAPL": 1.11, "MSFT": -0.15, "AMZN": 2.8,
+    "EUNL": 0.75, "VUAA": 0.6, "SGLN": 0.05,
+    "SAP": 0.4, "ASML": 1.2,
+}
+
+STOCK_WHY = {
+    "ETH":  "driven by record DeFi activity and 34M ETH staked",
+    "BTC":  "brief touch of 98,000 dollars followed by institutional profit-taking",
+    "SHIB": "Shibarium L2 crossed 400 million transactions, boosting utility",
+    "NVDA": "Q4 data center revenue up 93% year-on-year on AI GPU demand",
+    "AAPL": "Services segment grew 11% offsetting China iPhone softness",
+    "MSFT": "Azure growth of 28% slightly missed the 30% consensus — consolidation",
+    "AMZN": "AWS margins hit a record 37%, advertising revenue surging",
+    "EUNL": "broad market beta — global equities grinding higher",
+    "VUAA": "S&P 500 steady on mega-cap tech earnings beats",
+    "SGLN": "gold held near all-time highs on central-bank buying",
+    "SAP":  "cloud migration ahead of schedule, European tech re-rating",
+    "ASML": "EUV monopoly intact; AI-driven chip demand pulling forward orders",
+}
+
+
+class PortfolioAudioScriptRequest(BaseModel):
+    holdings: list[dict]   # [{ticker, name, valueEUR, assetType, ...}]
+    mode: str = "2min"     # "2min" | "10min" | "30min"
+    user_id: str = "mock_user_1"
+
+
+@app.post("/portfolio-audio-script")
+def generate_portfolio_audio_script(req: PortfolioAudioScriptRequest):
+    cache_key = f"portaudio:{req.user_id}:{req.mode}"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+
+    holdings = req.holdings
+    total_eur = sum(h.get("valueEUR", 0) for h in holdings)
+
+    # Build a compact portfolio summary string
+    portfolio_lines = []
+    for h in holdings:
+        ticker = h.get("ticker", "")
+        name = h.get("name", ticker)
+        value = h.get("valueEUR", 0)
+        pct_portfolio = (value / total_eur * 100) if total_eur > 0 else 0
+        change = MOCK_CHANGES.get(ticker, 0.0)
+        direction = "up" if change >= 0 else "down"
+        why = STOCK_WHY.get(ticker, "tracking the broader market")
+        portfolio_lines.append(
+            f"- {name} ({ticker}): €{value:.2f} ({pct_portfolio:.1f}% of portfolio), "
+            f"{direction} {abs(change):.2f}% — {why}"
+        )
+
+    portfolio_text = "\n".join(portfolio_lines)
+
+    if req.mode == "2min":
+        prompt = f"""Write a spoken 2-minute portfolio briefing.
+The user's total portfolio is €{total_eur:.2f}. List the key positions and their current performance.
+Keep it concise — just tell them what they own and how it's doing. No explanations, no macro.
+Speak warmly and directly. Start with "Here's your portfolio snapshot."
+
+Holdings:
+{portfolio_text}
+
+Write ONLY the spoken script text."""
+        max_tokens = 350
+
+    elif req.mode == "10min":
+        prompt = f"""Write a spoken 10-minute portfolio briefing.
+Cover each holding, what it's currently worth, how it has performed, AND WHY it moved.
+Be analytical but accessible. Use the "why" notes to explain each move clearly.
+Start with a brief overview of total portfolio value and overall performance, then go holding by holding.
+End with a summary sentence.
+
+User portfolio (total €{total_eur:.2f}):
+{portfolio_text}
+
+Write ONLY the spoken script text. Target: approximately 10 minutes when read aloud."""
+        max_tokens = 900
+
+    else:  # 30min
+        prompt = f"""Write a spoken 30-minute comprehensive portfolio briefing.
+Structure it in 3 parts:
+
+PART 1 — Portfolio Snapshot (3 min): Summarise the total value and overall performance.
+
+PART 2 — Position Deep Dive (12 min): For each holding, explain:
+  - Current value and recent performance
+  - The specific reason it moved (use the why notes provided)
+  - Connection to any broader theme (AI boom, rate cuts, crypto rally, European re-rating, etc.)
+
+PART 3 — Macro Connections (15 min): Explain the current macro environment and how each of these macro forces is directly affecting the user's specific holdings:
+  - Fed rate cuts and their effect on growth stocks and crypto
+  - AI capex boom and its effect on NVIDIA, Microsoft, Amazon
+  - EU AI Act and its effect on SAP, ASML
+  - Gold and geopolitical risk
+  - Crypto bull market drivers
+
+Current macro context:
+{MACRO_CONTEXT}
+
+User portfolio (total €{total_eur:.2f}):
+{portfolio_text}
+
+Write ONLY the spoken script text. Be thorough, educational, and personalised. Target: 30 minutes when read aloud at a natural pace."""
+        max_tokens = 2500
+
+    from rag.llm_client import get_client
+    client = get_client()
+    response = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": SYSTEM_AUDIO},
+            {"role": "user", "content": prompt},
+        ],
+        model="llama-3.3-70b-versatile",
+        temperature=0.6,
+        max_tokens=max_tokens,
+    )
+    script = response.choices[0].message.content.strip()
+
+    result = {"script": script}
+    cache.set(cache_key, result, ttl_seconds=3600)
+    return result
+
+
+# ── /stock-explain ────────────────────────────────────────────────────────────
+
+class StockExplainRequest(BaseModel):
+    ticker: str
+    name: str
+    change_pct: float = 0.0
+
+
+@app.post("/stock-explain")
+def explain_stock(req: StockExplainRequest):
+    cache_key = f"explain:{req.ticker}"
+    cached = cache.get(cache_key)
+    if cached:
+        return cached
+
+    change_dir = "up" if req.change_pct >= 0 else "down"
+    why_note = STOCK_WHY.get(req.ticker, "tracking the broader market")
+
+    prompt = f"""{req.name} ({req.ticker}) is {change_dir} {abs(req.change_pct):.2f}% recently.
+Context: {why_note}
+
+Return a JSON object with exactly these 3 keys:
+- "short": one-line headline (max 10 words) summarising the move
+- "why": 2-3 sentences explaining WHY it moved, with specific data points
+- "outlook": 1-2 sentences on near-term outlook and key things to watch
+
+Respond ONLY with valid JSON, nothing else."""
+
+    from rag.llm_client import get_client
+    client = get_client()
+    try:
+        response = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama-3.3-70b-versatile",
+            temperature=0.4,
+            max_tokens=300,
+        )
+        import json as _json
+        raw = response.choices[0].message.content.strip()
+        # Strip markdown code fences if present
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        result = _json.loads(raw)
+    except Exception:
+        result = {
+            "short": f"{req.ticker} moved {change_dir} {abs(req.change_pct):.1f}%",
+            "why": why_note,
+            "outlook": "Monitor upcoming earnings and macro data for the next catalyst.",
+        }
+
+    cache.set(cache_key, result, ttl_seconds=3600)
+    return result
+
+
 @app.get("/")
 def root():
     return {
         "status": "ok",
         "service": "N26 AI Financial News Curator",
-        "endpoints": ["/feed", "/insight/{id}", "/eli10/{concept}", "/trends", "/spend-map", "/fund-tracker", "/tip", "/events", "/events/{id}/causal-chain", "/audio-script", "/audio-tts", "/docs"],
+        "endpoints": ["/feed", "/insight/{id}", "/eli10/{concept}", "/trends", "/spend-map", "/fund-tracker", "/tip", "/events", "/events/{id}/causal-chain", "/audio-script", "/portfolio-audio-script", "/stock-explain", "/audio-tts", "/docs"],
     }
 
 

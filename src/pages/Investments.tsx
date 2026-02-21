@@ -6,11 +6,14 @@ import MacroTab from "@/components/MacroTab";
 import { popularStocks, popularETFs, expertFunds, portfolioCoins } from "@/data/mockData";
 import { marketStories } from "@/data/marketStories";
 import { portfolioStories } from "@/data/portfolioStories";
+import { portfolioHoldings } from "@/data/portfolioHoldings";
 import InvestmentRow from "@/components/InvestmentRow";
 import StoriesViewer from "@/components/StoriesViewer";
 import AudioSummarySheet from "@/components/AudioSummarySheet";
+import PortfolioAudioSummarySheet from "@/components/PortfolioAudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
 import { PoolPortfoliosSection } from "@/components/PoolPortfoliosSection";
+import StockExplainerCard from "@/components/StockExplainerCard";
 
 const AI_ENABLED_KEY = "aiEnabled";
 
@@ -280,42 +283,31 @@ const Investments = () => {
             ))}
           </div>
 
-          {/* ── AI-gated: News stories ──────────────────────────── */}
+          {/* ── AI-gated: Stock Explainer Cards ─────────────────── */}
           <AnimatePresence initial={false}>
             {aiEnabled && (
               <motion.div
-                key="portfolio-stories"
+                key="portfolio-explainer"
                 initial={{ opacity: 0, height: 0, marginBottom: 0 }}
                 animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
                 exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <h3 className="text-lg font-bold text-foreground mb-3">Your holdings at a glance</h3>
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-                  {portfolioStories.map((story, i) => (
-                    <button
-                      key={story.id}
-                      onClick={() => {
-                        setActiveStorySource("portfolio");
-                        setActiveStoryIndex(i);
-                      }}
-                      className="flex flex-col items-center gap-1.5 shrink-0"
-                    >
-                      <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
-                        <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
-                          {story.emoji}
-                        </div>
-                      </div>
-                      <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
-                    </button>
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="text-lg font-bold text-foreground">Your holdings at a glance</h3>
+                  <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">tap to expand</span>
+                </div>
+                <div className="space-y-2">
+                  {portfolioHoldings.map((holding) => (
+                    <StockExplainerCard key={holding.ticker} holding={holding} aiEnabled={aiEnabled} />
                   ))}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* ── AI-gated: Audio summary ─────────────────────────── */}
+          {/* ── AI-gated: Portfolio Audio Briefing ──────────────── */}
           <AnimatePresence initial={false}>
             {aiEnabled && (
               <motion.div
@@ -328,10 +320,16 @@ const Investments = () => {
               >
                 <button
                   onClick={() => setShowPortfolioAudioSheet(true)}
-                  className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+                  className="w-full flex items-center justify-between gap-3 bg-card border border-border rounded-xl px-4 py-3 hover:bg-secondary transition-colors"
                 >
-                  <span className="text-base">🎧</span>
-                  Audio summary
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-base">🎧</span>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-foreground">Portfolio Briefing</p>
+                      <p className="text-xs text-muted-foreground">2 min · 10 min · 30 min</p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-primary font-medium">Generate →</span>
                 </button>
               </motion.div>
             )}
@@ -449,10 +447,10 @@ const Investments = () => {
         />
       )}
 
-      {/* Audio Summary Sheet - Portfolio (only when AI enabled) */}
+      {/* Portfolio Audio Briefing Sheet (only when AI enabled) */}
       {aiEnabled && showPortfolioAudioSheet && (
-        <AudioSummarySheet
-          stories={portfolioStories}
+        <PortfolioAudioSummarySheet
+          holdings={portfolioHoldings}
           onClose={() => setShowPortfolioAudioSheet(false)}
         />
       )}
