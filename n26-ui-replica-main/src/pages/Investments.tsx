@@ -1,0 +1,466 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Settings, Bell, Info, TriangleIcon, Lightbulb, Sparkles, ZapOff } from "lucide-react";
+import MacroTab from "@/components/MacroTab";
+import { popularStocks, popularETFs, expertFunds, portfolioCoins } from "@/data/mockData";
+import { marketStories } from "@/data/marketStories";
+import { portfolioStories } from "@/data/portfolioStories";
+import { portfolioHoldings } from "@/data/portfolioHoldings";
+import InvestmentRow from "@/components/InvestmentRow";
+import StoriesViewer from "@/components/StoriesViewer";
+import AudioSummarySheet from "@/components/AudioSummarySheet";
+import PortfolioAudioSummarySheet from "@/components/PortfolioAudioSummarySheet";
+import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
+import { PoolPortfoliosSection } from "@/components/PoolPortfoliosSection";
+import StockExplainerCard from "@/components/StockExplainerCard";
+
+const AI_ENABLED_KEY = "aiEnabled";
+
+function readAiEnabled(): boolean {
+  try {
+    const stored = localStorage.getItem(AI_ENABLED_KEY);
+    return stored === null ? true : stored === "true";
+  } catch {
+    return true;
+  }
+}
+
+const regions = ["🌍 World", "🇺🇸 USA", "🌍 Europe", "🌍 Emerging"];
+const timeRanges = ["24h", "1W", "1M", "1Y"];
+
+const Investments = () => {
+  const navigate = useNavigate();
+  const [topTab, setTopTab] = useState<"Explore" | "Portfolio" | "Macro">("Explore");
+  const [tab, setTab] = useState<"Stocks" | "ETFs">("Stocks");
+  const [timeRange, setTimeRange] = useState("1W");
+  const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
+  const [activeStorySource, setActiveStorySource] = useState<"market" | "portfolio">("market");
+  const [showAudioSheet, setShowAudioSheet] = useState(false);
+  const [showPortfolioAudioSheet, setShowPortfolioAudioSheet] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState<boolean>(readAiEnabled);
+  const data = tab === "Stocks" ? popularStocks : popularETFs;
+
+  const toggleAi = () => {
+    setAiEnabled((prev) => {
+      const next = !prev;
+      try { localStorage.setItem(AI_ENABLED_KEY, String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-background pb-28"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 pt-12 pb-2">
+        <h1 className="text-3xl font-bold text-foreground">Investments</h1>
+        <div className="flex items-center gap-3">
+          <Settings size={22} className="text-foreground/70" />
+          <div className="w-px h-5 bg-border mx-1" />
+          <div className="relative">
+            <Bell size={22} className="text-foreground/70" />
+            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-negative rounded-full" />
+          </div>
+          <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+            <span className="text-xs font-semibold text-foreground">PG</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Tabs */}
+      <div className="flex bg-secondary mx-4 rounded-lg p-1 mb-4">
+        {(["Explore", "Portfolio", "Macro"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTopTab(t)}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+              topTab === t ? "bg-card text-primary" : "text-muted-foreground"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {topTab === "Explore" ? (
+        /* ---- Explore Tab ---- */
+        <>
+          {/* Market at a glance - Stories */}
+          <div className="px-4 mb-6">
+            <h3 className="text-lg font-bold text-foreground mb-3">Market at a glance</h3>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+              {marketStories.map((story, i) => (
+                <button
+                  key={story.id}
+                  onClick={() => {
+                    setActiveStorySource("market");
+                    setActiveStoryIndex(i);
+                  }}
+                  className="flex flex-col items-center gap-1.5 shrink-0"
+                >
+                  <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
+                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
+                      {story.emoji}
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Audio Summary button */}
+          <div className="px-4 mb-6">
+            <button
+              onClick={() => setShowAudioSheet(true)}
+              className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+            >
+              <span className="text-base">🎧</span>
+              Audio summary
+            </button>
+          </div>
+
+          {/* Expert funds */}
+          <div className="px-4 mb-6">
+            <h3 className="text-lg font-bold text-foreground mb-1">Funds managed by experts</h3>
+            <p className="text-sm text-muted-foreground mb-3">Pick one of three ready-made funds and let trusted experts manage your investments for you.</p>
+            <div className="bg-card rounded-xl border border-border overflow-hidden">
+              {expertFunds.map((fund, i) => (
+                <div key={fund.name} className={`flex items-center gap-3 p-4 ${i < expertFunds.length - 1 ? "border-b border-border" : ""}`}>
+                  <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-2xl">
+                    {fund.emoji}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{fund.name}</p>
+                    <p className="text-xs text-muted-foreground">{fund.returnRate}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Estimated returns are before fees, based on moderate market conditions over a 5 year period and aren't a reliable indicator of future performance.
+            </p>
+          </div>
+
+          {/* Explore ETFs by region */}
+          <div className="px-4 mb-6">
+            <h3 className="text-lg font-bold text-foreground mb-3">Explore ETFs by region</h3>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {regions.map((r) => (
+                <button key={r} className="bg-secondary rounded-full px-4 py-2 text-sm text-foreground whitespace-nowrap shrink-0">
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Most popular */}
+          <div className="px-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-bold text-foreground">Most popular</h3>
+              <button className="text-sm text-primary font-medium">See all</button>
+            </div>
+
+            <div className="flex bg-secondary rounded-lg p-1 mb-3">
+              {(["Stocks", "ETFs"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                    tab === t ? "bg-card text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            <div className="bg-card rounded-xl border border-border px-4">
+              {data.map((item) => (
+                <InvestmentRow
+                  key={item.ticker}
+                  name={item.name}
+                  ticker={item.ticker}
+                  price={item.price}
+                  change={item.change}
+                  color={item.color}
+                  brand={"brand" in item ? (item as any).brand : undefined}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Explore by industry */}
+          <div className="px-4 mt-6">
+            <h3 className="text-lg font-bold text-foreground mb-3">Explore stocks by industry</h3>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {["💻 Technology", "💊 Pharmaceuticals", "⚙️ Manufacturing"].map((ind) => (
+                <button key={ind} className="bg-secondary rounded-full px-4 py-2 text-sm text-foreground whitespace-nowrap shrink-0">
+                  {ind}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : topTab === "Portfolio" ? (
+        /* ---- Portfolio Tab ---- */
+        <div className="px-4">
+
+          {/* ── AI Toggle ─────────────────────────────────────────── */}
+          <div className="flex items-center justify-between bg-secondary rounded-xl px-4 py-3 mb-5">
+            <div className="flex-1 min-w-0 mr-3">
+              <div className="flex items-center gap-1.5">
+                {aiEnabled
+                  ? <Sparkles size={14} className="text-primary shrink-0" />
+                  : <ZapOff size={14} className="text-muted-foreground shrink-0" />
+                }
+                <span className={`text-sm font-semibold ${aiEnabled ? "text-foreground" : "text-muted-foreground"}`}>
+                  {aiEnabled ? "AI Enabled" : "AI Disabled"}
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
+                {aiEnabled ? "News, audio & suggestions are visible." : "News, audio & suggestions are hidden."}
+              </p>
+            </div>
+            {/* Switch */}
+            <button
+              role="switch"
+              aria-checked={aiEnabled}
+              onClick={toggleAi}
+              className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                aiEnabled ? "bg-primary" : "bg-muted-foreground/30"
+              }`}
+            >
+              <motion.div
+                layout
+                transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm"
+                style={{ left: aiEnabled ? "calc(100% - 1.375rem)" : "0.125rem" }}
+              />
+            </button>
+          </div>
+
+          {/* Portfolio value — always visible */}
+          <div className="mb-2">
+            <p className="text-sm text-muted-foreground mb-1">Your portfolio</p>
+            <p className="text-4xl font-bold text-foreground">€926.26</p>
+            <div className="flex items-center gap-1 mt-1">
+              <TriangleIcon size={12} className="text-positive fill-current" />
+              <span className="text-sm text-positive font-medium">€123.40 · 15.37%</span>
+            </div>
+          </div>
+
+          {/* Chart — always visible */}
+          <div className="h-40 my-4 flex items-end">
+            <svg viewBox="0 0 300 100" className="w-full h-full" preserveAspectRatio="none">
+              <polyline
+                fill="none"
+                stroke="hsl(var(--primary))"
+                strokeWidth="2"
+                points="0,70 20,65 40,60 60,72 80,55 100,50 120,58 140,45 160,48 180,40 200,42 220,35 240,38 260,30 280,25 300,20"
+              />
+              <circle cx="300" cy="20" r="4" fill="hsl(var(--primary))" />
+            </svg>
+          </div>
+
+          {/* Time range — always visible */}
+          <div className="flex bg-secondary rounded-lg p-1 mb-6">
+            {timeRanges.map((t) => (
+              <button
+                key={t}
+                onClick={() => setTimeRange(t)}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+                  timeRange === t ? "bg-card text-primary" : "text-muted-foreground"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          {/* ── AI-gated: Stock Explainer Cards ─────────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-explainer"
+                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="text-lg font-bold text-foreground">Your holdings at a glance</h3>
+                  <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">tap to expand</span>
+                </div>
+                <div className="space-y-2">
+                  {portfolioHoldings.map((holding) => (
+                    <StockExplainerCard key={holding.ticker} holding={holding} aiEnabled={aiEnabled} />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── AI-gated: Portfolio Audio Briefing ──────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-audio"
+                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <button
+                  onClick={() => setShowPortfolioAudioSheet(true)}
+                  className="w-full flex items-center justify-between gap-3 bg-card border border-border rounded-xl px-4 py-3 hover:bg-secondary transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-base">🎧</span>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-foreground">Portfolio Briefing</p>
+                      <p className="text-xs text-muted-foreground">2 min · 10 min · 30 min</p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-primary font-medium">Generate →</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Your coins — always visible */}
+          <div className="mb-4">
+            <div className="flex items-center gap-1.5 mb-3">
+              <h3 className="text-lg font-bold text-foreground">Your coins</h3>
+              <Info size={14} className="text-muted-foreground" />
+            </div>
+            <div className="bg-card rounded-xl border border-border px-4">
+              {portfolioCoins.map((coin, i) => (
+                <div key={coin.ticker} className={`flex items-center gap-3 py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
+                  <div className={`w-10 h-10 rounded-full ${coin.color} flex items-center justify-center shrink-0`}>
+                    <span className="text-sm">{coin.emoji}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{coin.name}</p>
+                    <p className="text-xs text-muted-foreground">{coin.ticker}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-semibold text-foreground">{coin.price}</p>
+                    <div className="flex items-center justify-end gap-0.5">
+                      <TriangleIcon
+                        size={8}
+                        className={coin.change >= 0 ? "text-positive fill-current" : "text-negative fill-current rotate-180"}
+                      />
+                      <span className={`text-xs ${coin.change >= 0 ? "text-positive" : "text-negative"}`}>
+                        {coin.changeAmount} · {Math.abs(coin.change).toFixed(2).replace(".", ",")}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Buy / Sell — always visible */}
+          <div className="flex gap-3 mt-4">
+            <button className="flex-1 bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold">
+              Buy
+            </button>
+            <button className="flex-1 bg-secondary text-foreground py-3 rounded-xl text-sm font-semibold">
+              Sell
+            </button>
+          </div>
+
+          {/* ── AI-gated: Scenarios ─────────────────────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-scenarios"
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <button
+                  onClick={() => navigate("/scenarios")}
+                  className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+                >
+                  <span className="text-base">🔮</span>
+                  Scenarios
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── AI-gated: Suggestions ───────────────────────────── */}
+          <AnimatePresence initial={false}>
+            {aiEnabled && (
+              <motion.div
+                key="portfolio-suggestions"
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 12 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <button
+                  onClick={() => setShowSuggestions(true)}
+                  className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+                >
+                  <Lightbulb size={16} className="text-primary" />
+                  Suggestions
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Pool Portfolios — ALWAYS visible, AI-toggle-independent */}
+          <PoolPortfoliosSection />
+        </div>
+      ) : (
+        /* ---- Macro Tab ---- */
+        <MacroTab />
+      )}
+
+      {/* Stories Viewer */}
+      {activeStoryIndex !== null && (
+        <StoriesViewer
+          stories={activeStorySource === "market" ? marketStories : portfolioStories}
+          initialStoryIndex={activeStoryIndex}
+          onClose={() => setActiveStoryIndex(null)}
+        />
+      )}
+
+      {/* Audio Summary Sheet - Explore */}
+      {showAudioSheet && (
+        <AudioSummarySheet
+          stories={marketStories}
+          onClose={() => setShowAudioSheet(false)}
+        />
+      )}
+
+      {/* Portfolio Audio Briefing Sheet (only when AI enabled) */}
+      {aiEnabled && showPortfolioAudioSheet && (
+        <PortfolioAudioSummarySheet
+          holdings={portfolioHoldings}
+          onClose={() => setShowPortfolioAudioSheet(false)}
+        />
+      )}
+
+      {/* Portfolio Suggestions Sheet (only when AI enabled) */}
+      {aiEnabled && showSuggestions && (
+        <PortfolioSuggestionsSheet onClose={() => setShowSuggestions(false)} />
+      )}
+    </motion.div>
+  );
+};
+
+export default Investments;

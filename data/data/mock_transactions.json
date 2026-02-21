@@ -1,0 +1,47 @@
+{
+  "mock_user_1": {
+    "user_id": "mock_user_1",
+    "name": "Alex",
+    "savings_balance": 1200,
+    "transactions": [
+      {"id": "txn_001", "date": "2026-02-18", "merchant": "Ryanair", "amount": -89.99, "currency": "EUR", "category_raw": "travel"},
+      {"id": "txn_002", "date": "2026-02-15", "merchant": "Mercadona", "amount": -67.40, "currency": "EUR", "category_raw": "groceries"},
+      {"id": "txn_003", "date": "2026-02-10", "merchant": "Amazon", "amount": -124.00, "currency": "EUR", "category_raw": "shopping"},
+      {"id": "txn_004", "date": "2026-02-08", "merchant": "Iberdrola", "amount": -78.50, "currency": "EUR", "category_raw": "utilities"},
+      {"id": "txn_005", "date": "2026-02-05", "merchant": "Ryanair", "amount": -250.00, "currency": "EUR", "category_raw": "travel"},
+      {"id": "txn_006", "date": "2026-02-03", "merchant": "Mercadona", "amount": -54.20, "currency": "EUR", "category_raw": "groceries"},
+      {"id": "txn_007", "date": "2026-01-28", "merchant": "Netflix", "amount": -12.99, "currency": "EUR", "category_raw": "entertainment"},
+      {"id": "txn_008", "date": "2026-01-25", "merchant": "Uber", "amount": -18.50, "currency": "EUR", "category_raw": "transport"},
+      {"id": "txn_009", "date": "2026-01-20", "merchant": "Apple Store", "amount": -45.00, "currency": "EUR", "category_raw": "tech"},
+      {"id": "txn_010", "date": "2026-01-15", "merchant": "Booking.com", "amount": -180.00, "currency": "EUR", "category_raw": "travel"}
+    ]
+  },
+  "mock_user_2": {
+    "user_id": "mock_user_2",
+    "name": "Sofia",
+    "savings_balance": 5400,
+    "transactions": [
+      {"id": "txn_101", "date": "2026-02-19", "merchant": "Trade Republic", "amount": -500.00, "currency": "EUR", "category_raw": "investing"},
+      {"id": "txn_102", "date": "2026-02-17", "merchant": "Amazon", "amount": -67.00, "currency": "EUR", "category_raw": "shopping"},
+      {"id": "txn_103", "date": "2026-02-14", "merchant": "Degiro", "amount": -200.00, "currency": "EUR", "category_raw": "investing"},
+      {"id": "txn_104", "date": "2026-02-12", "merchant": "Spotify", "amount": -9.99, "currency": "EUR", "category_raw": "entertainment"},
+      {"id": "txn_105", "date": "2026-02-10", "merchant": "Microsoft", "amount": -12.99, "currency": "EUR", "category_raw": "tech"},
+      {"id": "txn_106", "date": "2026-02-08", "merchant": "Lidl", "amount": -43.60, "currency": "EUR", "category_raw": "groceries"},
+      {"id": "txn_107", "date": "2026-02-05", "merchant": "Apple Store", "amount": -29.99, "currency": "EUR", "category_raw": "tech"},
+      {"id": "txn_108", "date": "2026-02-01", "merchant": "Trade Republic", "amount": -300.00, "currency": "EUR", "category_raw": "investing"}
+    ]
+  },
+  "mock_user_3": {
+    "user_id": "mock_user_3",
+    "name": "Luca",
+    "savings_balance": 320,
+    "transactions": [
+      {"id": "txn_201", "date": "2026-02-20", "merchant": "Lidl", "amount": -28.40, "currency": "EUR", "category_raw": "groceries"},
+      {"id": "txn_202", "date": "2026-02-18", "merchant": "Uber", "amount": -9.80, "currency": "EUR", "category_raw": "transport"},
+      {"id": "txn_203", "date": "2026-02-15", "merchant": "Netflix", "amount": -12.99, "currency": "EUR", "category_raw": "entertainment"},
+      {"id": "txn_204", "date": "2026-02-12", "merchant": "Iberdrola", "amount": -55.00, "currency": "EUR", "category_raw": "utilities"},
+      {"id": "txn_205", "date": "2026-02-10", "merchant": "Mercadona", "amount": -39.80, "currency": "EUR", "category_raw": "groceries"},
+      {"id": "txn_206", "date": "2026-02-05", "merchant": "Amazon", "amount": -32.50, "currency": "EUR", "category_raw": "shopping"}
+    ]
+  }
+}

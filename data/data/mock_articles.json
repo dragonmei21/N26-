@@ -1,0 +1,182 @@
+[
+  {
+    "article_id": "art_001",
+    "title": "ECB holds rates at 3.5% amid persistent inflation",
+    "content": "The European Central Bank kept its key interest rates unchanged at 3.5% on Thursday, as policymakers weigh stubborn inflation against signs of economic slowdown. ECB President Christine Lagarde signaled that rates will remain at current levels until inflation sustainably returns to the 2% target. The decision was unanimous among the 26 governing council members. Markets had largely priced in a hold, with some analysts expecting a first cut in June 2026 if wage growth moderates. European bond yields fell slightly on the news.",
+    "url": "https://reuters.com/ecb-rates-hold-2026",
+    "source_name": "Reuters",
+    "published_at": "2026-02-21T10:00:00Z",
+    "category": "macro"
+  },
+  {
+    "article_id": "art_002",
+    "title": "Bitcoin surges 15% after US spot ETF approval rumors",
+    "content": "Bitcoin jumped 15% in 24 hours to reach $94,000 as rumors circulated that the SEC is considering approving several spot Bitcoin ETF applications from major asset managers including BlackRock and Fidelity. Trading volume on major exchanges hit a 6-month high. Ethereum and other major cryptocurrencies followed Bitcoin higher, with Ethereum gaining 12%. Analysts noted that institutional interest has been building since the successful launch of US Bitcoin ETFs in January 2024.",
+    "url": "https://coindesk.com/bitcoin-etf-surge-2026",
+    "source_name": "CoinDesk",
+    "published_at": "2026-02-21T08:30:00Z",
+    "category": "crypto"
+  },
+  {
+    "article_id": "art_003",
+    "title": "NVIDIA Q4 earnings smash estimates, raises guidance",
+    "content": "NVIDIA reported fourth-quarter revenue of $39.3 billion, beating Wall Street estimates of $36.2 billion by a significant margin. Data center revenue alone reached $32.6 billion, up 93% year-over-year. CEO Jensen Huang raised full-year guidance citing unprecedented demand for Blackwell GPU architecture. The company also announced a new $50 billion share buyback program. NVIDIA stock rose 12% in after-hours trading. Analysts from Goldman Sachs and Morgan Stanley raised their price targets to $200 and $220 respectively.",
+    "url": "https://cnbc.com/nvidia-q4-2026",
+    "source_name": "CNBC",
+    "published_at": "2026-02-20T21:00:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_004",
+    "title": "Ryanair warns of higher fares as fuel costs spike",
+    "content": "Ryanair CEO Michael O'Leary warned passengers to expect 8-12% higher airfares through summer 2026 as jet fuel prices have risen 22% since October. The airline reported record passenger numbers of 185 million for FY2025 but warned margins will compress. Ryanair has hedged 85% of its fuel requirements for the next 12 months but said it cannot absorb the full increase. The warning sent shares down 3.2% and triggered a sell-off across European airlines including easyJet and Wizz Air.",
+    "url": "https://ft.com/ryanair-fares-2026",
+    "source_name": "Financial Times",
+    "published_at": "2026-02-21T09:15:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_005",
+    "title": "Vanguard increases European bond allocation by 4%",
+    "content": "Vanguard, the world's second-largest asset manager, announced it has increased its European bond allocation by 4 percentage points across its flagship balanced funds, citing attractive yields and expectations for eventual ECB rate cuts. The move represents approximately $12 billion in reallocation. Chief Investment Officer Greg Davis said the firm sees European government bonds as undervalued relative to US Treasuries given the ECB's more hawkish stance relative to the Fed. BlackRock made a similar move last month, increasing European duration exposure.",
+    "url": "https://bloomberg.com/vanguard-europe-bonds-2026",
+    "source_name": "Bloomberg",
+    "published_at": "2026-02-20T14:00:00Z",
+    "category": "etf"
+  },
+  {
+    "article_id": "art_006",
+    "title": "OpenAI launches ChatGPT-5 with real-time capabilities",
+    "content": "OpenAI unveiled ChatGPT-5, claiming a 40% improvement in reasoning benchmarks over GPT-4 and native real-time voice and video capabilities. The model is available immediately to ChatGPT Plus subscribers. Enterprise pricing starts at $30 per user per month, up from $20 for GPT-4. CEO Sam Altman said demand signals from Fortune 500 companies are the strongest the company has ever seen. The launch accelerates the AI arms race, with Google, Anthropic, and Meta all expected to respond within weeks.",
+    "url": "https://techcrunch.com/chatgpt5-launch-2026",
+    "source_name": "TechCrunch",
+    "published_at": "2026-02-20T18:00:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_007",
+    "title": "ARK Invest doubles down on Tesla after price drop",
+    "content": "Cathie Wood's ARK Innovation ETF purchased $47 million worth of Tesla shares after the stock dropped 8% following disappointing delivery numbers. Wood reiterated her $2,600 price target for 2029, citing autonomous driving progress. Tesla delivered 1.79 million vehicles in 2025, missing the 1.87 million analyst consensus. However, ARK argues the market is undervaluing Tesla's robotaxi potential. The fund currently holds 9.2% of its portfolio in Tesla, making it the largest position.",
+    "url": "https://bloomberg.com/ark-tesla-2026",
+    "source_name": "Bloomberg",
+    "published_at": "2026-02-19T16:30:00Z",
+    "category": "etf"
+  },
+  {
+    "article_id": "art_008",
+    "title": "EU AI Act enforcement creates compliance rush",
+    "content": "With the EU AI Act's high-risk AI provisions entering enforcement phase, European and US technology companies are scrambling to meet compliance deadlines. Microsoft, Google, and Meta face significant audit requirements for their AI products deployed in Europe. SAP, IBM, and several European startups are benefiting from surging demand for AI compliance tooling. Legal costs for large AI deployments are estimated at €500,000 to €2 million per system. The EU has appointed 27 national supervisory authorities to oversee enforcement.",
+    "url": "https://ft.com/eu-ai-act-enforcement-2026",
+    "source_name": "Financial Times",
+    "published_at": "2026-02-19T11:00:00Z",
+    "category": "macro"
+  },
+  {
+    "article_id": "art_009",
+    "title": "Spain's Iberdrola hits record renewable energy output",
+    "content": "Iberdrola, Europe's largest renewable energy company, reported record electricity generation from renewable sources in 2025, with 80% of its capacity now from wind, solar, and hydro. The company invested €12 billion in new renewable capacity and expects to invest a further €15 billion through 2027. CEO Ignacio Galán said the green energy transition is accelerating faster than expected, driven by corporate power purchase agreements. Iberdrola shares rose 4% on the earnings beat.",
+    "url": "https://reuters.com/iberdrola-renewables-2026",
+    "source_name": "Reuters",
+    "published_at": "2026-02-18T13:00:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_010",
+    "title": "Fed signals two rate cuts possible in 2026",
+    "content": "Federal Reserve Chair Jerome Powell told Congress that two rate cuts remain possible in 2026 if inflation continues its descent toward 2%. Current PCE inflation stands at 2.4%, down from 2.8% six months ago. Powell warned that 'premature easing would be a mistake' but acknowledged progress. Markets immediately priced in a 75% probability of a June cut, up from 55% before the testimony. The S&P 500 rose 1.8% and the 10-year Treasury yield fell 8 basis points on the news.",
+    "url": "https://wsj.com/fed-rate-cuts-2026",
+    "source_name": "Wall Street Journal",
+    "published_at": "2026-02-19T20:00:00Z",
+    "category": "macro"
+  },
+  {
+    "article_id": "art_011",
+    "title": "Amazon Web Services revenue grows 32% driven by AI demand",
+    "content": "Amazon reported AWS revenue of $28.8 billion for Q4 2025, up 32% year-over-year, driven by surging demand for AI compute infrastructure. CEO Andy Jassy said AWS has a $189 billion annualized revenue run rate and a backlog of AI workloads that extends 18 months. Amazon is investing $75 billion in data center infrastructure in 2026. The company also announced partnerships with NVIDIA for next-generation GPU clusters. Amazon stock rose 6% after the results.",
+    "url": "https://cnbc.com/amazon-aws-ai-2026",
+    "source_name": "CNBC",
+    "published_at": "2026-02-18T21:30:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_012",
+    "title": "Gold hits all-time high as geopolitical tensions rise",
+    "content": "Gold prices reached a new all-time high of $3,150 per ounce as investors sought safe-haven assets amid escalating tensions in the Taiwan Strait and Middle East. Central bank buying, particularly from China and India, has been a key driver. Goldman Sachs raised its year-end gold target to $3,400. The gold ETF iShares Physical Gold (SGLN) saw record inflows of €800 million in one week. Silver also hit a 12-year high at $35 per ounce.",
+    "url": "https://bloomberg.com/gold-alltime-high-2026",
+    "source_name": "Bloomberg",
+    "published_at": "2026-02-20T10:00:00Z",
+    "category": "macro"
+  },
+  {
+    "article_id": "art_013",
+    "title": "Consumer spending in Europe remains resilient despite inflation",
+    "content": "Eurostat data shows European consumer spending grew 1.2% in January 2026, defying expectations of a slowdown. Grocery retailers Mercadona and Lidl reported strong same-store sales growth. Travel bookings for summer 2026 are up 18% versus the same period last year. The resilience supports ECB arguments that the labor market remains tight enough to sustain inflation. Retailers such as Inditex and H&M also reported better-than-expected quarterly results.",
+    "url": "https://reuters.com/europe-consumer-spending-2026",
+    "source_name": "Reuters",
+    "published_at": "2026-02-17T09:00:00Z",
+    "category": "macro"
+  },
+  {
+    "article_id": "art_014",
+    "title": "Spotify reports first annual profit, stock jumps 18%",
+    "content": "Spotify delivered its first full-year profit since going public, reporting net income of €1.2 billion for 2025. Monthly active users reached 750 million, with premium subscribers at 280 million. The company credited its podcast strategy, price increases, and AI-powered personalization for the turnaround. CEO Daniel Ek announced Spotify will begin paying a quarterly dividend. Shares jumped 18% to a record €400, giving the company a market cap of €80 billion.",
+    "url": "https://techcrunch.com/spotify-profit-2026",
+    "source_name": "TechCrunch",
+    "published_at": "2026-02-18T07:30:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_015",
+    "title": "iShares Core MSCI World ETF sees record monthly inflows",
+    "content": "BlackRock's iShares Core MSCI World ETF (IWDA) attracted record monthly inflows of €4.2 billion in January 2026, according to data from ETFGI. European retail investors are increasingly turning to passive investing as market volatility drives interest in diversified products. The ETF, which tracks 1,500+ stocks across 23 developed markets, has returned 24% over the past 12 months. IWDA now manages over €80 billion in assets, making it Europe's largest ETF.",
+    "url": "https://ft.com/ishares-world-etf-2026",
+    "source_name": "Financial Times",
+    "published_at": "2026-02-16T11:00:00Z",
+    "category": "etf"
+  },
+  {
+    "article_id": "art_016",
+    "title": "China military exercises near Taiwan rattle chip stocks",
+    "content": "China conducted its largest military exercises near Taiwan in five years, sending TSMC shares down 6.3% and Apple shares down 3.1% as investors worried about semiconductor supply chain disruption. TSMC manufactures over 60% of the world's advanced chips. The exercises included naval and air force maneuvers in the Taiwan Strait. US Defense Secretary said the exercises are 'provocative but not unprecedented'. The Philadelphia Semiconductor Index fell 4.2%, its worst day in six months.",
+    "url": "https://bloomberg.com/china-taiwan-chips-2026",
+    "source_name": "Bloomberg",
+    "published_at": "2026-02-17T06:00:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_017",
+    "title": "N26 launches 3% savings rate for premium customers",
+    "content": "N26 announced it will raise its Instant Savings rate to 3.0% APY for Metal and Premium subscribers, effective March 1, 2026. Standard account holders will receive 2.5% APY. The move follows similar rate increases from Revolut and Wise and comes as competition for European digital banking deposits intensifies. N26 CEO Valentin Stalf said the company now has 12 million customers and is profitable in its core European markets. The new rate will apply to balances up to €100,000.",
+    "url": "https://n26.com/press/savings-rate-3pct",
+    "source_name": "N26",
+    "published_at": "2026-02-21T07:00:00Z",
+    "category": "macro"
+  },
+  {
+    "article_id": "art_018",
+    "title": "Microsoft Copilot reaches 100M enterprise users",
+    "content": "Microsoft announced that its AI assistant Copilot has reached 100 million monthly active enterprise users, up from 60 million six months ago. Revenue from Copilot and Azure AI services grew 45% year-over-year to $12 billion in the last quarter. CEO Satya Nadella said AI is the most transformative technology since the internet. Microsoft plans to invest $80 billion in AI infrastructure in 2026, mostly in the US but also in EU markets to comply with data sovereignty requirements.",
+    "url": "https://wsj.com/microsoft-copilot-100m-2026",
+    "source_name": "Wall Street Journal",
+    "published_at": "2026-02-20T15:00:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_019",
+    "title": "European airlines hedge fuel costs amid oil price volatility",
+    "content": "Major European airlines including Lufthansa, Air France-KLM, and Ryanair have increased their fuel hedging ratios to 80-90% for 2026 as oil prices remain volatile between $75-$95 per barrel. Hedging protects carriers from sudden price spikes but can be expensive if prices fall. Analysts at JPMorgan estimate European airlines will face €2.1 billion in higher fuel costs in 2026 versus 2025 even with current hedging positions. Passenger demand remains strong, giving carriers some ability to pass through costs.",
+    "url": "https://reuters.com/europe-airlines-hedging-2026",
+    "source_name": "Reuters",
+    "published_at": "2026-02-19T14:00:00Z",
+    "category": "stocks"
+  },
+  {
+    "article_id": "art_020",
+    "title": "Ethereum upgrade 'Pectra' set for April, boosting staking yields",
+    "content": "The Ethereum Foundation confirmed that the Pectra upgrade will launch in April 2026, bringing significant improvements to staking efficiency and validator economics. Current staking yields are expected to increase from 3.8% to approximately 4.5% post-upgrade. The upgrade also raises the maximum validator stake from 32 ETH to 2,048 ETH, potentially attracting institutional stakers. Ethereum rose 8% on the announcement. Total value locked in Ethereum staking contracts now exceeds $80 billion.",
+    "url": "https://coindesk.com/ethereum-pectra-2026",
+    "source_name": "CoinDesk",
+    "published_at": "2026-02-18T16:00:00Z",
+    "category": "crypto"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "4a78a6cfdc3be77a",
+    "title": "OpenAI releases ChatGPT-5 with real-time capabilities and autonomous agents",
+    "content": "OpenAI on Friday released ChatGPT-5, its most capable language model yet, featuring real-time web access, autonomous agent capabilities, and multimodal reasoning. The launch marks a significant escalation in the AI arms race, with Microsoft, Google, and Amazon immediately announcing plans to integrate the technology into their cloud services. Analysts expect the release to drive a surge in demand for NVIDIA H100 and H200 GPUs as hyperscalers race to expand their AI infrastructure. NVIDIA shares rose 8% in pre-market trading following the announcement. The model, which can execute multi-step tasks without human oversight, is expected to accelerate enterprise AI adoption across sectors including finance, healthcare, and logistics. Amazon Web Services has already committed $5 billion in additional GPU compute to meet anticipated demand.",
+    "published_at": "2026-02-21",
+    "url": "https://reuters.com/technology/openai-releases-chatgpt-5-real-time-capabilities-2026-02-21"
+  },
+  {
+    "id": "937b0457b2a098e0",
+    "title": "ECB holds rates at 3.5% for seventh consecutive meeting amid stubborn inflation",
+    "content": "The European Central Bank kept its key interest rates unchanged at 3.5% on Thursday, as policymakers remained cautious about declaring victory over inflation despite a slowdown in price growth. ECB President Christine Lagarde said the bank needs more evidence that inflation is on a sustained path back to its 2% target before cutting rates. The decision was widely expected by markets, though some investors had hoped for signals of an imminent rate cut. European bank stocks including Santander and BBVA fell slightly on the news as hopes for cheaper borrowing faded. The ECB's rate hold means savings accounts across the eurozone will continue to offer relatively high yields, with N26 Instant Savings currently paying 2.5% annually. The next policy meeting is scheduled for March 12, 2026, with analysts split on whether a 25 basis point cut could materialise.",
+    "published_at": "2026-02-21",
+    "url": "https://reuters.com/markets/europe/ecb-holds-rates-3-5-percent-february-2026"
+  },
+  {
+    "id": "130268006d14a68d",
+    "title": "EU regulators approve first Bitcoin ETF, opening crypto to retail investors",
+    "content": "European financial regulators approved the region's first physically-backed Bitcoin exchange-traded fund on Wednesday, a landmark decision that analysts say could channel hundreds of billions of euros into crypto markets. The approval by ESMA follows the US SEC's historic Bitcoin ETF approval in 2024 and is expected to trigger a wave of institutional investment in digital assets. Bitcoin surged 12% to $98,500 immediately following the announcement, while Coinbase shares jumped 18% as the largest regulated crypto exchange in the region. The ETF, to be listed on Euronext Amsterdam, will allow retail investors to gain Bitcoin exposure through their existing brokerage accounts without holding the underlying asset.",
+    "published_at": "2026-02-20",
+    "url": "https://reuters.com/markets/currencies/bitcoin-etf-approved-eu-regulators-2026-02-20"
+  },
+  {
+    "id": "20fe422209448409",
+    "title": "NVIDIA beats Q4 earnings by 23%, raises guidance on surging AI chip demand",
+    "content": "NVIDIA Corporation reported fiscal fourth-quarter earnings that surpassed analyst expectations by 23%, driven by unprecedented demand for its H100 and Blackwell GPU chips used in AI data centers. Revenue reached $39.3 billion, up 78% year-over-year, while the company raised its forward guidance to $43 billion for the next quarter. CEO Jensen Huang said demand for AI compute infrastructure shows no sign of slowing, with every major cloud provider and enterprise increasing their orders. The results confirm that the AI investment cycle is accelerating rather than moderating, boosting the entire semiconductor supply chain including TSMC, ASML, and SK Hynix. Shares rose 11% in after-hours trading.",
+    "published_at": "2026-02-19",
+    "url": "https://reuters.com/technology/nvidia-beats-earnings-raises-guidance-ai-demand-2026-02-19"
+  }
+]

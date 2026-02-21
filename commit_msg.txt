@@ -1,0 +1,8 @@
+feat: stock explainer cards, portfolio briefing modes, AI toggle refinements
+
+- Replace portfolio story circles with expandable StockExplainerCard per holding
+- Add PortfolioAudioSummarySheet with 3 modes: Portfolio Snapshot, Holdings Analysis, Macro Intelligence Report
+- Remove voice selector and briefing description text from audio sheet
+- Add /portfolio-audio-script and /stock-explain backend endpoints
+- Rename briefing modes to more professional names
+- Wire AI toggle to show/hide stock explainer cards and audio briefing button

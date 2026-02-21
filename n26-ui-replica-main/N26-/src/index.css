@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 150 10% 7%;
+    --foreground: 0 0% 95%;
+
+    --card: 155 8% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 155 8% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 168 80% 45%;
+    --primary-foreground: 0 0% 5%;
+
+    --secondary: 155 6% 18%;
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 155 5% 20%;
+    --muted-foreground: 0 0% 55%;
+
+    --accent: 155 6% 18%;
+    --accent-foreground: 0 0% 90%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 155 5% 18%;
+    --input: 155 5% 18%;
+    --ring: 168 80% 45%;
+
+    --radius: 0.75rem;
+
+    --positive: 168 80% 55%;
+    --negative: 350 80% 65%;
+    --warning: 45 90% 55%;
+
+    --sidebar-background: 150 10% 7%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 168 80% 45%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 155 6% 18%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 155 5% 18%;
+    --sidebar-ring: 168 80% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-positive {
+    color: hsl(var(--positive));
+  }
+  .text-negative {
+    color: hsl(var(--negative));
+  }
+  .bg-n26-card {
+    background-color: hsl(var(--card));
+  }
+  .border-n26 {
+    border-color: hsl(var(--border));
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

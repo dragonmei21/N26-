@@ -1,24 +1,6 @@
-# API Framework
-fastapi==0.115.0
-uvicorn==0.32.0
-python-dotenv==1.0.0
-
-# AI / Embeddings
-openai>=1.30.0
-sentence-transformers==3.3.0
-chromadb==1.0.21          # bumped from 0.6.0 — Python 3.13 wheel available
-
-# Financial Data
-yfinance==0.2.36
-
-# Data Processing
-pydantic==2.10.0
-httpx==0.28.0
-feedparser==6.0.11
-beautifulsoup4==4.12.3
-
-# Scheduling
-apscheduler==3.10.4
-
-# Utils
-python-dateutil==2.9.0
+fastapi==0.129.0
+uvicorn==0.41.0
+python-dotenv==1.2.1
+groq==1.0.0
+pydantic==2.12.5
+httpx==0.28.1

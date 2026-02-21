@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+N26/
+.DS_Store
+chroma_db/
+*.mp3
+/tmp/audio/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
