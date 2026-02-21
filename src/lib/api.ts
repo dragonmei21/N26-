@@ -50,32 +50,79 @@ function classifyTitle(title: string): EventCategory {
   return best;
 }
 
+// ── Hero events — guaranteed to have causal chains (fallback_chain.json) ──
+
+const HERO_EVENTS: MacroEvent[] = [
+  {
+    id: "1020225c78bb0919",
+    title: "Rampant AI Demand for Memory Is Fueling a Growing Chip Crisis",
+    source: "Fortune",
+    date: "2026-02-17",
+    category: "tech",
+    emoji: "💻",
+  },
+  {
+    id: "b8544bde55f780b3",
+    title: "ECB to Hold Rates Steady Despite Global Strains: Decision Guide",
+    source: "Reuters",
+    date: "2026-02-21",
+    category: "macro",
+    emoji: "🏛️",
+  },
+  {
+    id: "132b1ac78ddaea0e",
+    title: "Tech leads US stocks rally; renewed geopolitical strife boosts oil, gold",
+    source: "Reuters",
+    date: "2026-02-21",
+    category: "geo",
+    emoji: "🌍",
+  },
+  {
+    id: "6f44da0d4f1c521d",
+    title: "AI-fuelled tech stock selloff rolls on",
+    source: "Reuters",
+    date: "2026-02-21",
+    category: "tech",
+    emoji: "💻",
+  },
+];
+
 // ── Fetch feed → MacroEvent[] ──────────────────────────────────────────
 
 export async function fetchFeedEvents(limit = 8): Promise<MacroEvent[]> {
-  const res = await fetch(`${BASE_URL}/feed?user_id=${USER_ID}&limit=${limit}`, { headers: HEADERS });
-  if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/feed?user_id=${USER_ID}&limit=${limit}`, { headers: HEADERS });
+    if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
+    const data = await res.json();
 
-  return (data.feed as Array<{
-    id: string;
-    title: string;
-    source_name: string;
-    published_at: string;
-    has_causal_chain: boolean;
-  }>)
-    .filter((a) => a.has_causal_chain)
-    .map((a) => {
-      const category = classifyTitle(a.title);
-      return {
-        id: a.id,
-        title: a.title,
-        source: a.source_name,
-        date: a.published_at.split("T")[0],
-        category,
-        emoji: CATEGORY_EMOJI[category],
-      };
-    });
+    const heroIds = new Set(HERO_EVENTS.map((e) => e.id));
+
+    const feedEvents = (data.feed as Array<{
+      id: string;
+      title: string;
+      source_name: string;
+      published_at: string;
+      has_causal_chain: boolean;
+    }>)
+      .filter((a) => a.has_causal_chain && !heroIds.has(a.id))
+      .map((a) => {
+        const category = classifyTitle(a.title);
+        return {
+          id: a.id,
+          title: a.title,
+          source: a.source_name,
+          date: a.published_at.split("T")[0],
+          category,
+          emoji: CATEGORY_EMOJI[category],
+        };
+      });
+
+    // Hero events always first, then personalised feed articles
+    return [...HERO_EVENTS, ...feedEvents];
+  } catch {
+    // If feed fails, still show hero events
+    return HERO_EVENTS;
+  }
 }
 
 // ── Fetch causal chain → CausalChainResponse ──────────────────────────
