@@ -64,8 +64,9 @@ def get_feed(
             "ai_summary": {
                 "plain_english": summary.get("plain_english", ""),
                 "for_you": summary.get("for_you", ""),
-                "disclaimer": "Educational only, not financial advice.",
+                "disclaimer": "Educational only, not financial advice."
             },
+            "has_causal_chain": True # Mocked as True for the Hackathon demo path always showing the endpoint capabilities
         })
 
     return {
