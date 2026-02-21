@@ -1,89 +1,125 @@
-import yfinance as yf
+import json
+import random
 from datetime import date, timedelta
+import yfinance as yf
 
-# Mock price data — used when yfinance returns nothing
-# Realistic 30-day curves for hero tickers
-MOCK_PRICES = {
-    "NVDA": [136.2, 138.1, 140.5, 139.8, 142.3, 141.0, 143.7, 145.2, 144.8,
-             147.1, 146.5, 149.3, 148.7, 151.2, 150.6, 153.4, 152.8, 155.1,
-             154.3, 157.6, 156.9, 159.2, 158.4, 161.7, 160.3, 163.8, 162.5,
-             165.1, 164.7, 167.3],
-    "AMZN": [224.5, 225.8, 223.4, 226.7, 228.1, 227.3, 229.6, 231.2, 230.8,
-             232.4, 233.7, 232.1, 234.8, 236.3, 235.7, 237.4, 238.9, 237.6,
-             239.8, 241.3, 240.7, 242.5, 243.8, 242.4, 244.7, 246.2, 245.6,
-             247.9, 249.4, 248.8],
-    "AAPL": [220.1, 221.4, 219.8, 222.3, 223.7, 222.5, 224.8, 226.3, 225.7,
-             227.4, 228.9, 227.6, 229.8, 231.3, 230.7, 232.5, 233.8, 232.4,
-             234.7, 236.2, 235.6, 237.9, 239.4, 238.8, 240.7, 242.3, 241.6,
-             243.8, 245.4, 244.7],
-    "MSFT": [415.2, 417.8, 416.3, 419.5, 421.2, 420.4, 422.8, 424.5, 423.9,
-             426.3, 427.8, 426.4, 428.9, 430.6, 429.8, 431.5, 433.2, 432.6,
-             434.9, 436.7, 435.8, 437.5, 439.3, 438.7, 440.5, 442.1, 441.4,
-             443.8, 445.6, 444.9],
-    "META": [652.3, 655.8, 654.2, 657.6, 659.4, 658.7, 661.2, 663.8, 662.5,
-             665.1, 667.4, 666.3, 668.9, 671.5, 670.8, 672.6, 674.9, 673.4,
-             676.1, 678.7, 677.5, 679.8, 682.4, 681.3, 683.7, 686.2, 685.6,
-             688.1, 690.7, 689.4],
-    "GOOGL": [195.4, 196.8, 195.2, 197.6, 198.9, 198.1, 199.7, 201.3, 200.8,
-              202.4, 203.7, 202.5, 204.8, 206.3, 205.7, 207.4, 208.9, 207.6,
-              209.8, 211.4, 210.8, 212.5, 213.9, 212.7, 214.8, 216.3, 215.7,
-              217.9, 219.5, 218.8],
-}
-
+# In-memory cache for pricing TTL
+_price_cache = {}
 
 def fetch_price_timeline(ticker: str, event_date: date) -> dict | None:
     """
-    Fetch 30 days of price history centred on event_date.
-    Returns chart-ready dict or None if ticker is invalid.
-    Falls back to mock data if yfinance returns nothing.
+    Fetch 30 days of price data centered around the event date.
+    Returns chart-ready JSON or None if ticker invalid or fails.
     """
-    start = event_date - timedelta(days=20)
-    end = event_date + timedelta(days=10)
+    cache_key = f"{ticker}:{event_date.isoformat()}"
+    if cache_key in _price_cache:
+        return _price_cache[cache_key]
 
     try:
+        start = event_date - timedelta(days=20)
+        end = event_date + timedelta(days=10)
+        
         tk = yf.Ticker(ticker)
         hist = tk.history(start=start, end=end)
-
-        if not hist.empty:
-            labels = [d.strftime("%b %d") for d in hist.index]
-            values = [round(float(v), 2) for v in hist["Close"]]
-
-            # Index of the first trading day on or after the event
-            event_index = next(
-                (i for i, d in enumerate(hist.index) if d.date() >= event_date),
-                len(labels) - 1,
-            )
-
-            pre = hist["Close"].iloc[max(0, event_index - 5)]
-            post = hist["Close"].iloc[min(len(hist) - 1, event_index + 3)]
-            pct_change = round(((post - pre) / pre) * 100, 2)
-
-            return {
-                "labels": labels,
-                "values": values,
-                "event_index": event_index,
-                "pct_change": pct_change,
-            }
-    except Exception:
-        pass
-
-    # Fallback: mock data
-    mock = MOCK_PRICES.get(ticker.upper())
-    if mock:
-        labels = [
-            (event_date - timedelta(days=20) + timedelta(days=i)).strftime("%b %d")
-            for i in range(len(mock))
-        ]
-        event_index = 20  # event_date lands at index 20 in the 30-day window
-        pre = mock[max(0, event_index - 5)]
-        post = mock[min(len(mock) - 1, event_index + 3)]
-        pct_change = round(((post - pre) / pre) * 100, 2)
-
-        return {
+        
+        # Fallback to mock data if yfinance is empty or fails
+        if hist.empty:
+            return _get_mock_timeline(ticker, event_date)
+        
+        labels = [d.strftime("%b %d") for d in hist.index]
+        values = [round(v, 2) for v in hist["Close"].tolist()]
+        
+        # Find index of event_date in the series
+        event_index = next(
+            (i for i, d in enumerate(hist.index) if d.date() >= event_date),
+            len(labels) - 1
+        )
+        
+        # Price change: close on event_date vs 5 days before
+        pre_event_price = hist["Close"].iloc[max(0, event_index - 5)]
+        post_event_price = hist["Close"].iloc[min(len(hist) - 1, event_index + 3)]
+        pct_change = round(((post_event_price - pre_event_price) / pre_event_price) * 100, 2)
+        
+        result = {
             "labels": labels,
-            "values": mock,
+            "values": values,
             "event_index": event_index,
-            "pct_change": pct_change,
+            "pct_change": pct_change
         }
+        
+        _price_cache[cache_key] = result
+        return result
+        
+    except Exception as e:
+        print(f"Error fetching live prices: {e}")
+        return _get_mock_timeline(ticker, event_date)
 
+def _get_mock_timeline(ticker: str, event_date: date) -> dict | None:
+    """Fallback generator for mock data if yfinance fails or is down (hackathon resilience)"""
+    try:
+        with open("data/mock_prices.json", "r") as f:
+            mocks = json.load(f)
+            if ticker in mocks:
+                return mocks[ticker]
+    except FileNotFoundError:
+        pass
     return None
+
+def enrich_chain_with_prices(chain: list, event_date: date, trigger_event_label: str) -> list:
+    """Enriches the base causal chain with historical price data graphs"""
+    priced_chain = []
+    
+    # Recreate the PricedCausalStep format expected by Team B UI
+    for idx, step in enumerate(chain):
+        step_dict = step.model_dump()
+        
+        if step.ticker:
+            price_info = fetch_price_timeline(step.ticker, event_date)
+            if price_info:
+                # Add Team B color schema mapping based on direction
+                color = "#00D4A8" if step.direction == "up" else "#F43F5E" if step.direction == "down" else "#6B7280"
+                
+                step_dict["price_data"] = {
+                    "type": "timeline_with_event",
+                    "title": f"{step.affected_entity} — 30 Day Price",
+                    "event_label": trigger_event_label[:15] + "..." if len(trigger_event_label) > 15 else trigger_event_label,
+                    "data": {
+                        "labels": price_info["labels"],
+                        "values": price_info["values"],
+                        "event_index": price_info["event_index"],
+                        "color": color
+                    }
+                }
+                step_dict["price_change_pct"] = price_info["pct_change"]
+            else:
+                step_dict["price_data"] = None
+                step_dict["price_change_pct"] = None
+        else:
+            step_dict["price_data"] = None
+            step_dict["price_change_pct"] = None
+            
+        step_dict["event_date"] = event_date.isoformat()
+        
+        # Pydantic prevents direct dynamic assignment without recreating or wrapping object,
+        # Team B's response wants JSON layout, return raw dicts that map to the wrapper class later.
+        
+        from pydantic import BaseModel
+        from typing import Literal, Optional
+        
+        class PricedCausalStep(BaseModel):
+            step_number: int
+            event: str
+            mechanism: str
+            affected_entity: str
+            entity_type: Literal["company", "sector", "commodity", "currency", "index"]
+            ticker: Optional[str] = None
+            direction: Literal["up", "down", "neutral"]
+            confidence: Literal["high", "medium", "low"]
+            plain_english: str
+            price_data: Optional[dict] = None
+            price_change_pct: Optional[float] = None
+            event_date: date
+            
+        priced_chain.append(PricedCausalStep(**step_dict))
+        
+    return priced_chain
