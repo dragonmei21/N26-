@@ -11,10 +11,15 @@ from api.routes.spend_map import router as spend_map_router
 from api.routes.tip import router as tip_router
 from api.routes.eli10 import router as eli10_router
 from api.routes.trends import router as trends_router
+from api.routes.podcast import router as podcast_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Ensure audio output dir exists
+    from pathlib import Path
+    Path("/tmp/audio").mkdir(parents=True, exist_ok=True)
+
     try:
         from ingestion.scheduler import start_scheduler
         from scripts.seed_news import main as seed
@@ -40,6 +45,7 @@ app.include_router(spend_map_router)
 app.include_router(tip_router)
 app.include_router(eli10_router)
 app.include_router(trends_router)
+app.include_router(podcast_router)
 
 
 @app.get("/health")
