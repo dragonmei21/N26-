@@ -14,3 +14,24 @@ pnpm-debug.log*
 
 # Editor
 .vscode/
+
+# Env
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# Project-specific
+N26/
+
+# Data/cache/artifacts
+chroma_db/
+data/frozen_articles.json
+data/mock_prices.json
+*.egg-info/
+build/
+.pytest_cache/
