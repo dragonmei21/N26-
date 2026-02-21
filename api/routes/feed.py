@@ -8,6 +8,7 @@ from spend.profiler import build_profile
 from relevance.scorer import score
 from rag.prompt_builder import build_summary_prompt
 from rag.llm_client import complete
+from cache.store import cache
 
 router = APIRouter()
 
@@ -69,10 +70,12 @@ def get_feed(
             "has_causal_chain": True # Mocked as True for the Hackathon demo path always showing the endpoint capabilities
         })
 
-    return {
+    response = {
         "user_id": user_id,
         "name": profile["name"],
         "risk_appetite": profile["risk_appetite"],
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "feed": feed,
     }
+    cache.set(f"feed:{user_id}", response, ttl_seconds=3600)
+    return response

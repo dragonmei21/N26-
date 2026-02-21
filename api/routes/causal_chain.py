@@ -8,6 +8,9 @@ from pathlib import Path
 from rag.event_classifier import classify_event
 from rag.causal_chain import generate_causal_chain
 from rag.price_correlator import enrich_chain_with_prices
+from ingestion.fetcher import fetch_articles
+from ingestion.cleaner import clean_articles
+from spend.profiler import build_profile
 
 _FALLBACK_CHAIN_PATH = Path(__file__).parent.parent.parent / "data" / "fallback_chain.json"
 
@@ -74,42 +77,27 @@ async def get_causal_chain(article_id: str, user_id: str = Query(...)):
     Generates a personalized causal chain for a specific macro news event.
     """
     
-    # 1. Fetch Article (Mocked for hackathon integration - usually from ChromaDB)
-    import json
-    try:
-        with open("data/mock_articles.json", "r") as f:
-            articles = json.load(f)
-            # Find article logic
-            article = next((a for a in articles if a.get("id") == article_id), None)
-            
-            if not article:
-                # Fallback to a hardcoded representation for ease of live demo testing
-                article = {
-                    "id": article_id,
-                    "title": "OpenAI releases ChatGPT-5 with real-time capabilities",
-                    "content": "OpenAI's latest release signifies a massive step forward in AI...",
-                    "published_at": date.today().isoformat(),
-                    "url": "https://reuters.com/mock"
-                }
-    except FileNotFoundError:
-        article = {
-            "id": article_id,
-            "title": "OpenAI releases ChatGPT-5 with real-time capabilities",
-            "content": "OpenAI's latest release signifies a massive step forward in AI...",
-            "published_at": date.today().isoformat(),
-            "url": "https://reuters.com/mock"
-        }
+    # 1. Fetch article from frozen source
+    articles = clean_articles(fetch_articles())
+    raw = next((a for a in articles if a.id == article_id), None)
 
-    # 2. Extract User Profile (Mocked inline for hackathon - usually from spend profile service)
+    if not raw:
+        raise HTTPException(status_code=404, detail=f"Article {article_id} not found.")
+
+    article = {
+        "id": raw.id,
+        "title": raw.title,
+        "content": raw.content,
+        "published_at": raw.published_at.date().isoformat(),
+        "url": raw.source_url,
+    }
+
+    # 2. Build user profile via spend/profiler
     try:
-        with open("data/mock_transactions.json", "r") as f:
-            transactions = json.load(f)
-            # Get user spending
-            spend_summary = f"User {user_id} recently spent heavily on Tech and Travel."
-            if user_id == "mock_user_1":
-                spend_summary = "You spent €124 at Amazon last month. Amazon is deeply invested in AI."
-    except Exception:
-        spend_summary = "You rely on technology in your daily spending."
+        profile = build_profile(user_id)
+        spend_summary = profile["spend_summary"]
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
     # 3. Classify Event + Generate Causal Chain
     # Wrapped together: any LLM exception triggers the pre-generated fallback chain

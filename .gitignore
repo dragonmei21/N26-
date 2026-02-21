@@ -7,8 +7,8 @@ venv/
 N26/
 .DS_Store
 chroma_db/
-data/frozen_articles.json
-data/mock_prices.json
+*.mp3
+/tmp/audio/
 *.egg-info/
 dist/
 build/
