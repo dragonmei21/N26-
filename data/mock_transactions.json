@@ -1,0 +1,40 @@
+{
+  "mock_user_1": {
+    "name": "Alex",
+    "risk_appetite": "low",
+    "savings_balance_eur": 3200,
+    "transactions": [
+      { "id": "t001", "merchant": "Mercadona",  "amount": 94.30,  "date": "2026-02-18", "category": "groceries" },
+      { "id": "t002", "merchant": "Lidl",        "amount": 41.80,  "date": "2026-02-15", "category": "groceries" },
+      { "id": "t003", "merchant": "Mercadona",  "amount": 87.50,  "date": "2026-02-10", "category": "groceries" },
+      { "id": "t004", "merchant": "Carrefour",  "amount": 56.20,  "date": "2026-02-05", "category": "groceries" },
+      { "id": "t005", "merchant": "Metro Madrid", "amount": 28.00, "date": "2026-02-20", "category": "transport" },
+      { "id": "t006", "merchant": "Renfe",       "amount": 32.50,  "date": "2026-02-12", "category": "transport" },
+      { "id": "t007", "merchant": "Netflix",     "amount": 13.99,  "date": "2026-02-01", "category": "subscriptions" },
+      { "id": "t008", "merchant": "Spotify",     "amount": 9.99,   "date": "2026-02-01", "category": "subscriptions" },
+      { "id": "t009", "merchant": "Zara",        "amount": 89.95,  "date": "2026-02-14", "category": "clothing" },
+      { "id": "t010", "merchant": "Ikea",        "amount": 44.99,  "date": "2026-02-08", "category": "home" },
+      { "id": "t011", "merchant": "Starbucks",   "amount": 18.40,  "date": "2026-02-19", "category": "food_drink" },
+      { "id": "t012", "merchant": "Starbucks",   "amount": 14.20,  "date": "2026-02-11", "category": "food_drink" }
+    ]
+  },
+  "mock_user_2": {
+    "name": "Marco",
+    "risk_appetite": "high",
+    "savings_balance_eur": 800,
+    "transactions": [
+      { "id": "t101", "merchant": "Amazon",        "amount": 187.40, "date": "2026-02-18", "category": "ecommerce" },
+      { "id": "t102", "merchant": "Amazon",        "amount": 154.90, "date": "2026-02-09", "category": "ecommerce" },
+      { "id": "t103", "merchant": "Apple Store",   "amount": 149.00, "date": "2026-02-15", "category": "tech" },
+      { "id": "t104", "merchant": "Degiro",        "amount": 500.00, "date": "2026-02-03", "category": "investing" },
+      { "id": "t105", "merchant": "Binance",       "amount": 300.00, "date": "2026-02-10", "category": "crypto" },
+      { "id": "t106", "merchant": "AWS",           "amount": 89.12,  "date": "2026-02-01", "category": "tech" },
+      { "id": "t107", "merchant": "Ryanair",       "amount": 229.98, "date": "2026-02-07", "category": "travel" },
+      { "id": "t108", "merchant": "Spotify",       "amount": 9.99,   "date": "2026-02-01", "category": "subscriptions" },
+      { "id": "t109", "merchant": "Netflix",       "amount": 17.99,  "date": "2026-02-01", "category": "subscriptions" },
+      { "id": "t110", "merchant": "Apple Store",   "amount": 44.99,  "date": "2026-02-13", "category": "tech" },
+      { "id": "t111", "merchant": "Booking.com",   "amount": 312.00, "date": "2026-02-06", "category": "travel" },
+      { "id": "t112", "merchant": "Steam",         "amount": 59.99,  "date": "2026-02-17", "category": "tech" }
+    ]
+  }
+}
