@@ -1,189 +1,203 @@
 {
-  "4a78a6cfdc3be77a": {
-    "user_connection": "You spend at Amazon, which is deeply invested in AI infrastructure — this event directly affects what you pay for cloud services.",
+  "1020225c78bb0919": {
+    "user_connection": "You spend on Amazon and Apple \u2014 both are massive buyers of AI memory chips. This supply crunch means higher cloud costs and slower AI product cycles for the brands you use daily.",
     "chain": [
       {
         "step_number": 1,
-        "event": "ChatGPT-5 Launch",
-        "mechanism": "OpenAI releases the most capable consumer AI, triggering a global AI arms race and accelerating enterprise AI adoption.",
+        "event": "AI memory chip demand surges",
+        "mechanism": "Explosive AI model training and inference requirements outpace HBM and GDDR memory production capacity.",
+        "affected_entity": "AI Sector",
+        "entity_type": "sector",
+        "ticker": null,
+        "direction": "up",
+        "confidence": "high",
+        "plain_english": "Every AI system needs vast amounts of fast memory. Demand has grown faster than factories can produce chips.",
+        "price_data": null,
+        "price_change_pct": null,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 2,
+        "event": "NVIDIA supply constraints tighten",
+        "mechanism": "NVIDIA H100/H200 GPU allocations are limited by HBM3 memory shortages from SK Hynix and Micron.",
         "affected_entity": "NVIDIA",
         "entity_type": "company",
         "ticker": "NVDA",
         "direction": "up",
         "confidence": "high",
-        "plain_english": "Every new AI product needs NVIDIA chips to run. More demand means higher stock price.",
+        "plain_english": "Constrained supply plus surging demand pushes NVIDIA GPU prices higher and extends delivery lead times to 6+ months.",
         "price_data": null,
-        "price_change_pct": 8.3,
-        "event_date": "2026-02-21"
-      },
-      {
-        "step_number": 2,
-        "event": "AI Cloud Demand Surge",
-        "mechanism": "Enterprises race to deploy AI. AWS, Azure, and Google Cloud increase GPU cluster orders significantly.",
-        "affected_entity": "Amazon",
-        "entity_type": "company",
-        "ticker": "AMZN",
-        "direction": "up",
-        "confidence": "high",
-        "plain_english": "Amazon runs AWS, the biggest AI cloud. More AI adoption equals more AWS revenue.",
-        "price_data": null,
-        "price_change_pct": 3.1,
+        "price_change_pct": 6.2,
         "event_date": "2026-02-21"
       },
       {
         "step_number": 3,
-        "event": "Consumer AI Adoption",
-        "mechanism": "Consumers adopt AI-powered apps, boosting subscription and in-app revenue for tech platforms.",
+        "event": "Cloud provider costs rise",
+        "mechanism": "AWS, Azure, and Google Cloud pay premium prices for scarce AI chips, squeezing margins and raising cloud service prices.",
+        "affected_entity": "Amazon",
+        "entity_type": "company",
+        "ticker": "AMZN",
+        "direction": "down",
+        "confidence": "medium",
+        "plain_english": "Amazon\u2019s AWS is the world\u2019s biggest AI cloud. When chips cost more, cloud margins shrink in the short term.",
+        "price_data": null,
+        "price_change_pct": -1.4,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 4,
+        "event": "AI product launch delays",
+        "mechanism": "Apple and Google postpone next-generation on-device AI features as chip allocation shortfalls delay production timelines.",
         "affected_entity": "Apple",
         "entity_type": "company",
         "ticker": "AAPL",
-        "direction": "up",
+        "direction": "down",
         "confidence": "medium",
-        "plain_english": "Apple integrates AI into every iPhone app. A more useful phone means more upgrades.",
+        "plain_english": "Apple\u2019s AI chip ambitions hit a wall. Delays in AI features could slow iPhone upgrade cycles.",
         "price_data": null,
-        "price_change_pct": 1.8,
+        "price_change_pct": -0.9,
         "event_date": "2026-02-21"
       }
     ]
   },
-  "937b0457b2a098e0": {
-    "user_connection": "You have savings in N26. The ECB rate hold means your N26 Instant Savings account stays at 2.5% — real interest on your balance.",
+  "b8544bde55f780b3": {
+    "user_connection": "You have savings in N26. The ECB rate hold means your N26 Instant Savings account stays at 2.5% \u2014 real interest on your balance, better than most traditional banks.",
     "chain": [
       {
         "step_number": 1,
-        "event": "ECB Rate Hold at 3.5%",
-        "mechanism": "ECB keeps benchmark rate unchanged for the seventh time, signalling rates stay higher for longer.",
+        "event": "ECB holds rates at 3.5%",
+        "mechanism": "Faced with global trade uncertainty and sticky core inflation at 2.6%, the ECB Governing Council votes to keep the benchmark deposit rate unchanged.",
         "affected_entity": "European Banks",
         "entity_type": "sector",
         "ticker": null,
         "direction": "neutral",
         "confidence": "high",
-        "plain_english": "The ECB controls borrowing costs across Europe. Holding rates means no cheap money yet.",
+        "plain_english": "The ECB controls borrowing costs across the entire eurozone. Holding rates means no cheap money yet \u2014 and savers keep earning interest.",
         "price_data": null,
         "price_change_pct": null,
         "event_date": "2026-02-21"
       },
       {
         "step_number": 2,
-        "event": "N26 Savings Rate Maintained",
-        "mechanism": "N26 Instant Savings rate stays at 2.5%, tracking ECB policy. Your money keeps earning.",
+        "event": "N26 savings rate maintained",
+        "mechanism": "N26 Instant Savings rate tracks ECB policy with a small spread. Rate hold keeps the 2.5% APY in place for depositors.",
         "affected_entity": "N26",
         "entity_type": "company",
         "ticker": null,
         "direction": "up",
         "confidence": "high",
-        "plain_english": "Your N26 savings account pays 2.5% APY — better than most traditional banks offering 0.1%.",
+        "plain_english": "Your N26 savings account pays 2.5% annually with no lock-in \u2014 this decision keeps that rate alive for another quarter.",
         "price_data": null,
         "price_change_pct": null,
         "event_date": "2026-02-21"
       },
       {
         "step_number": 3,
-        "event": "Bond Market Repricing",
-        "mechanism": "Longer-dated European government bonds reprice as investors extend duration expectations.",
+        "event": "Euro zone bond yields reprice higher",
+        "mechanism": "Longer-dated European government bonds reprice as investors factor in a delayed rate cut cycle, pushing yields above 2.8%.",
         "affected_entity": "Euro Bonds",
         "entity_type": "index",
         "ticker": null,
         "direction": "down",
         "confidence": "medium",
-        "plain_english": "Bond prices fall when rates stay high. This is why stocks sometimes dip on rate hold days.",
+        "plain_english": "Bond prices fall when rates stay high. German 10-year bunds yield more, making them more attractive than equities for cautious investors.",
         "price_data": null,
         "price_change_pct": -0.4,
         "event_date": "2026-02-21"
       }
     ]
   },
-  "130268006d14a68d": {
-    "user_connection": "Even if you don't hold crypto, this changes the market you live in — Bitcoin ETF approval opens institutional money floodgates.",
+  "132b1ac78ddaea0e": {
+    "user_connection": "Your Apple and Amazon spending puts you directly in the middle of the tech rally. The same companies whose products you use every day are driving global market gains.",
     "chain": [
       {
         "step_number": 1,
-        "event": "EU Bitcoin ETF Approved",
-        "mechanism": "ESMA grants approval for the first Bitcoin spot ETF listed on Euronext Amsterdam, opening BTC to retail and institutional EU investors.",
-        "affected_entity": "Bitcoin",
-        "entity_type": "commodity",
-        "ticker": null,
-        "direction": "up",
-        "confidence": "high",
-        "plain_english": "Now any EU investor can buy Bitcoin through their regular brokerage — massive new demand incoming.",
-        "price_data": null,
-        "price_change_pct": 12.4,
-        "event_date": "2026-02-20"
-      },
-      {
-        "step_number": 2,
-        "event": "Crypto Exchange Volume Surge",
-        "mechanism": "Retail and institutional inflows drive trading volume higher on crypto exchanges and ETF providers.",
-        "affected_entity": "Coinbase",
-        "entity_type": "company",
-        "ticker": "COIN",
-        "direction": "up",
-        "confidence": "high",
-        "plain_english": "More Bitcoin trading means more fees for exchanges like Coinbase. Simple.",
-        "price_data": null,
-        "price_change_pct": 18.2,
-        "event_date": "2026-02-20"
-      },
-      {
-        "step_number": 3,
-        "event": "Institutional Crypto Allocation",
-        "mechanism": "Pension funds and family offices add 1-5% crypto allocation to portfolios, creating sustained buy pressure.",
-        "affected_entity": "Crypto Sector",
+        "event": "Big Tech earnings beat expectations",
+        "mechanism": "Apple, Microsoft, and Google all report Q4 cloud and AI revenue above consensus, triggering institutional re-rating of the tech sector.",
+        "affected_entity": "Tech Sector",
         "entity_type": "sector",
         "ticker": null,
         "direction": "up",
-        "confidence": "medium",
-        "plain_english": "Big money is slow but huge. When institutions buy, prices move for months — not days.",
+        "confidence": "high",
+        "plain_english": "When the biggest tech companies beat expectations, fund managers buy more \u2014 lifting the entire sector.",
         "price_data": null,
         "price_change_pct": null,
-        "event_date": "2026-02-20"
-      }
-    ]
-  },
-  "20fe422209448409": {
-    "user_connection": "NVIDIA powers the AI apps you use daily. Their earnings beat confirms the AI infrastructure boom is real — and your tech subscriptions are part of it.",
-    "chain": [
+        "event_date": "2026-02-21"
+      },
       {
-        "step_number": 1,
-        "event": "NVIDIA Earnings Beat +23%",
-        "mechanism": "NVIDIA reports $39.3B revenue, up 78% YoY, driven entirely by AI data center GPU demand from hyperscalers.",
+        "step_number": 2,
+        "event": "NVIDIA leads the rally",
+        "mechanism": "NVIDIA stock jumps 11% on AI chip demand confirmation, pulling the Nasdaq Composite up 2.4% in a single session.",
         "affected_entity": "NVIDIA",
         "entity_type": "company",
         "ticker": "NVDA",
         "direction": "up",
         "confidence": "high",
-        "plain_english": "NVIDIA makes the chips that run all AI. When AI booms, NVIDIA wins. Their numbers prove demand is real.",
+        "plain_english": "NVIDIA is the bellwether of the AI trade. When it rallies hard, the whole tech market follows.",
         "price_data": null,
         "price_change_pct": 11.0,
-        "event_date": "2026-02-19"
-      },
-      {
-        "step_number": 2,
-        "event": "AI Capex Confirmed",
-        "mechanism": "Hyperscalers (AWS, Azure, Google Cloud) reaffirm $200B+ combined AI capex plans for 2026.",
-        "affected_entity": "TSMC",
-        "entity_type": "company",
-        "ticker": "TSM",
-        "direction": "up",
-        "confidence": "high",
-        "plain_english": "TSMC makes the chips NVIDIA designs. More NVIDIA orders means more TSMC revenue.",
-        "price_data": null,
-        "price_change_pct": 4.2,
-        "event_date": "2026-02-19"
+        "event_date": "2026-02-21"
       },
       {
         "step_number": 3,
-        "event": "Cloud Stock Rally",
-        "mechanism": "Confirmed AI capex cycle drives cloud infrastructure stocks higher as revenue growth visibility improves.",
-        "affected_entity": "Microsoft",
-        "entity_type": "company",
-        "ticker": "MSFT",
+        "event": "Geopolitical risk drives oil and gold higher",
+        "mechanism": "Renewed Middle East tensions add a risk premium to oil and send gold to a new all-time high above $2,800/oz as a safe haven.",
+        "affected_entity": "Gold",
+        "entity_type": "commodity",
+        "ticker": null,
         "direction": "up",
         "confidence": "medium",
-        "plain_english": "Microsoft Azure is the #2 cloud and a top NVIDIA customer. AI growth lifts all cloud boats.",
+        "plain_english": "When geopolitical risk rises, investors buy gold. Higher oil also raises costs across the whole economy.",
         "price_data": null,
-        "price_change_pct": 2.6,
-        "event_date": "2026-02-19"
+        "price_change_pct": 2.1,
+        "event_date": "2026-02-21"
+      }
+    ]
+  },
+  "6f44da0d4f1c521d": {
+    "user_connection": "You invest on Degiro and hold crypto through Binance. A broad AI-driven tech selloff hits both your equity and crypto holdings at once.",
+    "chain": [
+      {
+        "step_number": 1,
+        "event": "AI valuation reset triggers selloff",
+        "mechanism": "Investors reassess stretched AI valuations after a string of disappointing product launches and rising rate expectations. Nasdaq drops 4.2% in a single day.",
+        "affected_entity": "Tech Sector",
+        "entity_type": "sector",
+        "ticker": null,
+        "direction": "down",
+        "confidence": "high",
+        "plain_english": "When investors decide AI stocks are priced for perfection but reality falls short, they sell fast and hard.",
+        "price_data": null,
+        "price_change_pct": null,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 2,
+        "event": "NVIDIA drops on profit-taking",
+        "mechanism": "NVIDIA, up 400% in 24 months, sees its largest single-day drawdown as leveraged funds unwind positions.",
+        "affected_entity": "NVIDIA",
+        "entity_type": "company",
+        "ticker": "NVDA",
+        "direction": "down",
+        "confidence": "high",
+        "plain_english": "Even the best companies correct. After an enormous run, NVIDIA falls 12% as investors lock in gains.",
+        "price_data": null,
+        "price_change_pct": -12.3,
+        "event_date": "2026-02-21"
+      },
+      {
+        "step_number": 3,
+        "event": "Crypto follows risk-off sentiment",
+        "mechanism": "Bitcoin and Ethereum drop 8\u201312% as risk-off sentiment from equity markets spills into crypto, triggering leveraged long liquidations.",
+        "affected_entity": "Bitcoin",
+        "entity_type": "commodity",
+        "ticker": null,
+        "direction": "down",
+        "confidence": "medium",
+        "plain_english": "Crypto and tech stocks tend to move together in a selloff. When fear spikes, speculative assets get sold first.",
+        "price_data": null,
+        "price_change_pct": -9.8,
+        "event_date": "2026-02-21"
       }
     ]
   }

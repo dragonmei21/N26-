@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   Zap,
   ShoppingCart,
+  Loader2,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -22,14 +23,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import {
-  macroEvents,
-  generateCausalChain,
   getSpendSnapshot,
   type MacroEvent,
   type CausalChainResponse,
   type PricedCausalStep,
   type EventCategory,
 } from "@/lib/macroReasoningEngine";
+import { fetchFeedEvents, fetchCausalChain } from "@/lib/api";
 
 // ── Category pill ──────────────────────────────────────
 
@@ -314,15 +314,48 @@ const WhyThisMattersCard = ({
 // ── Main MacroTab component ────────────────────────────
 
 const MacroTab = () => {
+  const [events, setEvents] = useState<MacroEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState(false);
+
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
-  const [simulateLive, setSimulateLive] = useState(false);
+  const [chain, setChain] = useState<CausalChainResponse | null>(null);
+  const [chainLoading, setChainLoading] = useState(false);
+  const [chainError, setChainError] = useState(false);
+
   const [eli10, setEli10] = useState(false);
   const [openSteps, setOpenSteps] = useState<Set<number>>(new Set([1]));
 
-  const chain = useMemo(
-    () => (selectedEvent ? generateCausalChain(selectedEvent) : null),
-    [selectedEvent]
-  );
+  // Load events from backend on mount
+  useEffect(() => {
+    fetchFeedEvents(8)
+      .then((data) => {
+        setEvents(data);
+        setEventsLoading(false);
+      })
+      .catch(() => {
+        setEventsError(true);
+        setEventsLoading(false);
+      });
+  }, []);
+
+  // Fetch causal chain when an event is selected
+  const handleTrace = async (articleId: string) => {
+    setSelectedEvent(articleId);
+    setChain(null);
+    setChainError(false);
+    setChainLoading(true);
+    setOpenSteps(new Set([1]));
+
+    try {
+      const data = await fetchCausalChain(articleId);
+      setChain(data);
+    } catch {
+      setChainError(true);
+    } finally {
+      setChainLoading(false);
+    }
+  };
 
   const toggleStep = (n: number) => {
     setOpenSteps((prev) => {
@@ -335,8 +368,8 @@ const MacroTab = () => {
 
   const hasLowConfidenceOnly = chain?.chain.every((s) => s.confidence === "low");
 
-  if (selectedEvent && chain) {
-    // ── Detail View ──
+  // ── Detail View ──
+  if (selectedEvent) {
     return (
       <motion.div
         initial={{ opacity: 0, x: 20 }}
@@ -348,6 +381,7 @@ const MacroTab = () => {
           <button
             onClick={() => {
               setSelectedEvent(null);
+              setChain(null);
               setOpenSteps(new Set([1]));
             }}
             className="flex items-center gap-1.5 text-sm text-primary font-medium"
@@ -355,76 +389,92 @@ const MacroTab = () => {
             <ArrowLeft size={16} />
             Back
           </button>
-          <div className="flex items-center gap-3">
+          {chain && (
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-muted-foreground">ELI10</span>
               <Switch checked={eli10} onCheckedChange={setEli10} />
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Event summary */}
-        <div className="bg-card rounded-xl border border-border p-4 mb-4">
-          <h3 className="text-base font-bold text-foreground mb-2">{chain.trigger_event}</h3>
-          <p className="text-xs text-muted-foreground mb-3">
-            {chain.trigger_date} · {chain.trigger_source_url}
-          </p>
-          <p className="text-xs text-foreground/80 leading-relaxed mb-3">
-            {eli10 ? chain.summary_eli10 : chain.summary}
-          </p>
-          <ul className="space-y-1.5">
-            {(eli10 ? chain.summary_bullets_eli10 : chain.summary_bullets).map((b, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs text-foreground/70">
-                <span className="text-primary mt-0.5">•</span>
-                {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Speculative warning */}
-        {hasLowConfidenceOnly && (
-          <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4">
-            <AlertTriangle size={14} className="text-amber-400 shrink-0" />
-            <p className="text-xs text-amber-400">
-              All links in this chain are speculative. Treat with extra caution.
-            </p>
+        {/* Loading state */}
+        {chainLoading && (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 size={28} className="text-primary animate-spin" />
+            <p className="text-sm text-muted-foreground">Tracing macro impact…</p>
           </div>
         )}
 
-        {/* Causal Chain */}
-        <div className="mb-4">
-          <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-            <Zap size={14} className="text-primary" />
-            Causal Chain
-          </h4>
-
-          {/* Vertical connector line */}
-          <div className="relative">
-            <div className="absolute left-[17px] top-4 bottom-4 w-px bg-border" />
-            <div className="space-y-0">
-              {chain.chain.map((step) => (
-                <CausalStepItem
-                  key={step.step_number}
-                  step={step}
-                  eli10={eli10}
-                  isOpen={openSteps.has(step.step_number)}
-                  onToggle={() => toggleStep(step.step_number)}
-                />
-              ))}
-            </div>
+        {/* Error state */}
+        {chainError && !chainLoading && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+            <p className="text-sm text-red-400 mb-2">Could not generate causal chain.</p>
+            <button
+              onClick={() => handleTrace(selectedEvent)}
+              className="text-xs text-primary font-medium"
+            >
+              Try again
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* Why this matters */}
-        <div className="mb-4">
-          <WhyThisMattersCard chain={chain} eli10={eli10} />
-        </div>
+        {/* Chain content */}
+        {chain && !chainLoading && (
+          <>
+            {/* Event summary */}
+            <div className="bg-card rounded-xl border border-border p-4 mb-4">
+              <h3 className="text-base font-bold text-foreground mb-2">{chain.trigger_event}</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                {chain.trigger_date} · {chain.trigger_source_url}
+              </p>
+              <p className="text-xs text-foreground/80 leading-relaxed">
+                {eli10 ? chain.summary_eli10 : chain.summary}
+              </p>
+            </div>
 
-        {/* Disclaimer */}
-        <p className="text-[10px] text-muted-foreground text-center pb-4 leading-relaxed">
-          {chain.disclaimer}
-        </p>
+            {/* Speculative warning */}
+            {hasLowConfidenceOnly && (
+              <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 mb-4">
+                <AlertTriangle size={14} className="text-amber-400 shrink-0" />
+                <p className="text-xs text-amber-400">
+                  All links in this chain are speculative. Treat with extra caution.
+                </p>
+              </div>
+            )}
+
+            {/* Causal Chain */}
+            <div className="mb-4">
+              <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                <Zap size={14} className="text-primary" />
+                Causal Chain
+              </h4>
+              <div className="relative">
+                <div className="absolute left-[17px] top-4 bottom-4 w-px bg-border" />
+                <div className="space-y-0">
+                  {chain.chain.map((step) => (
+                    <CausalStepItem
+                      key={step.step_number}
+                      step={step}
+                      eli10={eli10}
+                      isOpen={openSteps.has(step.step_number)}
+                      onToggle={() => toggleStep(step.step_number)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Why this matters */}
+            <div className="mb-4">
+              <WhyThisMattersCard chain={chain} eli10={eli10} />
+            </div>
+
+            {/* Disclaimer */}
+            <p className="text-[10px] text-muted-foreground text-center pb-4 leading-relaxed">
+              {chain.disclaimer}
+            </p>
+          </>
+        )}
       </motion.div>
     );
   }
@@ -440,8 +490,8 @@ const MacroTab = () => {
             Macro Reasoning Engine
           </h3>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-muted-foreground">Simulate Live</span>
-            <Switch checked={simulateLive} onCheckedChange={setSimulateLive} />
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[10px] text-emerald-400 font-medium">Live</span>
           </div>
         </div>
         <p className="text-xs text-foreground/70 mb-1">
@@ -450,28 +500,41 @@ const MacroTab = () => {
         <p className="text-[10px] text-muted-foreground italic">
           Educational only — not financial advice.
         </p>
-        {simulateLive && (
-          <div className="mt-2 flex items-center gap-1.5 bg-amber-500/10 rounded-lg px-2.5 py-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-[10px] text-amber-400 font-medium">
-              Live mode · Mocked prices (no API connected)
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Today's Events */}
       <h4 className="text-sm font-bold text-foreground mb-3">Today's Events</h4>
-      {macroEvents.map((event) => (
+
+      {/* Loading */}
+      {eventsLoading && (
+        <div className="flex items-center justify-center py-16 gap-2">
+          <Loader2 size={22} className="text-primary animate-spin" />
+          <span className="text-sm text-muted-foreground">Loading today's events…</span>
+        </div>
+      )}
+
+      {/* Error */}
+      {eventsError && !eventsLoading && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+          <p className="text-sm text-red-400">Could not load events. Is the backend running?</p>
+        </div>
+      )}
+
+      {/* Event list */}
+      {!eventsLoading && !eventsError && events.map((event) => (
         <EventCard
           key={event.id}
           event={event}
-          onTrace={() => {
-            setSelectedEvent(event.id);
-            setOpenSteps(new Set([1]));
-          }}
+          onTrace={() => handleTrace(event.id)}
         />
       ))}
+
+      {/* Empty state */}
+      {!eventsLoading && !eventsError && events.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-sm text-muted-foreground">No events found.</p>
+        </div>
+      )}
     </div>
   );
 };
