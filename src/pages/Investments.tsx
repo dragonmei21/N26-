@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Settings, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
@@ -14,6 +14,7 @@ import StoriesViewer from "@/components/StoriesViewer";
 import AudioSummarySheet from "@/components/AudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
 import { Switch } from "@/components/ui/switch";
+import { useLivePrices } from "@/hooks/useLivePrices";
 
 const regions = ["World", "USA", "Europe", "Emerging"];
 const timeRanges = ["24h", "1W", "1M", "1Y"];
@@ -35,6 +36,47 @@ const [showSuggestions, setShowSuggestions] = useState(false);
     try { localStorage.setItem("aiEnabled", String(value)); } catch {}
   };
   const data = tab === "Stocks" ? popularStocks : popularETFs;
+
+  // ── Live prices for portfolio coins ──────────────────────────────────────
+  // CoinGecko IDs mapped from each coin's ticker
+  const COIN_ID_MAP: Record<string, string> = {
+    BTC:  "bitcoin",
+    ETH:  "ethereum",
+    SHIB: "shiba-inu",
+  };
+  const cgIds = portfolioCoins.map((c) => COIN_ID_MAP[c.ticker]).filter(Boolean);
+  const { prices: livePrices, loading: pricesLoading } = useLivePrices(cgIds);
+
+  const livePortfolioCoins = useMemo(() => {
+    return portfolioCoins.map((coin) => {
+      const cgId = COIN_ID_MAP[coin.ticker];
+      const live  = cgId ? livePrices[cgId] : undefined;
+      if (!live) return coin; // fall back to mock while loading
+
+      const eurPrice    = live.eur;
+      const change24h   = live.eur_24h_change;
+      // Format price: large numbers → no decimals, small → up to 6 dp
+      const formatPrice = (n: number) => {
+        if (n >= 1_000) return `€${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (n >= 1)     return `€${n.toFixed(4)}`;
+        return `€${n.toFixed(8)}`;
+      };
+      // Derive a realistic "changeAmount" from today's % move
+      const changeAmt = Math.abs(eurPrice * change24h / 100);
+      const formatAmt = (n: number) => {
+        if (n >= 1) return `€${n.toFixed(2)}`;
+        return `€${n.toFixed(6)}`;
+      };
+
+      return {
+        ...coin,
+        price:        formatPrice(eurPrice),
+        change:       parseFloat(change24h.toFixed(2)),
+        changeAmount: formatAmt(changeAmt),
+      };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [livePrices]);
 
   return (
     <motion.div
@@ -248,10 +290,13 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             <div className="flex items-center gap-1.5 mb-3">
               <h3 className="text-lg font-bold text-foreground">Your coins</h3>
               <Info size={14} className="text-muted-foreground" />
+              {pricesLoading && (
+                <span className="text-[10px] text-muted-foreground animate-pulse ml-1">Fetching live prices…</span>
+              )}
             </div>
             <div className="bg-card rounded-xl border border-border px-4">
-              {portfolioCoins.map((coin, i) => (
-                <div key={coin.ticker} className={`py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
+              {livePortfolioCoins.map((coin, i) => (
+                <div key={coin.ticker} className={`py-3 ${i < livePortfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
                   <div className="flex items-center gap-3">
                     <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
                     <div className="flex-1 min-w-0">
