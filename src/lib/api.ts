@@ -207,4 +207,28 @@ export async function fetchCausalChain(articleId: string): Promise<CausalChainRe
   };
 }
 
-export { USER_ID };
+// ── Generate podcast → returns podcast_id + audio_url ─────────────────
+
+export type PodcastLength = "flash" | "brief" | "deep_dive";
+export type PodcastMode = "personal" | "macro";
+
+export interface PodcastMeta {
+  podcast_id: string;
+  audio_url: string;
+  estimated_duration_sec: number;
+  title: string;
+}
+
+export async function generatePodcast(
+  length: PodcastLength = "flash",
+  mode: PodcastMode = "personal"
+): Promise<PodcastMeta> {
+  const res = await fetch(
+    `${BASE_URL}/podcast/generate?user_id=${USER_ID}&length=${length}&mode=${mode}`,
+    { method: "POST", headers: HEADERS }
+  );
+  if (!res.ok) throw new Error(`Podcast generation failed: ${res.status}`);
+  return res.json();
+}
+
+export { USER_ID, BASE_URL, HEADERS };

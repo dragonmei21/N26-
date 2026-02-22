@@ -13,6 +13,12 @@ export interface ConcentrationMetrics {
   hhi: number;
 }
 
+export interface AssetClassSplit {
+  cryptoPct: number;
+  stockPct: number;
+  safePct: number;
+}
+
 export interface PortfolioInsights {
   totalValue: number;
   regionExposure: ExposureItem[];
@@ -23,6 +29,9 @@ export interface PortfolioInsights {
   leverageReason: string;
   overallAssessment: string;
   topHoldings: { ticker: string; name: string; percent: number }[];
+  currentSplit: AssetClassSplit;
+  targetSplit: AssetClassSplit;
+  suggestions: string[];
 }
 
 function groupBy(holdings: PortfolioHolding[], key: "region" | "sector"): ExposureItem[] {
@@ -70,11 +79,29 @@ export function computeInsights(
     percent: (h.valueEUR / totalValue) * 100,
   }));
 
-  // Leverage assessment
-  const cryptoPct = holdings.filter((h) => h.assetType === "crypto").reduce((s, h) => s + h.valueEUR, 0) / totalValue;
-  const equityPct = holdings.filter((h) => h.assetType === "stock").reduce((s, h) => s + h.valueEUR, 0) / totalValue;
-  const safePct = holdings.filter((h) => ["bond", "commodity"].includes(h.assetType)).reduce((s, h) => s + h.valueEUR, 0) / totalValue;
+  // Asset class split (current)
+  const cryptoVal = holdings.filter((h) => h.assetType === "crypto").reduce((s, h) => s + h.valueEUR, 0);
+  const stockVal  = holdings.filter((h) => h.assetType === "stock").reduce((s, h) => s + h.valueEUR, 0);
+  const safeVal   = holdings.filter((h) => ["bond", "commodity"].includes(h.assetType)).reduce((s, h) => s + h.valueEUR, 0);
+  const cryptoPct = cryptoVal / totalValue;
+  const equityPct = stockVal / totalValue;
+  const safePct   = safeVal / totalValue;
 
+  const currentSplit: AssetClassSplit = {
+    cryptoPct: Math.round(cryptoPct * 100),
+    stockPct:  Math.round(equityPct * 100),
+    safePct:   Math.round(safePct * 100),
+  };
+
+  // Target splits per profile
+  const targetSplits: Record<string, AssetClassSplit> = {
+    Conservative: { cryptoPct: 15, stockPct: 45, safePct: 40 },
+    Balanced:     { cryptoPct: 30, stockPct: 55, safePct: 15 },
+    Growth:       { cryptoPct: 45, stockPct: 50, safePct: 5  },
+  };
+  const targetSplit = targetSplits[riskProfile];
+
+  // Leverage assessment
   const riskTargets = { Conservative: 0.3, Balanced: 0.55, Growth: 0.75 };
   const actualRisk = cryptoPct * 1.5 + equityPct * 1.0 + safePct * 0.3;
   const target = riskTargets[riskProfile];
@@ -91,6 +118,31 @@ export function computeInsights(
   } else {
     leverageAssessment = "Neutral";
     leverageReason = `Your risk exposure aligns well with a ${riskProfile} profile.`;
+  }
+
+  // Per-profile actionable suggestions
+  const cryptoDiff = targetSplit.cryptoPct - currentSplit.cryptoPct;
+  const stockDiff  = targetSplit.stockPct  - currentSplit.stockPct;
+  const safeDiff   = targetSplit.safePct   - currentSplit.safePct;
+
+  const suggestions: string[] = [];
+  if (Math.abs(cryptoDiff) >= 5) {
+    suggestions.push(cryptoDiff > 0
+      ? `Increase crypto allocation by ~${cryptoDiff}% to reach your ${riskProfile} target.`
+      : `Reduce crypto exposure by ~${Math.abs(cryptoDiff)}% — it's above your ${riskProfile} target.`);
+  }
+  if (Math.abs(stockDiff) >= 5) {
+    suggestions.push(stockDiff > 0
+      ? `Add ~${stockDiff}% more in equities (e.g. S&P 500 ETF) to hit your ${riskProfile} target.`
+      : `Trim equity exposure by ~${Math.abs(stockDiff)}% to stay within ${riskProfile} bounds.`);
+  }
+  if (Math.abs(safeDiff) >= 5) {
+    suggestions.push(safeDiff > 0
+      ? `Add ~${safeDiff}% in bonds or gold to improve stability for a ${riskProfile} profile.`
+      : `You can reduce bonds/safe-havens by ~${Math.abs(safeDiff)}% and redeploy into growth assets.`);
+  }
+  if (suggestions.length === 0) {
+    suggestions.push(`Your asset mix is well-aligned with a ${riskProfile} profile. No major rebalancing needed.`);
   }
 
   // Overall assessment
@@ -113,5 +165,8 @@ export function computeInsights(
     leverageReason,
     overallAssessment,
     topHoldings,
+    currentSplit,
+    targetSplit,
+    suggestions,
   };
 }
