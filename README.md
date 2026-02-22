@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://n26.com/assets/images/brand/N26-Logo.svg" alt="N26 Logo" width="100"/>
   <h1>N26 AI Financial News Curator</h1>
   <p><em>Empowering retail investors to navigate complex macroeconomic events through AI-driven, highly personalized causal chains.</em></p>
 </div>
