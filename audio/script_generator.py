@@ -67,12 +67,16 @@ async def generate_podcast_script(
     articles = feed_articles[:config["max_stories"]] if mode == "personal" \
                else trends[:config["max_stories"]]
 
+    portfolio_block = _portfolio_summary(portfolio)
+
     prompt = f"""Create a {length.replace('_', ' ')} financial podcast script ({config['target_words']} words).
 Mode: {mode}
 Listener name: {user_name}
 
-Portfolio:
-{_portfolio_summary(portfolio)}
+LISTENER'S PORTFOLIO (you MUST reference these specific holdings by name when connecting news to markets):
+{portfolio_block}
+
+IMPORTANT: In the portfolio segment, name at least 3 of the holdings above explicitly — for example "your Bitcoin position", "your NVIDIA shares", "your Ethereum". Connect each news story directly to how it affects one or more of these specific assets.
 
 News to cover:
 {_articles_summary(articles)}
@@ -96,12 +100,24 @@ Target {config['target_words']} words total."""
 
 
 def _portfolio_summary(portfolio: dict) -> str:
+    positions = portfolio.get("positions", [])
+    if not positions:
+        # Hardcoded fallback — matches portfolioCoins in mockData.ts
+        positions = [
+            {"name": "Ethereum",  "ticker": "ETH",  "price_eur": 1678.94,  "price_change_24h_pct":  4.25},
+            {"name": "Bitcoin",   "ticker": "BTC",  "price_eur": 57803.55, "price_change_24h_pct":  2.10},
+            {"name": "SHIBA INU", "ticker": "SHIB", "price_eur": 0.0000053,"price_change_24h_pct": -1.45},
+            {"name": "Apple",     "ticker": "AAPL", "price_eur": 264.58,   "price_change_24h_pct":  1.25},
+            {"name": "NVIDIA",    "ticker": "NVDA", "price_eur": 189.82,   "price_change_24h_pct": -0.85},
+        ]
     lines = []
-    for p in portfolio.get("positions", []):
+    for p in positions:
         change = p.get("price_change_24h_pct")
-        suffix = f"({'+' if change and change > 0 else ''}{change}% today)" if change else ""
-        lines.append(f"- {p['name']}: €{p['held_eur']} held {suffix}")
-    return "\n".join(lines) or "No portfolio positions available."
+        price = p.get("price_eur", p.get("held_eur", 0))
+        direction = "UP" if change and change > 0 else ("DOWN" if change and change < 0 else "flat")
+        change_str = f"{'+' if change and change > 0 else ''}{change}% today ({direction})" if change else ""
+        lines.append(f"- {p['name']} ({p['ticker']}): €{price:,.2f} — {change_str}")
+    return "\n".join(lines)
 
 
 def _articles_summary(articles: list[dict]) -> str:
