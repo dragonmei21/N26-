@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, TriangleIcon, RotateCcw, Info, History, AlertTriangle, TrendingUp, Landmark, CircleDollarSign, Droplets, DollarSign, BarChart2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { portfolioCoins } from "@/data/mockData";
+import { useLivePrices } from "@/hooks/useLivePrices";
 import { historicalScenarios, type HistoricalScenario } from "@/lib/scenarios/historicalScenarios";
 import SourceLogo from "@/components/SourceLogo";
 
@@ -113,6 +114,12 @@ const severityColors: Record<string, string> = {
   High: "bg-destructive/20 text-destructive",
 };
 
+const COIN_ID_MAP: Record<string, string> = {
+  BTC:  "bitcoin",
+  ETH:  "ethereum",
+  SHIB: "shiba-inu",
+};
+
 const Scenarios = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"Custom" | "Historical">("Custom");
@@ -120,6 +127,28 @@ const Scenarios = () => {
     Object.fromEntries(factors.map((f) => [f.id, f.defaultValue]))
   );
   const [activeHistorical, setActiveHistorical] = useState<HistoricalScenario | null>(null);
+
+  // Live prices from CoinGecko (same as Portfolio tab)
+  const cgIds = portfolioCoins.map((c) => COIN_ID_MAP[c.ticker]).filter(Boolean);
+  const { prices: livePrices } = useLivePrices(cgIds);
+
+  const coinsWithLivePrices = useMemo(() => {
+    return portfolioCoins.map((coin) => {
+      const cgId = COIN_ID_MAP[coin.ticker];
+      const live = cgId ? livePrices[cgId] : undefined;
+      if (!live) return coin;
+
+      const eur = live.eur;
+      // Format so parsePrice() works: European style (e.g. €84.230,50 or €1,23)
+      const priceStr =
+        eur >= 1_000
+          ? `€${eur.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          : eur >= 1
+            ? `€${eur.toFixed(2).replace(".", ",")}`
+            : `€${eur.toFixed(6).replace(".", ",")}`;
+      return { ...coin, price: priceStr };
+    });
+  }, [livePrices]);
 
   const handleChange = (id: string, val: number) => {
     setValues((prev) => ({ ...prev, [id]: val }));
@@ -138,7 +167,7 @@ const Scenarios = () => {
   };
 
   const simulatedPortfolio = useMemo(() => {
-    return portfolioCoins.map((coin) => {
+    return coinsWithLivePrices.map((coin) => {
       let changePct: number;
 
       if (activeHistorical && activeHistorical.impactOverrides[coin.ticker] !== undefined) {
@@ -163,9 +192,9 @@ const Scenarios = () => {
         isUp: priceDiff >= 0,
       };
     });
-  }, [values, activeHistorical]);
+  }, [values, activeHistorical, coinsWithLivePrices]);
 
-  const baseTotal = portfolioCoins.reduce((s, c) => s + parsePrice(c.price), 0);
+  const baseTotal = coinsWithLivePrices.reduce((s, c) => s + parsePrice(c.price), 0);
   const simTotal = simulatedPortfolio.reduce((s, c) => s + parsePrice(c.simPrice), 0);
   const totalDiff = simTotal - baseTotal;
   const totalPct = baseTotal > 0 ? ((simTotal - baseTotal) / baseTotal) * 100 : 0;
