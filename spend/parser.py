@@ -36,5 +36,14 @@ def get_user_meta(user_id: str) -> dict:
     }
 
 
+def get_user_portfolio(user_id: str) -> dict:
+    """Return portfolio positions for a user."""
+    data = _load()
+    user = data.get(user_id)
+    if not user:
+        raise ValueError(f"Unknown user_id: {user_id}")
+    return user.get("portfolio", {"positions": []})
+
+
 def list_user_ids() -> list[str]:
     return list(_load().keys())

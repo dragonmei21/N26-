@@ -3,6 +3,14 @@
     "name": "Alex",
     "risk_appetite": "low",
     "savings_balance_eur": 3200,
+    "portfolio": {
+      "positions": [
+        { "ticker": "EUNL", "name": "iShares Core MSCI World", "held_eur": 420.00, "asset_type": "etf" },
+        { "ticker": "VUAA", "name": "Vanguard S&P 500", "held_eur": 310.00, "asset_type": "etf" },
+        { "ticker": "SGLN", "name": "iShares Physical Gold", "held_eur": 180.00, "asset_type": "commodity" },
+        { "ticker": "AAPL", "name": "Apple", "held_eur": 95.00, "asset_type": "stock" }
+      ]
+    },
     "transactions": [
       { "id": "t001", "merchant": "Mercadona",  "amount": 94.30,  "date": "2026-02-18", "category": "groceries" },
       { "id": "t002", "merchant": "Lidl",        "amount": 41.80,  "date": "2026-02-15", "category": "groceries" },
@@ -22,6 +30,21 @@
     "name": "Marco",
     "risk_appetite": "high",
     "savings_balance_eur": 800,
+    "portfolio": {
+      "positions": [
+        { "ticker": "ETH",  "name": "Ethereum",              "held_eur": 477.88, "asset_type": "crypto" },
+        { "ticker": "BTC",  "name": "Bitcoin",               "held_eur": 270.50, "asset_type": "crypto" },
+        { "ticker": "NVDA", "name": "NVIDIA",                "held_eur": 160.96, "asset_type": "stock"  },
+        { "ticker": "MSFT", "name": "Microsoft",             "held_eur": 336.95, "asset_type": "stock"  },
+        { "ticker": "AAPL", "name": "Apple",                 "held_eur": 224.00, "asset_type": "stock"  },
+        { "ticker": "AMZN", "name": "Amazon",                "held_eur": 178.30, "asset_type": "stock"  },
+        { "ticker": "ASML", "name": "ASML Holding",          "held_eur": 145.00, "asset_type": "stock"  },
+        { "ticker": "SAP",  "name": "SAP SE",                "held_eur": 95.00,  "asset_type": "stock"  },
+        { "ticker": "SHIB", "name": "SHIBA INU",             "held_eur": 37.62,  "asset_type": "crypto" },
+        { "ticker": "VUAA", "name": "Vanguard S&P 500",      "held_eur": 112.66, "asset_type": "etf"    },
+        { "ticker": "SGLN", "name": "iShares Physical Gold", "held_eur": 83.70,  "asset_type": "commodity" }
+      ]
+    },
     "transactions": [
       { "id": "t101", "merchant": "Amazon",        "amount": 187.40, "date": "2026-02-18", "category": "ecommerce" },
       { "id": "t102", "merchant": "Amazon",        "amount": 154.90, "date": "2026-02-09", "category": "ecommerce" },
