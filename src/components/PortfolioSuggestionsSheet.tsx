@@ -101,7 +101,7 @@ const PortfolioSuggestionsSheet = ({ onClose }: PortfolioSuggestionsSheetProps) 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center"
+        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-end justify-center"
         onClick={onClose}
       >
         <motion.div
@@ -109,7 +109,7 @@ const PortfolioSuggestionsSheet = ({ onClose }: PortfolioSuggestionsSheetProps) 
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 30, stiffness: 300 }}
-          className="w-full max-w-md bg-card rounded-t-2xl border-t border-border p-5 pb-8 max-h-[85vh] overflow-y-auto"
+          className="w-full max-w-md bg-card rounded-t-2xl border-t border-border p-5 pb-8 max-h-[85vh] overflow-y-auto z-[101]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Handle */}
