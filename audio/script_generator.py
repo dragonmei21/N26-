@@ -99,24 +99,20 @@ Target {config['target_words']} words total."""
     return _parse_segments(raw, length, mode)
 
 
-def _portfolio_summary(portfolio: dict) -> str:
-    positions = portfolio.get("positions", [])
-    if not positions:
-        # Hardcoded fallback — matches portfolioCoins in mockData.ts
-        positions = [
-            {"name": "Ethereum",  "ticker": "ETH",  "price_eur": 1678.94,  "price_change_24h_pct":  4.25},
-            {"name": "Bitcoin",   "ticker": "BTC",  "price_eur": 57803.55, "price_change_24h_pct":  2.10},
-            {"name": "SHIBA INU", "ticker": "SHIB", "price_eur": 0.0000053,"price_change_24h_pct": -1.45},
-            {"name": "Apple",     "ticker": "AAPL", "price_eur": 264.58,   "price_change_24h_pct":  1.25},
-            {"name": "NVIDIA",    "ticker": "NVDA", "price_eur": 189.82,   "price_change_24h_pct": -0.85},
-        ]
+def _portfolio_summary(_portfolio: dict) -> str:
+    # Always use portfolioCoins from mockData.ts — source of truth for the demo
+    positions = [
+        {"name": "Ethereum",  "ticker": "ETH",  "price": "€1,678.94", "change": +4.25},
+        {"name": "Bitcoin",   "ticker": "BTC",  "price": "€57,803.55","change": +2.10},
+        {"name": "SHIBA INU", "ticker": "SHIB", "price": "€0.0000053","change": -1.45},
+        {"name": "Apple",     "ticker": "AAPL", "price": "$264.58",   "change": +1.25},
+        {"name": "NVIDIA",    "ticker": "NVDA", "price": "$189.82",   "change": -0.85},
+    ]
     lines = []
     for p in positions:
-        change = p.get("price_change_24h_pct")
-        price = p.get("price_eur", p.get("held_eur", 0))
-        direction = "UP" if change and change > 0 else ("DOWN" if change and change < 0 else "flat")
-        change_str = f"{'+' if change and change > 0 else ''}{change}% today ({direction})" if change else ""
-        lines.append(f"- {p['name']} ({p['ticker']}): €{price:,.2f} — {change_str}")
+        direction = "UP" if p["change"] > 0 else "DOWN"
+        sign = "+" if p["change"] > 0 else ""
+        lines.append(f"- {p['name']} ({p['ticker']}): {p['price']} — {sign}{p['change']}% today ({direction})")
     return "\n".join(lines)
 
 
