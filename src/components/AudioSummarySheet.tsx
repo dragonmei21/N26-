@@ -1,55 +1,43 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Headphones, Play, Pause, Square, Loader2 } from "lucide-react";
 import type { MarketStory } from "@/data/marketStories";
 import SourceLogo from "@/components/SourceLogo";
+import { generatePodcast, BASE_URL, HEADERS, type PodcastLength } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface AudioSummarySheetProps {
   stories: MarketStory[];
   onClose: () => void;
 }
 
-const durations = [
-  { label: "1 min", value: "1", sentencesPerTopic: 1 },
-  { label: "5 min", value: "5", sentencesPerTopic: 2 },
-  { label: "10 min", value: "10", sentencesPerTopic: 3 },
-  { label: "Auto", value: "auto", sentencesPerTopic: 2 },
+const durations: { label: string; value: string; length: PodcastLength }[] = [
+  { label: "1 min",  value: "1",    length: "flash"     },
+  { label: "5 min",  value: "5",    length: "brief"     },
+  { label: "10 min", value: "10",   length: "deep_dive" },
+  { label: "Auto",   value: "auto", length: "flash"     },
 ];
 
 type PlayState = "idle" | "generating" | "ready" | "playing" | "paused";
 
-function generateScript(stories: MarketStory[], selectedIds: Set<string>, durationValue: string): string {
-  const dur = durations.find((d) => d.value === durationValue) ?? durations[3];
-  const selected = stories.filter((s) => selectedIds.has(s.id));
-  const lines: string[] = ["Here's your market audio briefing."];
-
-  for (const story of selected) {
-    lines.push(`Next up: ${story.label}.`);
-    const slides = story.slides.slice(0, dur.sentencesPerTopic);
-    for (const slide of slides) {
-      lines.push(`${slide.headline}. ${slide.body}`);
-    }
-  }
-  lines.push("That's your briefing. Stay informed!");
-  return lines.join(" ");
-}
-
-function isSpeechAvailable(): boolean {
-  return typeof window !== "undefined" && "speechSynthesis" in window;
-}
-
 const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
+  const { toast } = useToast();
+
   const [selectedStories, setSelectedStories] = useState<Set<string>>(
     new Set(stories.map((s) => s.id))
   );
   const [duration, setDuration] = useState("auto");
   const [playState, setPlayState] = useState<PlayState>("idle");
-  const [transcript, setTranscript] = useState("");
   const [elapsed, setElapsed] = useState(0);
-  const speechAvailable = useRef(isSpeechAvailable());
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [podcastTitle, setPodcastTitle] = useState("");
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<number | null>(null);
-  const startTimeRef = useRef(0);
+
+  const clearTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
 
   const toggleStory = (id: string) => {
     setSelectedStories((prev) => {
@@ -68,128 +56,140 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
   };
 
   const stopPlayback = useCallback(() => {
-    if (speechAvailable.current) {
-      window.speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
-    if (timerRef.current) clearInterval(timerRef.current);
-    utteranceRef.current = null;
+    clearTimer();
     setPlayState("ready");
     setElapsed(0);
   }, []);
 
   const backToSelect = useCallback(() => {
-    stopPlayback();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+    }
+    clearTimer();
     setPlayState("idle");
-    setTranscript("");
-  }, [stopPlayback]);
+    setElapsed(0);
+    setTotalDuration(0);
+    setPodcastTitle("");
+  }, []);
 
-  const handleGenerate = useCallback(() => {
+  const handleGenerate = useCallback(async () => {
     if (selectedStories.size === 0) return;
     setPlayState("generating");
-    const script = generateScript(stories, selectedStories, duration);
-    // Simulate brief generation delay
-    setTimeout(() => {
-      setTranscript(script);
+
+    const dur = durations.find((d) => d.value === duration) ?? durations[3];
+
+    try {
+      const meta = await generatePodcast(dur.length, "personal");
+
+      // Build full audio src with ngrok bypass header workaround:
+      // <audio> can't set custom headers, so we fetch the blob manually
+      const audioSrc = `${BASE_URL}${meta.audio_url}`;
+      const audioRes = await fetch(audioSrc, { headers: HEADERS });
+      if (!audioRes.ok) throw new Error("Audio stream unavailable");
+      const blob = await audioRes.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
+      const audio = new Audio(objectUrl);
+      audioRef.current = audio;
+
+      audio.onloadedmetadata = () => {
+        setTotalDuration(Math.floor(audio.duration));
+      };
+
+      audio.ontimeupdate = () => {
+        setElapsed(Math.floor(audio.currentTime));
+      };
+
+      audio.onended = () => {
+        clearTimer();
+        setPlayState("ready");
+        setElapsed(0);
+      };
+
+      audio.onerror = () => {
+        clearTimer();
+        setPlayState("ready");
+        toast({ title: "Playback error", description: "Could not play audio.", variant: "destructive" });
+      };
+
+      setPodcastTitle(meta.title);
       setPlayState("ready");
-    }, 1500);
-  }, [stories, selectedStories, duration]);
+    } catch (err) {
+      setPlayState("idle");
+      toast({
+        title: "Could not generate podcast",
+        description: "Make sure the backend is running and /feed was called first.",
+        variant: "destructive",
+      });
+    }
+  }, [selectedStories, duration, toast]);
 
   const startPlayback = useCallback(() => {
-    if (!transcript) return;
-
-    if (!speechAvailable.current) {
-      setPlayState("playing");
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(transcript);
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utteranceRef.current = utterance;
-
-    utterance.onstart = () => {
-      setPlayState("playing");
-      startTimeRef.current = Date.now();
-      timerRef.current = window.setInterval(() => {
-        setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
-      }, 500);
-    };
-
-    utterance.onend = () => {
-      stopPlayback();
-    };
-
-    utterance.onerror = () => {
-      stopPlayback();
-    };
-
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-  }, [transcript, stopPlayback]);
+    if (!audioRef.current) return;
+    audioRef.current.play();
+    setPlayState("playing");
+  }, []);
 
   const togglePause = useCallback(() => {
-    if (!speechAvailable.current) return;
+    if (!audioRef.current) return;
     if (playState === "playing") {
-      window.speechSynthesis.pause();
+      audioRef.current.pause();
       setPlayState("paused");
-      if (timerRef.current) clearInterval(timerRef.current);
     } else if (playState === "paused") {
-      window.speechSynthesis.resume();
+      audioRef.current.play();
       setPlayState("playing");
-      startTimeRef.current = Date.now() - elapsed * 1000;
-      timerRef.current = window.setInterval(() => {
-        setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
-      }, 500);
     }
-  }, [playState, elapsed]);
+  }, [playState]);
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (speechAvailable.current) window.speechSynthesis.cancel();
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+      clearTimer();
     };
   }, []);
 
-  const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+  const formatTime = (s: number) =>
+    `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
   const statusLine = (() => {
     switch (playState) {
-      case "idle":
-        return "Choose topics to generate a short audio briefing.";
-      case "generating":
-        return "Generating your audio…";
-      case "ready":
-        return "Your summary is ready to play.";
-      case "playing":
-        return `Now playing: ${formatTime(elapsed)}`;
-      case "paused":
-        return `Paused at ${formatTime(elapsed)}`;
+      case "idle":       return "Choose topics to generate a short audio briefing.";
+      case "generating": return "Generating your audio with AI voice…";
+      case "ready":      return podcastTitle ? `Ready: ${podcastTitle}` : "Your summary is ready to play.";
+      case "playing":    return `Now playing: ${formatTime(elapsed)}${totalDuration ? ` / ${formatTime(totalDuration)}` : ""}`;
+      case "paused":     return `Paused at ${formatTime(elapsed)}`;
     }
   })();
 
   const isPlayingOrPaused = playState === "playing" || playState === "paused";
-  const isReadyOrPlaying = playState === "ready" || isPlayingOrPaused;
+  const isReadyOrPlaying  = playState === "ready"   || isPlayingOrPaused;
 
-  // Get the first source domain from story slides for logo display
   const getStorySource = (story: MarketStory) => {
     const slide = story.slides[0];
     if (!slide) return { name: story.label, domain: undefined };
     const sourceDomainMap: Record<string, string> = {
-      Reuters: "reuters.com",
-      Bloomberg: "bloomberg.com",
-      "World Gold Council": "gold.org",
-      "NVIDIA IR": "nvidia.com",
-      MarketWatch: "marketwatch.com",
-      Eurostat: "ec.europa.eu",
-      BLS: "bls.gov",
-      ECB: "ecb.europa.eu",
-      "Federal Reserve": "federalreserve.gov",
-      CoinDesk: "coindesk.com",
-      Etherscan: "etherscan.io",
-      CNBC: "cnbc.com",
-      "Goldman Sachs": "goldmansachs.com",
-      "Portfolio Analysis": undefined,
-      "Shibarium Explorer": undefined,
+      Reuters:            "reuters.com",
+      Bloomberg:          "bloomberg.com",
+      "World Gold Council":"gold.org",
+      "NVIDIA IR":        "nvidia.com",
+      MarketWatch:        "marketwatch.com",
+      Eurostat:           "ec.europa.eu",
+      BLS:                "bls.gov",
+      ECB:                "ecb.europa.eu",
+      "Federal Reserve":  "federalreserve.gov",
+      CoinDesk:           "coindesk.com",
+      Etherscan:          "etherscan.io",
+      CNBC:               "cnbc.com",
+      "Goldman Sachs":    "goldmansachs.com",
     };
     return { name: slide.source, domain: sourceDomainMap[slide.source] };
   };
@@ -256,7 +256,8 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
                             {story.label}
                           </span>
                           <span className="text-xs text-muted-foreground mr-1">
-                            {story.slides.length} {story.slides.length === 1 ? "story" : "stories"}
+                            {story.slides.length}{" "}
+                            {story.slides.length === 1 ? "story" : "stories"}
                           </span>
                           <div
                             className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
@@ -315,43 +316,40 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
                           : {}
                       }
                       transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.03 }}
-                      style={{
-                        height: `${Math.max(4, Math.sin(i * 0.5) * 20 + 8)}px`,
-                      }}
+                      style={{ height: `${Math.max(4, Math.sin(i * 0.5) * 20 + 8)}px` }}
                     />
                   ))}
                 </div>
 
-                {!speechAvailable.current && (
-                  <div className="bg-secondary rounded-xl p-4 mb-4 w-full">
-                    <p className="text-xs text-muted-foreground mb-2 font-medium">
-                      Audio not supported on this device — transcript:
-                    </p>
-                    <p className="text-sm text-foreground leading-relaxed">{transcript}</p>
+                {/* Progress bar */}
+                {totalDuration > 0 && (
+                  <div className="w-full bg-secondary rounded-full h-1 mb-4">
+                    <div
+                      className="bg-primary h-1 rounded-full transition-all"
+                      style={{ width: `${(elapsed / totalDuration) * 100}%` }}
+                    />
                   </div>
                 )}
 
                 {/* Playback controls */}
-                {speechAvailable.current && (
-                  <div className="flex items-center gap-4 mb-4">
-                    <button
-                      onClick={togglePause}
-                      className="w-12 h-12 rounded-full bg-primary flex items-center justify-center"
-                    >
-                      {playState === "playing" ? (
-                        <Pause size={20} className="text-primary-foreground" />
-                      ) : (
-                        <Play size={20} className="text-primary-foreground ml-0.5" />
-                      )}
-                    </button>
-                    <button
-                      onClick={stopPlayback}
-                      className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
-                    >
-                      <Square size={16} className="text-foreground" />
-                    </button>
-                  </div>
-                )}
+                <div className="flex items-center gap-4 mb-4">
+                  <button
+                    onClick={isPlayingOrPaused ? togglePause : startPlayback}
+                    className="w-12 h-12 rounded-full bg-primary flex items-center justify-center"
+                  >
+                    {playState === "playing" ? (
+                      <Pause size={20} className="text-primary-foreground" />
+                    ) : (
+                      <Play size={20} className="text-primary-foreground ml-0.5" />
+                    )}
+                  </button>
+                  <button
+                    onClick={stopPlayback}
+                    className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+                  >
+                    <Square size={16} className="text-foreground" />
+                  </button>
+                </div>
               </div>
             ) : null}
           </div>
@@ -359,6 +357,7 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
           {/* Status + CTA */}
           <div className="shrink-0 pt-3">
             <p className="text-xs text-muted-foreground text-center mb-3">{statusLine}</p>
+
             {playState === "idle" && (
               <button
                 onClick={handleGenerate}
@@ -369,6 +368,7 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
                 Generate summary
               </button>
             )}
+
             {playState === "generating" && (
               <button
                 disabled
@@ -378,6 +378,7 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
                 Generating…
               </button>
             )}
+
             {playState === "ready" && (
               <div className="space-y-2">
                 <button
@@ -395,6 +396,7 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
                 </button>
               </div>
             )}
+
             {isPlayingOrPaused && (
               <button
                 onClick={backToSelect}
