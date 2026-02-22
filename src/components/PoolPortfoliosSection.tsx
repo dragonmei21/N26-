@@ -11,6 +11,7 @@ import type { PortfolioHolding } from "@/data/portfolioHoldings";
 
 interface Props {
   userHoldings: PortfolioHolding[];
+  hideHeader?: boolean;
 }
 
 function toWeightedHoldings(holdings: PortfolioHolding[]) {
@@ -39,10 +40,10 @@ function CardSkeleton() {
   );
 }
 
-const PoolPortfoliosSection = ({ userHoldings }: Props) => {
+const PoolPortfoliosSection = ({ userHoldings, hideHeader = false }: Props) => {
   const normalizedHoldings = useMemo(() => toWeightedHoldings(userHoldings), [userHoldings]);
 
-  const { rankedPortfolios, copiedIds, isLoading, toggleCopy, previewAllocation, createPortfolio } =
+  const { rankedPortfolios, copiedIds, isLoading, toggleCopy, createPortfolio } =
     usePoolPortfolios(normalizedHoldings);
 
   const [detailPortfolio, setDetailPortfolio]       = useState<RankedPoolPortfolio | null>(null);
@@ -67,21 +68,23 @@ const PoolPortfoliosSection = ({ userHoldings }: Props) => {
   };
 
   return (
-    <div className="mt-8 mb-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-bold text-foreground">Popular Portfolios</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">Ranked by similarity to your holdings</p>
+    <div className={hideHeader ? "mb-4" : "mt-8 mb-4"}>
+      {/* Header — hidden when parent controls the section title */}
+      {!hideHeader && (
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-foreground">Popular Portfolios</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Ranked by similarity to your holdings</p>
+          </div>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="flex items-center gap-1.5 bg-secondary border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground hover:bg-border transition-colors"
+          >
+            <Plus size={13} />
+            Create
+          </button>
         </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="flex items-center gap-1.5 bg-secondary border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground hover:bg-border transition-colors"
-        >
-          <Plus size={13} />
-          Create
-        </button>
-      </div>
+      )}
 
       {/* Loading skeletons */}
       {isLoading && (

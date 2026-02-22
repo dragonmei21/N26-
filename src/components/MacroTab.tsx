@@ -328,6 +328,9 @@ const MacroTab = () => {
   const [eli10, setEli10] = useState(false);
   const [openSteps, setOpenSteps] = useState<Set<number>>(new Set([1]));
 
+  const [eventsOpen, setEventsOpen] = useState(false);
+  const [portfoliosOpen, setPortfoliosOpen] = useState(false);
+
   // Load events from backend on mount
   useEffect(() => {
     fetchFeedEvents(8)
@@ -504,42 +507,88 @@ const MacroTab = () => {
         </p>
       </div>
 
-      {/* Today's Events */}
-      <h4 className="text-sm font-bold text-foreground mb-3">Today's Events</h4>
-
-      {/* Loading */}
-      {eventsLoading && (
-        <div className="flex items-center justify-center py-16 gap-2">
-          <Loader2 size={22} className="text-primary animate-spin" />
-          <span className="text-sm text-muted-foreground">Loading today's events…</span>
-        </div>
-      )}
-
-      {/* Error */}
-      {eventsError && !eventsLoading && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
-          <p className="text-sm text-red-400">Could not load events. Is the backend running?</p>
-        </div>
-      )}
-
-      {/* Event list */}
-      {!eventsLoading && !eventsError && events.map((event) => (
-        <EventCard
-          key={event.id}
-          event={event}
-          onTrace={() => handleTrace(event.id)}
+      {/* Today's Events — collapsible */}
+      <button
+        onClick={() => setEventsOpen((o) => !o)}
+        className="w-full flex items-center justify-between mb-3 group"
+      >
+        <h4 className="text-sm font-bold text-foreground">Today's Events</h4>
+        <ChevronDown
+          size={16}
+          className={`text-muted-foreground transition-transform duration-200 ${eventsOpen ? "" : "-rotate-90"}`}
         />
-      ))}
+      </button>
 
-      {/* Empty state */}
-      {!eventsLoading && !eventsError && events.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-sm text-muted-foreground">No events found.</p>
-        </div>
-      )}
+      <AnimatePresence initial={false}>
+        {eventsOpen && (
+          <motion.div
+            key="events"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            {/* Loading */}
+            {eventsLoading && (
+              <div className="flex items-center justify-center py-16 gap-2">
+                <Loader2 size={22} className="text-primary animate-spin" />
+                <span className="text-sm text-muted-foreground">Loading today's events…</span>
+              </div>
+            )}
 
-      {/* Popular Portfolios */}
-      <PoolPortfoliosSection userHoldings={portfolioHoldings} />
+            {/* Error */}
+            {eventsError && !eventsLoading && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                <p className="text-sm text-red-400">Could not load events. Is the backend running?</p>
+              </div>
+            )}
+
+            {/* Event list */}
+            {!eventsLoading && !eventsError && events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onTrace={() => handleTrace(event.id)}
+              />
+            ))}
+
+            {/* Empty state */}
+            {!eventsLoading && !eventsError && events.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-sm text-muted-foreground">No events found.</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Popular Portfolios — collapsible */}
+      <button
+        onClick={() => setPortfoliosOpen((o) => !o)}
+        className="w-full flex items-center justify-between mt-6 mb-3 group"
+      >
+        <h4 className="text-sm font-bold text-foreground">Popular Portfolios</h4>
+        <ChevronDown
+          size={16}
+          className={`text-muted-foreground transition-transform duration-200 ${portfoliosOpen ? "" : "-rotate-90"}`}
+        />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {portfoliosOpen && (
+          <motion.div
+            key="portfolios"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <PoolPortfoliosSection userHoldings={portfolioHoldings} hideHeader />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
