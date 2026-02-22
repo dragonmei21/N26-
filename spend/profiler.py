@@ -1,4 +1,4 @@
-from spend.parser import get_user_transactions, get_user_meta, get_user_portfolio
+from spend.parser import get_user_transactions, get_user_meta
 from spend.categorizer import categorize
 
 
@@ -9,7 +9,6 @@ def build_profile(user_id: str) -> dict:
     """
     meta = get_user_meta(user_id)
     transactions = get_user_transactions(user_id)
-    portfolio = get_user_portfolio(user_id)
     categories = categorize(transactions)
 
     total_spend = sum(c["total_eur"] for c in categories.values())
@@ -29,22 +28,11 @@ def build_profile(user_id: str) -> dict:
         f"€{d['total_eur']:.0f} on {cat.replace('_', ' ')} ({', '.join(d['merchants'][:2])})"
         for cat, d in top_cats
     ]
-    positions = portfolio.get("positions", [])
-    portfolio_lines = [
-        f"€{p['held_eur']:.0f} in {p['name']} ({p['ticker']})"
-        for p in positions
-    ]
-    portfolio_summary = (
-        f"Portfolio: {', '.join(portfolio_lines)}." if portfolio_lines
-        else "No investment portfolio on record."
-    )
-
     spend_summary = (
         f"{meta['name']} spent €{total_spend:.0f} this month. "
         f"Top categories: {'; '.join(spend_lines)}. "
         f"Risk appetite: {meta['risk_appetite']}. "
-        f"Savings balance: €{meta['savings_balance_eur']:,.0f}. "
-        f"{portfolio_summary}"
+        f"Savings balance: €{meta['savings_balance_eur']:,.0f}."
     )
 
     return {
@@ -56,5 +44,4 @@ def build_profile(user_id: str) -> dict:
         "categories": categories,
         "ticker_interests": all_tickers,
         "spend_summary": spend_summary,   # injected into LLM prompts
-        "portfolio": portfolio,           # full positions for podcast cache
     }

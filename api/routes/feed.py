@@ -78,13 +78,4 @@ def get_feed(
         "feed": feed,
     }
     cache.set(f"feed:{user_id}", response, ttl_seconds=3600)
-
-    # Populate portfolio cache so /podcast/generate has real holdings data
-    portfolio_cache = {
-        **profile["portfolio"],
-        "name": profile["name"],
-        "risk_appetite": profile["risk_appetite"],
-    }
-    cache.set(f"portfolio:{user_id}", portfolio_cache, ttl_seconds=3600)
-
     return response

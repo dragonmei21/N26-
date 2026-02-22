@@ -3,14 +3,6 @@
     "name": "Alex",
     "risk_appetite": "low",
     "savings_balance_eur": 3200,
-    "portfolio": {
-      "positions": [
-        { "ticker": "EUNL", "name": "iShares Core MSCI World", "held_eur": 420.00, "asset_type": "etf" },
-        { "ticker": "VUAA", "name": "Vanguard S&P 500", "held_eur": 310.00, "asset_type": "etf" },
-        { "ticker": "SGLN", "name": "iShares Physical Gold", "held_eur": 180.00, "asset_type": "commodity" },
-        { "ticker": "AAPL", "name": "Apple", "held_eur": 95.00, "asset_type": "stock" }
-      ]
-    },
     "transactions": [
       { "id": "t001", "merchant": "Mercadona",  "amount": 94.30,  "date": "2026-02-18", "category": "groceries" },
       { "id": "t002", "merchant": "Lidl",        "amount": 41.80,  "date": "2026-02-15", "category": "groceries" },
@@ -30,15 +22,6 @@
     "name": "Marco",
     "risk_appetite": "high",
     "savings_balance_eur": 800,
-    "portfolio": {
-      "positions": [
-        { "ticker": "ETH",  "name": "Ethereum",  "price_eur": 1678.94, "price_change_24h_pct":  4.25, "change_amount_eur":  103.85, "asset_type": "crypto" },
-        { "ticker": "BTC",  "name": "Bitcoin",   "price_eur": 57803.55,"price_change_24h_pct":  2.10, "change_amount_eur": 1819.20, "asset_type": "crypto" },
-        { "ticker": "SHIB", "name": "SHIBA INU", "price_eur": 0.00000529, "price_change_24h_pct": -1.45, "change_amount_eur": 0.0, "asset_type": "crypto" },
-        { "ticker": "AAPL", "name": "Apple",     "price_eur": 264.58,  "price_change_24h_pct":  1.25, "change_amount_eur":    2.60, "asset_type": "stock"  },
-        { "ticker": "NVDA", "name": "NVIDIA",    "price_eur": 189.82,  "price_change_24h_pct": -0.85, "change_amount_eur":    1.13, "asset_type": "stock"  }
-      ]
-    },
     "transactions": [
       { "id": "t101", "merchant": "Amazon",        "amount": 187.40, "date": "2026-02-18", "category": "ecommerce" },
       { "id": "t102", "merchant": "Amazon",        "amount": 154.90, "date": "2026-02-09", "category": "ecommerce" },
