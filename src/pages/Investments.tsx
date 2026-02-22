@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Settings, Bell, Info, TriangleIcon, Lightbulb } from "lucide-react";
+import { Settings, Bell, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
+import SourceLogo from "@/components/SourceLogo";
 import MacroTab from "@/components/MacroTab";
 import { popularStocks, popularETFs, expertFunds, portfolioCoins } from "@/data/mockData";
 import { marketStories } from "@/data/marketStories";
@@ -12,7 +13,7 @@ import AudioSummarySheet from "@/components/AudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
 import { Switch } from "@/components/ui/switch";
 
-const regions = ["🌍 World", "🇺🇸 USA", "🌍 Europe", "🌍 Emerging"];
+const regions = ["World", "USA", "Europe", "Emerging"];
 const timeRanges = ["24h", "1W", "1M", "1Y"];
 
 const Investments = () => {
@@ -103,7 +104,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
               onClick={() => setShowAudioSheet(true)}
               className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
             >
-              <span className="text-base">🎧</span>
+              <Headphones size={16} className="text-foreground/70" />
               Audio summary
             </button>
           </div>
@@ -173,6 +174,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                   change={item.change}
                   color={item.color}
                   brand={"brand" in item ? (item as any).brand : undefined}
+                  domain={"domain" in item ? (item as any).domain : undefined}
                 />
               ))}
             </div>
@@ -182,7 +184,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           <div className="px-4 mt-6">
             <h3 className="text-lg font-bold text-foreground mb-3">Explore stocks by industry</h3>
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-              {["💻 Technology", "💊 Pharmaceuticals", "⚙️ Manufacturing"].map((ind) => (
+              {["Technology", "Pharmaceuticals", "Manufacturing"].map((ind) => (
                 <button key={ind} className="bg-secondary rounded-full px-4 py-2 text-sm text-foreground whitespace-nowrap shrink-0">
                   {ind}
                 </button>
@@ -249,9 +251,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             <div className="bg-card rounded-xl border border-border px-4">
               {portfolioCoins.map((coin, i) => (
                 <div key={coin.ticker} className={`flex items-center gap-3 py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
-                  <div className={`w-10 h-10 rounded-full ${coin.color} flex items-center justify-center shrink-0`}>
-                    <span className="text-sm">{coin.emoji}</span>
-                  </div>
+                  <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground">{coin.name}</p>
                     <p className="text-xs text-muted-foreground">{coin.ticker}</p>
@@ -290,7 +290,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                 onClick={() => navigate("/scenarios")}
                 className="w-full mt-4 flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
               >
-                <span className="text-base">🔮</span>
+                <FlaskConical size={16} className="text-foreground/70" />
                 Scenarios
               </button>
               <button
