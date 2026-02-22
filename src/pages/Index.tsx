@@ -6,16 +6,18 @@ import OnboardingCard from "@/components/OnboardingCard";
 import InvestmentsWidget from "@/components/InvestmentsWidget";
 import { Pen } from "lucide-react";
 
+const accountIconLabels = ["Card", "Home", "Savings", "Premium", "Stats", "Schedule", "Goals"];
+
 const AccountIcons = () => (
   <div className="flex gap-3 px-4 py-2 overflow-x-auto scrollbar-hide">
-    {["💳", "🏠", "🐷", "💎", "📊", "⏰", "🎯"].map((emoji, i) => (
+    {accountIconLabels.map((label, i) => (
       <div
         key={i}
-        className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
-          i === 0 ? "bg-primary/20 border-2 border-primary" : "bg-secondary"
-        }`}
+        className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${i === 0 ? "bg-primary/20 border-2 border-primary" : "bg-secondary"
+          }`}
       >
-        <span className="text-xl">{emoji}</span>
+        <span className={`text-[10px] font-semibold text-center leading-tight ${i === 0 ? "text-primary" : "text-muted-foreground"
+          }`}>{label}</span>
       </div>
     ))}
   </div>

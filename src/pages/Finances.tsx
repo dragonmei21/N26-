@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Eye, ArrowUpDown, HelpCircle, Plus, Link2, ChevronRight, Wallet } from "lucide-react";
+import { Eye, ArrowUpDown, HelpCircle, Plus, Link2, ChevronRight, Wallet, TrendingUp } from "lucide-react";
 import { addMoreItems } from "@/data/mockData";
 
 const Finances = () => {
@@ -69,7 +69,7 @@ const Finances = () => {
         <h3 className="text-lg font-bold text-foreground mb-3">Investments</h3>
         <div className="bg-card rounded-xl p-4 flex items-center gap-3 border border-border">
           <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-            <span className="text-lg">📈</span>
+            <TrendingUp size={20} className="text-primary" />
           </div>
           <div className="flex-1">
             <span className="text-base font-medium text-foreground">Stocks and ETFs</span>
@@ -88,7 +88,7 @@ const Finances = () => {
           <div className="min-w-[220px] bg-card rounded-xl p-4 border border-border">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 rounded-full bg-warning/20 flex items-center justify-center">
-                <span className="text-sm">📊</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-warning"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
               </div>
             </div>
             <p className="text-sm font-semibold text-foreground">Invest regularly</p>
@@ -98,7 +98,7 @@ const Finances = () => {
           <div className="min-w-[220px] bg-card rounded-xl p-4 border border-border">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 rounded-full bg-negative/20 flex items-center justify-center">
-                <span className="text-sm">🔄</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-negative"><polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>
               </div>
             </div>
             <p className="text-sm font-semibold text-foreground">Move money automatically</p>
@@ -118,7 +118,7 @@ const Finances = () => {
                 <p className="text-base font-semibold text-foreground">{item.title}</p>
                 <p className="text-sm text-muted-foreground mt-0.5">{item.desc}</p>
               </div>
-              <span className="text-3xl">{item.emoji}</span>
+              <ChevronRight size={18} className="text-muted-foreground" />
             </div>
           ))}
         </div>

@@ -25,13 +25,13 @@ const Investments = () => {
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
   const [activeStorySource, setActiveStorySource] = useState<"market" | "portfolio">("market");
   const [showAudioSheet, setShowAudioSheet] = useState(false);
-const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [aiEnabled, setAiEnabled] = useState<boolean>(() => {
     try { return localStorage.getItem("aiEnabled") !== "false"; } catch { return true; }
   });
   const toggleAI = (value: boolean) => {
     setAiEnabled(value);
-    try { localStorage.setItem("aiEnabled", String(value)); } catch {}
+    try { localStorage.setItem("aiEnabled", String(value)); } catch { }
   };
   const data = tab === "Stocks" ? popularStocks : popularETFs;
 
@@ -63,9 +63,8 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           <button
             key={t}
             onClick={() => setTopTab(t)}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-              topTab === t ? "bg-card text-primary" : "text-muted-foreground"
-            }`}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${topTab === t ? "bg-card text-primary" : "text-muted-foreground"
+              }`}
           >
             {t}
           </button>
@@ -119,8 +118,8 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               {expertFunds.map((fund, i) => (
                 <div key={fund.name} className={`flex items-center gap-3 p-4 ${i < expertFunds.length - 1 ? "border-b border-border" : ""}`}>
-                  <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-2xl">
-                    {fund.emoji}
+                  <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center">
+                    <span className="text-sm font-bold text-foreground">{fund.name.slice(0, 2).toUpperCase()}</span>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">{fund.name}</p>
@@ -158,9 +157,8 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-                    tab === t ? "bg-card text-primary" : "text-muted-foreground"
-                  }`}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${tab === t ? "bg-card text-primary" : "text-muted-foreground"
+                    }`}
                 >
                   {t}
                 </button>
@@ -236,9 +234,8 @@ const [showSuggestions, setShowSuggestions] = useState(false);
               <button
                 key={t}
                 onClick={() => setTimeRange(t)}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-                  timeRange === t ? "bg-card text-primary" : "text-muted-foreground"
-                }`}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${timeRange === t ? "bg-card text-primary" : "text-muted-foreground"
+                  }`}
               >
                 {t}
               </button>

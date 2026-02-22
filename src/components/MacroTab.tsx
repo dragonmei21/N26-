@@ -95,11 +95,10 @@ const TimelineWithEventChart = ({ step }: { step: PricedCausalStep }) => {
         <p className="text-xs font-medium text-foreground">{step.price_data.title}</p>
         {step.price_change_pct !== null && (
           <span
-            className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-              step.price_change_pct >= 0
+            className={`text-xs font-semibold px-2 py-0.5 rounded-full ${step.price_change_pct >= 0
                 ? "bg-emerald-500/20 text-emerald-400"
                 : "bg-red-500/20 text-red-400"
-            }`}
+              }`}
           >
             {step.price_change_pct >= 0 ? "+" : ""}
             {step.price_change_pct.toFixed(1)}%
@@ -167,11 +166,8 @@ const EventCard = ({
   onTrace: () => void;
 }) => (
   <div className="bg-card rounded-xl border border-border p-4 mb-3">
-    <div className="flex items-start justify-between mb-2">
-      <div className="flex items-center gap-2">
-        <span className="text-xl">{event.emoji}</span>
-        <CategoryPill category={event.category} />
-      </div>
+    <div className="flex items-center gap-2 mb-2">
+      <CategoryPill category={event.category} />
       <span className="text-xs text-muted-foreground">{event.date}</span>
     </div>
     <h4 className="text-sm font-bold text-foreground mb-1">{event.title}</h4>

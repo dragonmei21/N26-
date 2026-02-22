@@ -119,8 +119,8 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
 
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-2 z-10" onClick={(e) => e.stopPropagation()}>
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-lg">
-            {story.emoji}
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="text-xs font-bold text-white">{story.label.slice(0, 2).toUpperCase()}</span>
           </div>
           <span className="text-white text-sm font-semibold flex-1">{story.label}</span>
           <button onClick={onClose} className="text-white/80 hover:text-white">
@@ -130,7 +130,7 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
 
         {/* Content */}
         <div className={`flex-1 flex flex-col justify-center items-center px-8 bg-gradient-to-b ${slide.bgGradient}`}>
-          <span className="text-6xl mb-6">{slide.emoji}</span>
+          <div className="w-12 h-1 rounded-full bg-white/30 mb-6" />
           <h2 className="text-2xl font-bold text-white text-center mb-4 leading-tight">
             {slide.headline}
           </h2>

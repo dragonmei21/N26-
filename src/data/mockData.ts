@@ -14,19 +14,22 @@ export const transactions = [
 ];
 
 export const popularStocks = [
-  { name: "NVIDIA", ticker: "NVDA", price: "160,96 €", change: 1.45, color: "bg-green-500", domain: "nvidia.com" },
-  { name: "Amazon.com", ticker: "AMZN", price: "178,30 €", change: 2.8, color: "bg-orange-500", domain: "amazon.com" },
-  { name: "Microsoft", ticker: "MSFT", price: "336,95 €", change: -0.15, color: "bg-blue-500", domain: "microsoft.com" },
-  { name: "Alphabet", ticker: "GOOGL", price: "267,10 €", change: 3.6, color: "bg-white", domain: "google.com" },
-  { name: "Apple", ticker: "AAPL", price: "224,00 €", change: 1.11, color: "bg-gray-400", domain: "apple.com" },
+  { name: "NVIDIA", ticker: "NVDA", price: "161,04 €", change: 1.45, color: "bg-green-500", domain: "nvidia.com" },
+  { name: "Amazon.com", ticker: "AMZN", price: "178,28 €", change: 2.8, color: "bg-orange-500", domain: "amazon.com" },
+  { name: "Microsoft", ticker: "MSFT", price: "337,01 €", change: -0.15, color: "bg-blue-500", domain: "microsoft.com" },
+  { name: "Alphabet", ticker: "GOOGL", price: "267,28 €", change: 3.6, color: "bg-white", domain: "google.com" },
+  { name: "Apple", ticker: "AAPL", price: "224,50 €", change: 1.11, color: "bg-gray-400", domain: "apple.com" },
+  { name: "Meta Platforms", ticker: "META", price: "556,30 €", change: 1.69, color: "bg-blue-600", domain: "meta.com" },
+  { name: "Tesla", ticker: "TSLA", price: "349,39 €", change: 0.03, color: "bg-red-500", domain: "tesla.com" },
+  { name: "Netflix", ticker: "NFLX", price: "66,75 €", change: 2.16, color: "bg-red-700", domain: "netflix.com" },
 ];
 
 export const popularETFs = [
-  { name: "Core MSCI World", ticker: "EUNL", price: "113,89 €", change: 0.75, color: "bg-yellow-500", brand: "iShares", domain: "ishares.com" },
-  { name: "S&P 500", ticker: "VUAA", price: "112,66 €", change: 0.6, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
-  { name: "S&P 500 Information Technology Sector", ticker: "QDVE", price: "34,22 €", change: 0.84, color: "bg-yellow-500", brand: "iShares", domain: "ishares.com" },
-  { name: "S&P 500", ticker: "VUSA", price: "110,96 €", change: 0.5, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
-  { name: "FTSE All-World", ticker: "VWCE", price: "150,20 €", change: 0.9, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
+  { name: "Core MSCI World", ticker: "EUNL", price: "113,76 €", change: 0.75, color: "bg-yellow-500", brand: "iShares", domain: "ishares.com" },
+  { name: "S&P 500", ticker: "VUAA", price: "112,51 €", change: 0.6, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
+  { name: "S&P 500 Information Technology Sector", ticker: "QDVE", price: "34,26 €", change: 0.84, color: "bg-yellow-500", brand: "iShares", domain: "ishares.com" },
+  { name: "S&P 500", ticker: "VUSA", price: "110,95 €", change: 0.5, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
+  { name: "FTSE All-World", ticker: "VWCE", price: "149,88 €", change: 0.9, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
 ];
 
 export const cryptoMovers = [
@@ -48,21 +51,30 @@ export const commodities = [
 ];
 
 export const addMoreItems = [
-  { title: "Freelancer Account", desc: "Open a free business account and earn cashback.", emoji: "💼" },
-  { title: "Instant Savings", desc: "Earn 0.5% AER (0.5% NIR) on your Savings", emoji: "🐷" },
-  { title: "Joint Account", desc: "Set up in minutes, with money management tools made for two.", emoji: "💳" },
-  { title: "Crypto", desc: "Get started with crypto with 1 €.", emoji: "🪙" },
-  { title: "Extra funds", desc: "Borrow for unexpected moments and make your money go further.", emoji: "💰" },
+  { title: "Freelancer Account", desc: "Open a free business account and earn cashback." },
+  { title: "Instant Savings", desc: "Earn 0.5% AER (0.5% NIR) on your Savings" },
+  { title: "Joint Account", desc: "Set up in minutes, with money management tools made for two." },
+  { title: "Crypto", desc: "Get started with crypto with 1 €." },
+  { title: "Extra funds", desc: "Borrow for unexpected moments and make your money go further." },
 ];
 
 export const expertFunds = [
-  { name: "Mindful", returnRate: "2.1% yearly estimated return", emoji: "🏔️" },
-  { name: "Balanced", returnRate: "6.1% yearly estimated return", emoji: "🌊" },
-  { name: "Ambitious", returnRate: "8.2% yearly estimated return", emoji: "🏜️" },
+  { name: "Mindful", returnRate: "2.1% yearly estimated return" },
+  { name: "Balanced", returnRate: "6.1% yearly estimated return" },
+  { name: "Ambitious", returnRate: "8.2% yearly estimated return" },
 ];
 
 export const portfolioCoins = [
-  { name: "Ethereum", ticker: "ETH", price: "€477.88", change: 23.55, changeAmount: "€91.09", domain: "ethereum.org" },
-  { name: "Bitcoin", ticker: "BTC", price: "€270.50", change: -2.99, changeAmount: "€8.34", domain: "bitcoin.org" },
-  { name: "SHIBA INU", ticker: "SHIB", price: "€37.62", change: 5.12, changeAmount: "€1.83", domain: "shibatoken.com" },
+  { name: "Ethereum", ticker: "ETH", price: "€1,678.89", change: 23.55, changeAmount: "€91.09", color: "bg-indigo-500", domain: "ethereum.org" },
+  { name: "Bitcoin", ticker: "BTC", price: "€57,828.12", change: -2.99, changeAmount: "€8.34", color: "bg-orange-500", domain: "bitcoin.org" },
+  { name: "SHIBA INU", ticker: "SHIB", price: "€0.0000054", change: 5.12, changeAmount: "€1.83", color: "bg-yellow-500", domain: "shibatoken.com" },
+  { name: "NVIDIA", ticker: "NVDA", price: "€161,04", change: 1.45, changeAmount: "€2.30", color: "bg-green-500", domain: "nvidia.com" },
+  { name: "Microsoft", ticker: "MSFT", price: "€337,01", change: -0.15, changeAmount: "€0.51", color: "bg-blue-500", domain: "microsoft.com" },
+  { name: "Apple", ticker: "AAPL", price: "€224,50", change: 1.11, changeAmount: "€2.46", color: "bg-gray-400", domain: "apple.com" },
+  { name: "Amazon", ticker: "AMZN", price: "€178,28", change: 2.80, changeAmount: "€4.87", color: "bg-orange-400", domain: "amazon.com" },
+  { name: "Meta Platforms", ticker: "META", price: "€556,30", change: 1.69, changeAmount: "€9.23", color: "bg-blue-600", domain: "meta.com" },
+  { name: "Tesla", ticker: "TSLA", price: "€349,39", change: 0.03, changeAmount: "€0.10", color: "bg-red-500", domain: "tesla.com" },
+  { name: "Netflix", ticker: "NFLX", price: "€66,75", change: 2.16, changeAmount: "€1.41", color: "bg-red-700", domain: "netflix.com" },
+  { name: "SAP SE", ticker: "SAP", price: "€173,80", change: 0.85, changeAmount: "€1.47", color: "bg-blue-800", domain: "sap.com" },
+  { name: "ASML Holding", ticker: "ASML", price: "€1.255,60", change: -1.20, changeAmount: "€15.29", color: "bg-sky-600", domain: "asml.com" },
 ];
