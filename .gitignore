@@ -1,4 +1,4 @@
-.env
+1.env
 __pycache__/
 *.pyc
 *.pyo
@@ -13,5 +13,4 @@ chroma_db/
 dist/
 build/
 .pytest_cache/
-node_modules/
-N26-/
+node_modules
