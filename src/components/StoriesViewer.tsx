@@ -99,6 +99,21 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
         {/* Full-bleed gradient background — changes per slide */}
         <div className={`absolute inset-0 bg-gradient-to-b ${slide.bgClass} transition-colors duration-500`} />
 
+        {/* News image background at ~60% transparency */}
+        {slide.imageUrl && (
+          <img
+            src={slide.imageUrl}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
+          />
+        )}
+
+        {/* Dark scrim to ensure text legibility over the image */}
+        {slide.imageUrl && (
+          <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+        )}
+
         {/* Subtle noise/grain overlay for depth */}
         <div
           className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -153,7 +168,7 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25 }}
-            className="relative z-10 flex-1 flex flex-col justify-end px-5 pb-6"
+            className="relative z-10 flex-1 flex flex-col justify-center px-5 py-6"
           >
             {/* Headline */}
             <h2 className="text-[22px] font-bold text-white leading-snug mb-3">
@@ -173,8 +188,11 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
             </div>
 
             {/* ── Source bar ── */}
-            <div
-              className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-2.5"
+            <a
+              href={slide.sourceUrl ?? `https://${slide.sourceDomain}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 active:bg-white/10 transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-2.5">
@@ -192,8 +210,8 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
                   </p>
                 </div>
               </div>
-              <ExternalLink size={13} className="text-white/30" />
-            </div>
+              <ExternalLink size={13} className="text-white/50" />
+            </a>
           </motion.div>
         </AnimatePresence>
 
