@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink } from "lucide-react";
 import type { MarketStory, StoryCategory } from "@/data/marketStories";
 import SourceLogo from "@/components/SourceLogo";
+import { useUI } from "@/context/UIContext";
 
 interface StoriesViewerProps {
   stories: MarketStory[];
@@ -29,6 +30,13 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
   const [progress, setProgress]     = useState(0);
   const timerRef    = useRef<number | null>(null);
   const startTimeRef = useRef(Date.now());
+  const { setStoriesOpen } = useUI();
+
+  // Hide bottom nav while stories are visible
+  useEffect(() => {
+    setStoriesOpen(true);
+    return () => setStoriesOpen(false);
+  }, [setStoriesOpen]);
 
   const story = stories[storyIndex];
   const slide = story.slides[slideIndex];
@@ -93,7 +101,7 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex flex-col"
+        className="fixed inset-y-0 left-0 right-0 z-[60] flex flex-col max-w-md mx-auto"
         onClick={handleTap}
       >
         {/* Full-bleed gradient background — changes per slide */}

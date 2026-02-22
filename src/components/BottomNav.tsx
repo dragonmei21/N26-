@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, BarChart3, PieChart, Gift, CreditCard } from "lucide-react";
 import { motion } from "framer-motion";
+import { useUI } from "@/context/UIContext";
 
 const tabs = [
   { path: "/", label: "Home", icon: Home },
@@ -15,8 +16,9 @@ const HIDDEN_PATHS = ["/scenarios"];
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { storiesOpen } = useUI();
 
-  if (HIDDEN_PATHS.includes(location.pathname)) return null;
+  if (storiesOpen || HIDDEN_PATHS.includes(location.pathname)) return null;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border">
