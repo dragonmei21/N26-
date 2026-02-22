@@ -215,11 +215,6 @@ const StoriesViewer = ({ stories, initialStoryIndex, onClose }: StoriesViewerPro
           </motion.div>
         </AnimatePresence>
 
-        {/* Left / right tap zones — sit below header (z-10) so X button is always clickable */}
-        <div className="absolute inset-0 z-10 flex pointer-events-none">
-          <div className="w-1/3 h-full pointer-events-auto" onClick={(e) => { e.stopPropagation(); goPrev(); }} />
-          <div className="w-2/3 h-full pointer-events-auto" onClick={(e) => { e.stopPropagation(); goNext(); }} />
-        </div>
       </motion.div>
     </AnimatePresence>
   );
