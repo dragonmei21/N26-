@@ -36,7 +36,8 @@ async def generate_podcast(
     )
 
     podcast_id = str(uuid.uuid4())[:8]
-    await generate_audio(script.full_text, user_id, podcast_id)
+    audio_text = f"Hello and welcome to the N26 Financial Briefing. {script.full_text}"
+    await generate_audio(audio_text, user_id, podcast_id)
 
     metadata = PodcastMetadata(
         podcast_id=podcast_id,
