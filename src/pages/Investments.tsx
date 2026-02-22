@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Settings, Bell, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
 import SourceLogo from "@/components/SourceLogo";
+import TickerInsight from "@/components/TickerInsight";
 import MacroTab from "@/components/MacroTab";
 import { popularStocks, popularETFs, expertFunds, portfolioCoins } from "@/data/mockData";
 import { marketStories } from "@/data/marketStories";
@@ -250,24 +251,35 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             </div>
             <div className="bg-card rounded-xl border border-border px-4">
               {portfolioCoins.map((coin, i) => (
-                <div key={coin.ticker} className={`flex items-center gap-3 py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
-                  <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{coin.name}</p>
-                    <p className="text-xs text-muted-foreground">{coin.ticker}</p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-sm font-semibold text-foreground">{coin.price}</p>
-                    <div className="flex items-center justify-end gap-0.5">
-                      <TriangleIcon
-                        size={8}
-                        className={coin.change >= 0 ? "text-positive fill-current" : "text-negative fill-current rotate-180"}
-                      />
-                      <span className={`text-xs ${coin.change >= 0 ? "text-positive" : "text-negative"}`}>
-                        {coin.changeAmount} · {Math.abs(coin.change).toFixed(2).replace(".", ",")}%
-                      </span>
+                <div key={coin.ticker} className={`py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
+                  <div className="flex items-center gap-3">
+                    <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground">{coin.name}</p>
+                      <p className="text-xs text-muted-foreground">{coin.ticker}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-semibold text-foreground">{coin.price}</p>
+                      <div className="flex items-center justify-end gap-0.5">
+                        <TriangleIcon
+                          size={8}
+                          className={coin.change >= 0 ? "text-positive fill-current" : "text-negative fill-current rotate-180"}
+                        />
+                        <span className={`text-xs ${coin.change >= 0 ? "text-positive" : "text-negative"}`}>
+                          {coin.changeAmount} · {Math.abs(coin.change).toFixed(2).replace(".", ",")}%
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  {aiEnabled && (
+                    <TickerInsight
+                      key={`${coin.ticker}-${timeRange}`}
+                      ticker={coin.ticker}
+                      timeRange={timeRange}
+                      change={coin.change}
+                      className="mt-1.5 pl-[52px]"
+                    />
+                  )}
                 </div>
               ))}
             </div>
