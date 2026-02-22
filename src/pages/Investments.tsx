@@ -23,8 +23,7 @@ const Investments = () => {
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
   const [activeStorySource, setActiveStorySource] = useState<"market" | "portfolio">("market");
   const [showAudioSheet, setShowAudioSheet] = useState(false);
-  const [showPortfolioAudioSheet, setShowPortfolioAudioSheet] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+const [showSuggestions, setShowSuggestions] = useState(false);
   const [aiEnabled, setAiEnabled] = useState<boolean>(() => {
     try { return localStorage.getItem("aiEnabled") !== "false"; } catch { return true; }
   });
@@ -241,45 +240,6 @@ const Investments = () => {
             ))}
           </div>
 
-          {/* Portfolio Stories */}
-          {aiEnabled && (
-            <div className="mb-6">
-              <h3 className="text-lg font-bold text-foreground mb-3">Your holdings at a glance</h3>
-              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-                {portfolioStories.map((story, i) => (
-                  <button
-                    key={story.id}
-                    onClick={() => {
-                      setActiveStorySource("portfolio");
-                      setActiveStoryIndex(i);
-                    }}
-                    className="flex flex-col items-center gap-1.5 shrink-0"
-                  >
-                    <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
-                      <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
-                        {story.emoji}
-                      </div>
-                    </div>
-                    <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Portfolio Audio Summary */}
-          {aiEnabled && (
-            <div className="mb-6">
-              <button
-                onClick={() => setShowPortfolioAudioSheet(true)}
-                className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
-              >
-                <span className="text-base">🎧</span>
-                Audio summary
-              </button>
-            </div>
-          )}
-
           {/* Your coins */}
           <div className="mb-4">
             <div className="flex items-center gap-1.5 mb-3">
@@ -362,14 +322,6 @@ const Investments = () => {
         <AudioSummarySheet
           stories={marketStories}
           onClose={() => setShowAudioSheet(false)}
-        />
-      )}
-
-      {/* Audio Summary Sheet - Portfolio */}
-      {aiEnabled && showPortfolioAudioSheet && (
-        <AudioSummarySheet
-          stories={portfolioStories}
-          onClose={() => setShowPortfolioAudioSheet(false)}
         />
       )}
 
