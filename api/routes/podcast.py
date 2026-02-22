@@ -11,6 +11,7 @@ from audio.tts_engine import generate_audio
 from audio.progress_tracker import save_progress, get_progress, should_send_notification
 from models.podcast import PodcastMetadata
 from cache.store import cache
+from spend.parser import get_user_portfolio, get_user_meta
 
 router = APIRouter(prefix="/podcast", tags=["podcast"])
 
@@ -21,10 +22,19 @@ async def generate_podcast(
     length: Literal["flash", "brief", "deep_dive"],
     mode: Literal["personal", "macro"]
 ):
-    # Reuse already-cached feed/trends/portfolio — no new fetches
+    # Reuse already-cached feed/trends — no new fetches
     feed = cache.get(f"feed:{user_id}") or {}
     trends = cache.get("trends:current") or {}
-    portfolio = cache.get(f"portfolio:{user_id}") or {}
+
+    # Portfolio: read directly from data file so it's always available
+    # (cache fallback kept for any future enrichment like live price changes)
+    cached_portfolio = cache.get(f"portfolio:{user_id}")
+    if cached_portfolio:
+        portfolio = cached_portfolio
+    else:
+        raw = get_user_portfolio(user_id)
+        meta = get_user_meta(user_id)
+        portfolio = {**raw, "name": meta["name"], "risk_appetite": meta["risk_appetite"]}
 
     script = await generate_podcast_script(
         length=length,
