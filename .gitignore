@@ -13,9 +13,5 @@ chroma_db/
 dist/
 build/
 .pytest_cache/
-
-# Node
 node_modules/
-
-# Vite
-.vite/
+N26-/

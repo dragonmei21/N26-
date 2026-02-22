@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Settings, Bell, ArrowLeft, Info, TriangleIcon, Lightbulb } from "lucide-react";
+import { Settings, Bell, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
+import SourceLogo from "@/components/SourceLogo";
+import TickerInsight from "@/components/TickerInsight";
 import MacroTab from "@/components/MacroTab";
 import { popularStocks, popularETFs, expertFunds, portfolioCoins } from "@/data/mockData";
 import { marketStories } from "@/data/marketStories";
@@ -10,8 +12,9 @@ import InvestmentRow from "@/components/InvestmentRow";
 import StoriesViewer from "@/components/StoriesViewer";
 import AudioSummarySheet from "@/components/AudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
+import { Switch } from "@/components/ui/switch";
 
-const regions = ["🌍 World", "🇺🇸 USA", "🌍 Europe", "🌍 Emerging"];
+const regions = ["World", "USA", "Europe", "Emerging"];
 const timeRanges = ["24h", "1W", "1M", "1Y"];
 
 const Investments = () => {
@@ -22,8 +25,14 @@ const Investments = () => {
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
   const [activeStorySource, setActiveStorySource] = useState<"market" | "portfolio">("market");
   const [showAudioSheet, setShowAudioSheet] = useState(false);
-  const [showPortfolioAudioSheet, setShowPortfolioAudioSheet] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+const [showSuggestions, setShowSuggestions] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState<boolean>(() => {
+    try { return localStorage.getItem("aiEnabled") !== "false"; } catch { return true; }
+  });
+  const toggleAI = (value: boolean) => {
+    setAiEnabled(value);
+    try { localStorage.setItem("aiEnabled", String(value)); } catch {}
+  };
   const data = tab === "Stocks" ? popularStocks : popularETFs;
 
   return (
@@ -80,8 +89,10 @@ const Investments = () => {
                   className="flex flex-col items-center gap-1.5 shrink-0"
                 >
                   <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
-                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
-                      {story.emoji}
+                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center px-1">
+                      <span className="text-[11px] font-bold text-foreground text-center leading-tight break-words">
+                        {story.label}
+                      </span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
@@ -96,7 +107,7 @@ const Investments = () => {
               onClick={() => setShowAudioSheet(true)}
               className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
             >
-              <span className="text-base">🎧</span>
+              <Headphones size={16} className="text-foreground/70" />
               Audio summary
             </button>
           </div>
@@ -166,6 +177,7 @@ const Investments = () => {
                   change={item.change}
                   color={item.color}
                   brand={"brand" in item ? (item as any).brand : undefined}
+                  domain={"domain" in item ? (item as any).domain : undefined}
                 />
               ))}
             </div>
@@ -175,7 +187,7 @@ const Investments = () => {
           <div className="px-4 mt-6">
             <h3 className="text-lg font-bold text-foreground mb-3">Explore stocks by industry</h3>
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-              {["💻 Technology", "💊 Pharmaceuticals", "⚙️ Manufacturing"].map((ind) => (
+              {["Technology", "Pharmaceuticals", "Manufacturing"].map((ind) => (
                 <button key={ind} className="bg-secondary rounded-full px-4 py-2 text-sm text-foreground whitespace-nowrap shrink-0">
                   {ind}
                 </button>
@@ -186,6 +198,15 @@ const Investments = () => {
       ) : topTab === "Portfolio" ? (
         /* ---- Portfolio Tab ---- */
         <div className="px-4">
+          {/* Expand Portfolio Toggle */}
+          <div className="flex items-center justify-between mb-4 py-2 bg-card rounded-xl border border-border px-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">{aiEnabled ? "Expand Portfolio" : "Expand Portfolio"}</p>
+              <p className="text-xs text-muted-foreground">News, audio, suggestions & simulations</p>
+            </div>
+            <Switch checked={aiEnabled} onCheckedChange={toggleAI} />
+          </div>
+
           {/* Portfolio value */}
           <div className="mb-2">
             <p className="text-sm text-muted-foreground mb-1">Your portfolio</p>
@@ -224,41 +245,6 @@ const Investments = () => {
             ))}
           </div>
 
-          {/* Portfolio Stories */}
-          <div className="mb-6">
-            <h3 className="text-lg font-bold text-foreground mb-3">Your holdings at a glance</h3>
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-              {portfolioStories.map((story, i) => (
-                <button
-                  key={story.id}
-                  onClick={() => {
-                    setActiveStorySource("portfolio");
-                    setActiveStoryIndex(i);
-                  }}
-                  className="flex flex-col items-center gap-1.5 shrink-0"
-                >
-                  <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
-                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
-                      {story.emoji}
-                    </div>
-                  </div>
-                  <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Portfolio Audio Summary */}
-          <div className="mb-6">
-            <button
-              onClick={() => setShowPortfolioAudioSheet(true)}
-              className="w-full flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
-            >
-              <span className="text-base">🎧</span>
-              Audio summary
-            </button>
-          </div>
-
           {/* Your coins */}
           <div className="mb-4">
             <div className="flex items-center gap-1.5 mb-3">
@@ -267,26 +253,35 @@ const Investments = () => {
             </div>
             <div className="bg-card rounded-xl border border-border px-4">
               {portfolioCoins.map((coin, i) => (
-                <div key={coin.ticker} className={`flex items-center gap-3 py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
-                  <div className={`w-10 h-10 rounded-full ${coin.color} flex items-center justify-center shrink-0`}>
-                    <span className="text-sm">{coin.emoji}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{coin.name}</p>
-                    <p className="text-xs text-muted-foreground">{coin.ticker}</p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-sm font-semibold text-foreground">{coin.price}</p>
-                    <div className="flex items-center justify-end gap-0.5">
-                      <TriangleIcon
-                        size={8}
-                        className={coin.change >= 0 ? "text-positive fill-current" : "text-negative fill-current rotate-180"}
-                      />
-                      <span className={`text-xs ${coin.change >= 0 ? "text-positive" : "text-negative"}`}>
-                        {coin.changeAmount} · {Math.abs(coin.change).toFixed(2).replace(".", ",")}%
-                      </span>
+                <div key={coin.ticker} className={`py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
+                  <div className="flex items-center gap-3">
+                    <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground">{coin.name}</p>
+                      <p className="text-xs text-muted-foreground">{coin.ticker}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-semibold text-foreground">{coin.price}</p>
+                      <div className="flex items-center justify-end gap-0.5">
+                        <TriangleIcon
+                          size={8}
+                          className={coin.change >= 0 ? "text-positive fill-current" : "text-negative fill-current rotate-180"}
+                        />
+                        <span className={`text-xs ${coin.change >= 0 ? "text-positive" : "text-negative"}`}>
+                          {coin.changeAmount} · {Math.abs(coin.change).toFixed(2).replace(".", ",")}%
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  {aiEnabled && (
+                    <TickerInsight
+                      key={`${coin.ticker}-${timeRange}`}
+                      ticker={coin.ticker}
+                      timeRange={timeRange}
+                      change={coin.change}
+                      className="mt-1.5 pl-[52px]"
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -302,23 +297,26 @@ const Investments = () => {
             </button>
           </div>
 
-          {/* Scenarios button */}
-          <button
-            onClick={() => navigate("/scenarios")}
-            className="w-full mt-4 flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
-          >
-            <span className="text-base">🔮</span>
-            Scenarios
-          </button>
+          {/* Scenarios + Suggestions buttons (AI-gated) */}
+          {aiEnabled && (
+            <>
+              <button
+                onClick={() => navigate("/scenarios")}
+                className="w-full mt-4 flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+              >
+                <FlaskConical size={16} className="text-foreground/70" />
+                Scenarios
+              </button>
+              <button
+                onClick={() => setShowSuggestions(true)}
+                className="w-full mt-3 flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
+              >
+                <Lightbulb size={16} className="text-primary" />
+                Suggestions
+              </button>
+            </>
+          )}
 
-          {/* Suggestions button */}
-          <button
-            onClick={() => setShowSuggestions(true)}
-            className="w-full mt-3 flex items-center justify-center gap-2 bg-card border border-border rounded-xl py-3 text-sm font-semibold text-foreground hover:bg-secondary transition-colors"
-          >
-            <Lightbulb size={16} className="text-primary" />
-            Suggestions
-          </button>
         </div>
       ) : (
         /* ---- Macro Tab ---- */
@@ -335,23 +333,15 @@ const Investments = () => {
       )}
 
       {/* Audio Summary Sheet - Explore */}
-      {showAudioSheet && (
+      {aiEnabled && showAudioSheet && (
         <AudioSummarySheet
           stories={marketStories}
           onClose={() => setShowAudioSheet(false)}
         />
       )}
 
-      {/* Audio Summary Sheet - Portfolio */}
-      {showPortfolioAudioSheet && (
-        <AudioSummarySheet
-          stories={portfolioStories}
-          onClose={() => setShowPortfolioAudioSheet(false)}
-        />
-      )}
-
       {/* Portfolio Suggestions Sheet */}
-      {showSuggestions && (
+      {aiEnabled && showSuggestions && (
         <PortfolioSuggestionsSheet onClose={() => setShowSuggestions(false)} />
       )}
     </motion.div>

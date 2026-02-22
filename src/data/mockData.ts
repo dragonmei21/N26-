@@ -14,19 +14,19 @@ export const transactions = [
 ];
 
 export const popularStocks = [
-  { name: "NVIDIA", ticker: "NVDA", price: "160,96 €", change: 1.45, color: "bg-green-500" },
-  { name: "Amazon.com", ticker: "AMZN", price: "178,30 €", change: 2.8, color: "bg-orange-500" },
-  { name: "Microsoft", ticker: "MSFT", price: "336,95 €", change: -0.15, color: "bg-blue-500" },
-  { name: "Alphabet", ticker: "GOOGL", price: "267,10 €", change: 3.6, color: "bg-white" },
-  { name: "Apple", ticker: "AAPL", price: "224,00 €", change: 1.11, color: "bg-gray-400" },
+  { name: "NVIDIA", ticker: "NVDA", price: "160,96 €", change: 1.45, color: "bg-green-500", domain: "nvidia.com" },
+  { name: "Amazon.com", ticker: "AMZN", price: "178,30 €", change: 2.8, color: "bg-orange-500", domain: "amazon.com" },
+  { name: "Microsoft", ticker: "MSFT", price: "336,95 €", change: -0.15, color: "bg-blue-500", domain: "microsoft.com" },
+  { name: "Alphabet", ticker: "GOOGL", price: "267,10 €", change: 3.6, color: "bg-white", domain: "google.com" },
+  { name: "Apple", ticker: "AAPL", price: "224,00 €", change: 1.11, color: "bg-gray-400", domain: "apple.com" },
 ];
 
 export const popularETFs = [
-  { name: "Core MSCI World", ticker: "EUNL", price: "113,89 €", change: 0.75, color: "bg-yellow-500", brand: "iShares" },
-  { name: "S&P 500", ticker: "VUAA", price: "112,66 €", change: 0.6, color: "bg-red-600", brand: "Vanguard" },
-  { name: "S&P 500 Information Technology Sector", ticker: "QDVE", price: "34,22 €", change: 0.84, color: "bg-yellow-500", brand: "iShares" },
-  { name: "S&P 500", ticker: "VUSA", price: "110,96 €", change: 0.5, color: "bg-red-600", brand: "Vanguard" },
-  { name: "FTSE All-World", ticker: "VWCE", price: "150,20 €", change: 0.9, color: "bg-red-600", brand: "Vanguard" },
+  { name: "Core MSCI World", ticker: "EUNL", price: "113,89 €", change: 0.75, color: "bg-yellow-500", brand: "iShares", domain: "ishares.com" },
+  { name: "S&P 500", ticker: "VUAA", price: "112,66 €", change: 0.6, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
+  { name: "S&P 500 Information Technology Sector", ticker: "QDVE", price: "34,22 €", change: 0.84, color: "bg-yellow-500", brand: "iShares", domain: "ishares.com" },
+  { name: "S&P 500", ticker: "VUSA", price: "110,96 €", change: 0.5, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
+  { name: "FTSE All-World", ticker: "VWCE", price: "150,20 €", change: 0.9, color: "bg-red-600", brand: "Vanguard", domain: "vanguard.com" },
 ];
 
 export const cryptoMovers = [
@@ -62,7 +62,7 @@ export const expertFunds = [
 ];
 
 export const portfolioCoins = [
-  { name: "Ethereum", ticker: "ETH", price: "€477.88", change: 23.55, changeAmount: "€91.09", color: "bg-blue-500", emoji: "💎" },
-  { name: "Bitcoin", ticker: "BTC", price: "€270.50", change: -2.99, changeAmount: "€8.34", color: "bg-orange-500", emoji: "₿" },
-  { name: "SHIBA INU", ticker: "SHIB", price: "€37.62", change: 5.12, changeAmount: "€1.83", color: "bg-yellow-500", emoji: "🐕" },
+  { name: "Ethereum", ticker: "ETH", price: "€477.88", change: 23.55, changeAmount: "€91.09", domain: "ethereum.org" },
+  { name: "Bitcoin", ticker: "BTC", price: "€270.50", change: -2.99, changeAmount: "€8.34", domain: "bitcoin.org" },
+  { name: "SHIBA INU", ticker: "SHIB", price: "€37.62", change: 5.12, changeAmount: "€1.83", domain: "shibatoken.com" },
 ];
