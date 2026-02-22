@@ -11,6 +11,8 @@ import InvestmentRow from "@/components/InvestmentRow";
 import StoriesViewer from "@/components/StoriesViewer";
 import AudioSummarySheet from "@/components/AudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
+import PoolPortfoliosSection from "@/components/PoolPortfoliosSection";
+import { portfolioHoldings } from "@/data/portfolioHoldings";
 import { Switch } from "@/components/ui/switch";
 
 const regions = ["World", "USA", "Europe", "Emerging"];
@@ -283,7 +285,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             </button>
           </div>
 
-          {/* Scenarios + Suggestions buttons */}
+          {/* Scenarios + Suggestions buttons (AI-gated) */}
           {aiEnabled && (
             <>
               <button
@@ -302,6 +304,9 @@ const [showSuggestions, setShowSuggestions] = useState(false);
               </button>
             </>
           )}
+
+          {/* Popular Portfolios — ALWAYS visible, AI-toggle-independent */}
+          <PoolPortfoliosSection userHoldings={portfolioHoldings} />
         </div>
       ) : (
         /* ---- Macro Tab ---- */
