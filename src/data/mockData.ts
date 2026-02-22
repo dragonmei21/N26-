@@ -62,7 +62,9 @@ export const expertFunds = [
 ];
 
 export const portfolioCoins = [
-  { name: "Ethereum", ticker: "ETH", price: "€477.88", change: 23.55, changeAmount: "€91.09", domain: "ethereum.org" },
-  { name: "Bitcoin", ticker: "BTC", price: "€270.50", change: -2.99, changeAmount: "€8.34", domain: "bitcoin.org" },
-  { name: "SHIBA INU", ticker: "SHIB", price: "€37.62", change: 5.12, changeAmount: "€1.83", domain: "shibatoken.com" },
+  { name: "Ethereum", ticker: "ETH", price: "€1,678.94", change: 4.25, changeAmount: "€103.85", domain: "ethereum.org" },
+  { name: "Bitcoin", ticker: "BTC", price: "€57,803.55", change: 2.10, changeAmount: "€1,819.20", domain: "bitcoin.org" },
+  { name: "SHIBA INU", ticker: "SHIB", price: "€0.00000529", change: -1.45, changeAmount: "€0.0000001", domain: "shibatoken.com" },
+  { name: "Apple", ticker: "AAPL", price: "$264.58", change: 1.25, changeAmount: "$2.60", domain: "apple.com" },
+  { name: "NVIDIA", ticker: "NVDA", price: "$189.82", change: -0.85, changeAmount: "$1.13", domain: "nvidia.com" },
 ];
