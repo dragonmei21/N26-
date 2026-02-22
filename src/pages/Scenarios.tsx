@@ -38,7 +38,7 @@ const factors: Factor[] = [
     max: 10,
     step: 0.5,
     defaultValue: 2.4,
-    sensitivity: { ETH: -1.2, BTC: -0.8, SHIB: -2.5 },
+    sensitivity: { ETH: -1.2, BTC: -0.8, SHIB: -2.5, AAPL: -0.5, NVDA: -1.5 },
   },
   {
     id: "interest_rate",
@@ -48,7 +48,7 @@ const factors: Factor[] = [
     max: 8,
     step: 0.25,
     defaultValue: 2.75,
-    sensitivity: { ETH: -1.5, BTC: -1.0, SHIB: -3.0 },
+    sensitivity: { ETH: -1.5, BTC: -1.0, SHIB: -3.0, AAPL: -0.8, NVDA: -2.0 },
   },
   {
     id: "gold",
@@ -58,7 +58,7 @@ const factors: Factor[] = [
     max: 30,
     step: 1,
     defaultValue: 0,
-    sensitivity: { ETH: -0.3, BTC: 0.1, SHIB: -0.5 },
+    sensitivity: { ETH: -0.3, BTC: 0.1, SHIB: -0.5, AAPL: -0.1, NVDA: -0.2 },
   },
   {
     id: "oil",
@@ -68,7 +68,7 @@ const factors: Factor[] = [
     max: 40,
     step: 1,
     defaultValue: 0,
-    sensitivity: { ETH: -0.2, BTC: -0.15, SHIB: -0.4 },
+    sensitivity: { ETH: -0.2, BTC: -0.15, SHIB: -0.4, AAPL: -0.3, NVDA: -0.4 },
   },
   {
     id: "usd",
@@ -78,7 +78,7 @@ const factors: Factor[] = [
     max: 15,
     step: 0.5,
     defaultValue: 0,
-    sensitivity: { ETH: -0.9, BTC: -0.7, SHIB: -1.8 },
+    sensitivity: { ETH: -0.9, BTC: -0.7, SHIB: -1.8, AAPL: -0.4, NVDA: -0.6 },
   },
   {
     id: "sp500",
@@ -88,13 +88,13 @@ const factors: Factor[] = [
     max: 30,
     step: 1,
     defaultValue: 0,
-    sensitivity: { ETH: 0.6, BTC: 0.4, SHIB: 1.2 },
+    sensitivity: { ETH: 0.6, BTC: 0.4, SHIB: 1.2, AAPL: 1.1, NVDA: 1.8 },
   },
 ];
 
 const parsePrice = (p: string) => {
-  // Prices can be "€477.88" or "€477,88" or "160,96 €"
-  const cleaned = p.replace("€", "").trim();
+  // Prices can be "€477.88" or "$264.58" or "160,96 €"
+  const cleaned = p.replace("€", "").replace("$", "").trim();
   // If contains both . and , → . is thousands, , is decimal (European)
   if (cleaned.includes(".") && cleaned.includes(",")) {
     return parseFloat(cleaned.replace(".", "").replace(",", "."));
@@ -115,8 +115,8 @@ const severityColors: Record<string, string> = {
 };
 
 const COIN_ID_MAP: Record<string, string> = {
-  BTC:  "bitcoin",
-  ETH:  "ethereum",
+  BTC: "bitcoin",
+  ETH: "ethereum",
   SHIB: "shiba-inu",
 };
 
@@ -226,9 +226,8 @@ const Scenarios = () => {
           <button
             key={t}
             onClick={() => setMode(t)}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-              mode === t ? "bg-card text-primary" : "text-muted-foreground"
-            }`}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${mode === t ? "bg-card text-primary" : "text-muted-foreground"
+              }`}
           >
             {t}
           </button>
@@ -281,9 +280,8 @@ const Scenarios = () => {
                   return (
                     <div
                       key={f.id}
-                      className={`bg-card rounded-xl border p-4 transition-colors ${
-                        isChanged ? "border-primary/40" : "border-border"
-                      }`}
+                      className={`bg-card rounded-xl border p-4 transition-colors ${isChanged ? "border-primary/40" : "border-border"
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -291,9 +289,8 @@ const Scenarios = () => {
                           <span className="text-sm font-medium text-foreground">{f.label}</span>
                         </div>
                         <span
-                          className={`text-sm font-semibold ${
-                            isChanged ? "text-primary" : "text-muted-foreground"
-                          }`}
+                          className={`text-sm font-semibold ${isChanged ? "text-primary" : "text-muted-foreground"
+                            }`}
                         >
                           {f.id === "inflation" || f.id === "interest_rate"
                             ? `${values[f.id].toFixed(f.step < 1 ? 2 : 0).replace(".", ",")}${f.unit}`
@@ -343,9 +340,8 @@ const Scenarios = () => {
                 {historicalScenarios.map((scenario) => (
                   <motion.div
                     key={scenario.id}
-                    className={`bg-card rounded-xl border p-4 transition-colors ${
-                      activeHistorical?.id === scenario.id ? "border-primary/50" : "border-border"
-                    }`}
+                    className={`bg-card rounded-xl border p-4 transition-colors ${activeHistorical?.id === scenario.id ? "border-primary/50" : "border-border"
+                      }`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -356,9 +352,8 @@ const Scenarios = () => {
                         </p>
                       </div>
                       <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
-                          severityColors[scenario.severity]
-                        }`}
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-2 ${severityColors[scenario.severity]
+                          }`}
                       >
                         {scenario.severity}
                       </span>
@@ -368,11 +363,10 @@ const Scenarios = () => {
                     </p>
                     <button
                       onClick={() => applyHistorical(scenario)}
-                      className={`text-xs font-semibold px-4 py-2 rounded-lg transition-colors ${
-                        activeHistorical?.id === scenario.id
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-foreground hover:bg-secondary/80"
-                      }`}
+                      className={`text-xs font-semibold px-4 py-2 rounded-lg transition-colors ${activeHistorical?.id === scenario.id
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-foreground hover:bg-secondary/80"
+                        }`}
                     >
                       {activeHistorical?.id === scenario.id ? "✓ Applied" : "Simulate"}
                     </button>
@@ -391,9 +385,8 @@ const Scenarios = () => {
           {simulatedPortfolio.map((coin, i) => (
             <div
               key={coin.ticker}
-              className={`flex items-center gap-3 py-3 ${
-                i < simulatedPortfolio.length - 1 ? "border-b border-border" : ""
-              }`}
+              className={`flex items-center gap-3 py-3 ${i < simulatedPortfolio.length - 1 ? "border-b border-border" : ""
+                }`}
             >
               <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
               <div className="flex-1 min-w-0">
