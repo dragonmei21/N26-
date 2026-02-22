@@ -33,7 +33,7 @@ export const historicalScenarios: HistoricalScenario[] = [
       usd: 5,
       sp500: -30,
     },
-    impactOverrides: { ETH: -42, BTC: -38, SHIB: -55 },
+    impactOverrides: { ETH: -42, BTC: -38, SHIB: -55, AAPL: -31, NVDA: -46 },
   },
   {
     id: "dotcom-burst",
@@ -50,7 +50,7 @@ export const historicalScenarios: HistoricalScenario[] = [
       usd: 8,
       sp500: -25,
     },
-    impactOverrides: { ETH: -60, BTC: -35, SHIB: -70 },
+    impactOverrides: { ETH: -60, BTC: -35, SHIB: -70, AAPL: -81, NVDA: -83 },
   },
   {
     id: "gfc-2008",
@@ -67,7 +67,7 @@ export const historicalScenarios: HistoricalScenario[] = [
       usd: 10,
       sp500: -28,
     },
-    impactOverrides: { ETH: -50, BTC: -45, SHIB: -65 },
+    impactOverrides: { ETH: -50, BTC: -45, SHIB: -65, AAPL: -52, NVDA: -76 },
   },
   {
     id: "inflation-hikes-2022",
@@ -84,7 +84,7 @@ export const historicalScenarios: HistoricalScenario[] = [
       usd: 12,
       sp500: -20,
     },
-    impactOverrides: { ETH: -67, BTC: -64, SHIB: -75 },
+    impactOverrides: { ETH: -67, BTC: -64, SHIB: -75, AAPL: -26, NVDA: -50 },
   },
   {
     id: "oil-shock-2022",
@@ -101,7 +101,7 @@ export const historicalScenarios: HistoricalScenario[] = [
       usd: 10,
       sp500: -15,
     },
-    impactOverrides: { ETH: -30, BTC: -25, SHIB: -40 },
+    impactOverrides: { ETH: -30, BTC: -25, SHIB: -40, AAPL: -12, NVDA: -35 },
   },
   {
     id: "crypto-winter-2022",
@@ -118,6 +118,6 @@ export const historicalScenarios: HistoricalScenario[] = [
       usd: 8,
       sp500: -10,
     },
-    impactOverrides: { ETH: -72, BTC: -65, SHIB: -85 },
+    impactOverrides: { ETH: -72, BTC: -65, SHIB: -85, AAPL: -4, NVDA: -15 },
   },
 ];

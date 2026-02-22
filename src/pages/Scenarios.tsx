@@ -404,9 +404,9 @@ const Scenarios = () => {
                         : "text-negative fill-current rotate-180"
                     }
                   />
-                  <span className={`text-xs ${coin.isUp ? "text-positive" : "text-negative"}`}>
-                    {coin.isUp ? "+" : "-"}
-                    {coin.simDiff} · {coin.simChange >= 0 ? "+" : ""}
+                  <span className={`text-xs ${coin.simChange > 0 ? "text-positive" : coin.simChange < 0 ? "text-negative" : "text-muted-foreground"}`}>
+                    {coin.isUp && coin.simChange !== 0 ? "+" : coin.simChange < 0 ? "-" : ""}
+                    {coin.simDiff} · {coin.simChange > 0 ? "+" : ""}
                     {coin.simChange.toFixed(2).replace(".", ",")}%
                   </span>
                 </div>
