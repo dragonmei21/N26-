@@ -200,7 +200,7 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center"
+        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -208,24 +208,25 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", damping: 30, stiffness: 300 }}
-          className="w-full max-w-md bg-card rounded-t-2xl border-t border-border p-5 pb-8 max-h-[85vh] flex flex-col"
+          className="fixed bottom-0 left-0 right-0 z-[101] max-w-md mx-auto bg-card rounded-t-2xl border-t border-border overflow-hidden"
+          style={{ maxHeight: '85vh', display: 'grid', gridTemplateRows: 'auto 1fr auto' }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Handle */}
-          <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mx-auto mb-4 shrink-0" />
-
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4 shrink-0">
-            <div className="flex items-center gap-2.5">
-              <Headphones size={20} className="text-primary" />
-              <h3 className="text-lg font-bold text-foreground">Audio summary</h3>
+          {/* Handle + Header */}
+          <div className="px-5 pt-5 shrink-0">
+            <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mx-auto mb-4" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <Headphones size={20} className="text-primary" />
+                <h3 className="text-lg font-bold text-foreground">Audio summary</h3>
+              </div>
+              <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+                <X size={20} />
+              </button>
             </div>
-            <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
-              <X size={20} />
-            </button>
           </div>
 
-          <div className="overflow-y-auto flex-1 min-h-0">
+          <div className="overflow-y-auto px-5">
             {playState === "idle" || playState === "generating" ? (
               <>
                 {/* Story selection */}
@@ -355,7 +356,7 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
           </div>
 
           {/* Status + CTA */}
-          <div className="shrink-0 pt-3">
+          <div className="shrink-0 px-5 pt-3 pb-8">
             <p className="text-xs text-muted-foreground text-center mb-3">{statusLine}</p>
 
             {playState === "idle" && (

@@ -1,4 +1,5 @@
 import { TriangleIcon } from "lucide-react";
+import SourceLogo from "@/components/SourceLogo";
 
 interface InvestmentRowProps {
   name: string;
@@ -7,16 +8,15 @@ interface InvestmentRowProps {
   change: number;
   color?: string;
   brand?: string;
+  domain?: string;
 }
 
-const InvestmentRow = ({ name, ticker, price, change, color = "bg-blue-500", brand }: InvestmentRowProps) => {
+const InvestmentRow = ({ name, ticker, price, change, brand, domain }: InvestmentRowProps) => {
+  const logoName = brand || name;
+
   return (
     <div className="flex items-center gap-3 py-3 border-b border-border last:border-b-0">
-      <div className={`w-10 h-10 rounded-full ${color} flex items-center justify-center shrink-0`}>
-        <span className="text-[9px] font-bold text-white leading-none">
-          {brand ? brand.slice(0, 2).toUpperCase() : ticker.slice(0, 2)}
-        </span>
-      </div>
+      <SourceLogo name={logoName} domain={domain} fallbackText={ticker} size={40} />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-foreground truncate">{name}</p>
         <p className="text-xs text-muted-foreground">{ticker}</p>
