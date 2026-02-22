@@ -12,8 +12,6 @@ import InvestmentRow from "@/components/InvestmentRow";
 import StoriesViewer from "@/components/StoriesViewer";
 import AudioSummarySheet from "@/components/AudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
-import PoolPortfoliosSection from "@/components/PoolPortfoliosSection";
-import { portfolioHoldings } from "@/data/portfolioHoldings";
 import { Switch } from "@/components/ui/switch";
 
 const regions = ["World", "USA", "Europe", "Emerging"];
@@ -91,8 +89,10 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                   className="flex flex-col items-center gap-1.5 shrink-0"
                 >
                   <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-br ${story.ringColor}`}>
-                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xl">
-                      {story.emoji}
+                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center px-1">
+                      <span className="text-[11px] font-bold text-foreground text-center leading-tight break-words">
+                        {story.label}
+                      </span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground w-16 text-center truncate">{story.label}</span>
@@ -317,8 +317,6 @@ const [showSuggestions, setShowSuggestions] = useState(false);
             </>
           )}
 
-          {/* Popular Portfolios — ALWAYS visible, AI-toggle-independent */}
-          <PoolPortfoliosSection userHoldings={portfolioHoldings} />
         </div>
       ) : (
         /* ---- Macro Tab ---- */

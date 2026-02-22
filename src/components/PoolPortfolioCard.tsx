@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Users, ChevronRight, CheckCircle2 } from "lucide-react";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import type { RankedPoolPortfolio } from "@/types/poolPortfolio";
 
 interface Props {
@@ -11,6 +12,16 @@ interface Props {
 }
 
 const RETURN_LABELS = ["1D", "1W", "1M", "1Y", "ALL"] as const;
+
+const SLICE_COLORS = [
+  "hsl(168 80% 45%)",   // primary teal
+  "hsl(217 91% 60%)",   // blue
+  "hsl(38 92% 60%)",    // amber
+  "hsl(271 76% 65%)",   // violet
+  "hsl(355 78% 60%)",   // rose
+  "hsl(142 71% 50%)",   // green
+  "hsl(199 89% 55%)",   // sky
+];
 
 function riskColor(label: string) {
   if (label === "Low")  return "text-positive bg-positive/10";
@@ -78,7 +89,7 @@ const PoolPortfolioCard = ({ portfolio, isCopied, onCopyClick, onViewDetails }: 
         })}
       </div>
 
-      {/* Expanded holdings */}
+      {/* Expanded: pie chart + legend */}
       {expanded && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
@@ -86,23 +97,70 @@ const PoolPortfolioCard = ({ portfolio, isCopied, onCopyClick, onViewDetails }: 
           exit={{ opacity: 0, height: 0 }}
           className="overflow-hidden"
         >
-          <div className="px-4 pb-3 border-t border-border/40 pt-3">
-            <p className="text-xs font-semibold text-muted-foreground mb-2">Top holdings</p>
-            <div className="space-y-1.5">
-              {topHoldings.map((h) => (
-                <div key={h.ticker} className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-foreground w-12 shrink-0">{h.ticker}</span>
-                  <div className="flex-1 bg-secondary rounded-full h-1.5">
-                    <div
-                      className="h-1.5 rounded-full bg-primary/70"
-                      style={{ width: `${(h.weight * 100).toFixed(0)}%` }}
+          <div className="px-4 pb-4 border-t border-border/40 pt-3">
+            <p className="text-xs font-semibold text-muted-foreground mb-3">Composition</p>
+
+            {/* Pie chart */}
+            <div className="flex items-center gap-4">
+              <div className="shrink-0" style={{ width: 110, height: 110 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={topHoldings}
+                      dataKey="weight"
+                      nameKey="ticker"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={28}
+                      outerRadius={50}
+                      paddingAngle={2}
+                      strokeWidth={0}
+                    >
+                      {topHoldings.map((_, i) => (
+                        <Cell key={i} fill={SLICE_COLORS[i % SLICE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(155 8% 12%)",
+                        border: "1px solid hsl(155 5% 18%)",
+                        borderRadius: "8px",
+                        fontSize: "11px",
+                        color: "hsl(0 0% 95%)",
+                      }}
+                      formatter={(value: number, name: string) => [
+                        `${(value * 100).toFixed(1)}%`,
+                        name,
+                      ]}
                     />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Legend */}
+              <div className="flex-1 space-y-1.5 min-w-0">
+                {topHoldings.map((h, i) => (
+                  <div key={h.ticker} className="flex items-center gap-2">
+                    <span
+                      className="w-2.5 h-2.5 rounded-sm shrink-0"
+                      style={{ backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length] }}
+                    />
+                    <span className="text-xs font-mono font-bold text-foreground w-11 shrink-0">{h.ticker}</span>
+                    <div className="flex-1 bg-secondary rounded-full h-1">
+                      <div
+                        className="h-1 rounded-full"
+                        style={{
+                          width: `${(h.weight * 100).toFixed(0)}%`,
+                          backgroundColor: SLICE_COLORS[i % SLICE_COLORS.length],
+                        }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted-foreground w-9 text-right shrink-0">
+                      {(h.weight * 100).toFixed(0)}%
+                    </span>
                   </div>
-                  <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
-                    {(h.weight * 100).toFixed(0)}%
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>

@@ -30,6 +30,8 @@ import {
   type EventCategory,
 } from "@/lib/macroReasoningEngine";
 import { fetchFeedEvents, fetchCausalChain } from "@/lib/api";
+import PoolPortfoliosSection from "@/components/PoolPortfoliosSection";
+import { portfolioHoldings } from "@/data/portfolioHoldings";
 
 // ── Category pill ──────────────────────────────────────
 
@@ -535,6 +537,9 @@ const MacroTab = () => {
           <p className="text-sm text-muted-foreground">No events found.</p>
         </div>
       )}
+
+      {/* Popular Portfolios */}
+      <PoolPortfoliosSection userHoldings={portfolioHoldings} />
     </div>
   );
 };
