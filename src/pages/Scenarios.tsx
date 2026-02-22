@@ -1,14 +1,25 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TriangleIcon, RotateCcw, Info, History, AlertTriangle } from "lucide-react";
+import { ArrowLeft, TriangleIcon, RotateCcw, Info, History, AlertTriangle, TrendingUp, Landmark, CircleDollarSign, Droplets, DollarSign, BarChart2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { portfolioCoins } from "@/data/mockData";
 import { historicalScenarios, type HistoricalScenario } from "@/lib/scenarios/historicalScenarios";
+import SourceLogo from "@/components/SourceLogo";
+
+import type { LucideIcon } from "lucide-react";
+
+const factorIcons: Record<string, LucideIcon> = {
+  inflation: BarChart2,
+  interest_rate: Landmark,
+  gold: CircleDollarSign,
+  oil: Droplets,
+  usd: DollarSign,
+  sp500: TrendingUp,
+};
 
 interface Factor {
   id: string;
   label: string;
-  emoji: string;
   unit: string;
   min: number;
   max: number;
@@ -21,7 +32,6 @@ const factors: Factor[] = [
   {
     id: "inflation",
     label: "Inflation rate",
-    emoji: "📊",
     unit: "%",
     min: -2,
     max: 10,
@@ -32,7 +42,6 @@ const factors: Factor[] = [
   {
     id: "interest_rate",
     label: "Interest rate",
-    emoji: "🏛️",
     unit: "%",
     min: 0,
     max: 8,
@@ -43,7 +52,6 @@ const factors: Factor[] = [
   {
     id: "gold",
     label: "Gold price",
-    emoji: "🥇",
     unit: "%",
     min: -30,
     max: 30,
@@ -54,7 +62,6 @@ const factors: Factor[] = [
   {
     id: "oil",
     label: "Oil price",
-    emoji: "🛢️",
     unit: "%",
     min: -40,
     max: 40,
@@ -65,7 +72,6 @@ const factors: Factor[] = [
   {
     id: "usd",
     label: "USD strength (DXY)",
-    emoji: "💵",
     unit: "%",
     min: -15,
     max: 15,
@@ -76,7 +82,6 @@ const factors: Factor[] = [
   {
     id: "sp500",
     label: "S&P 500",
-    emoji: "📈",
     unit: "%",
     min: -30,
     max: 30,
@@ -253,7 +258,7 @@ const Scenarios = () => {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-base">{f.emoji}</span>
+                          {(() => { const Icon = factorIcons[f.id]; return Icon ? <Icon size={15} className="text-muted-foreground shrink-0" /> : null; })()}
                           <span className="text-sm font-medium text-foreground">{f.label}</span>
                         </div>
                         <span
@@ -361,11 +366,7 @@ const Scenarios = () => {
                 i < simulatedPortfolio.length - 1 ? "border-b border-border" : ""
               }`}
             >
-              <div
-                className={`w-10 h-10 rounded-full ${coin.color} flex items-center justify-center shrink-0`}
-              >
-                <span className="text-sm">{coin.emoji}</span>
-              </div>
+              <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground">{coin.name}</p>
                 <p className="text-xs text-muted-foreground">{coin.ticker}</p>

@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
+
   Minus,
   ChevronDown,
   ChevronUp,
@@ -95,11 +96,10 @@ const TimelineWithEventChart = ({ step }: { step: PricedCausalStep }) => {
         <p className="text-xs font-medium text-foreground">{step.price_data.title}</p>
         {step.price_change_pct !== null && (
           <span
-            className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-              step.price_change_pct >= 0
+            className={`text-xs font-semibold px-2 py-0.5 rounded-full ${step.price_change_pct >= 0
                 ? "bg-emerald-500/20 text-emerald-400"
                 : "bg-red-500/20 text-red-400"
-            }`}
+              }`}
           >
             {step.price_change_pct >= 0 ? "+" : ""}
             {step.price_change_pct.toFixed(1)}%
@@ -488,23 +488,18 @@ const MacroTab = () => {
   return (
     <div className="px-4">
       {/* Header card */}
-      <div className="bg-card rounded-xl border border-border p-4 mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Zap size={16} className="text-primary" />
-            Macro Reasoning Engine
-          </h3>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-emerald-400 font-medium">Live</span>
+      <div className="bg-card rounded-xl border border-border px-3 py-2.5 mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <Zap size={14} className="text-primary shrink-0" />
+          <div className="min-w-0">
+            <span className="text-sm font-bold text-foreground">Macro Reasoning Engine</span>
+            <span className="text-[10px] text-muted-foreground italic ml-2">Educational only — not financial advice</span>
           </div>
         </div>
-        <p className="text-xs text-foreground/70 mb-1">
-          See how big news ripples into stocks and your life.
-        </p>
-        <p className="text-[10px] text-muted-foreground italic">
-          Educational only — not financial advice.
-        </p>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[10px] text-emerald-400 font-medium">Live</span>
+        </div>
       </div>
 
       {/* Today's Events — collapsible */}
