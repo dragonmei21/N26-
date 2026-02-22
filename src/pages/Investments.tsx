@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Settings, Bell, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
+import { Settings, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 import SourceLogo from "@/components/SourceLogo";
 import TickerInsight from "@/components/TickerInsight";
 import MacroTab from "@/components/MacroTab";
@@ -47,10 +48,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
         <div className="flex items-center gap-3">
           <Settings size={22} className="text-foreground/70" />
           <div className="w-px h-5 bg-border mx-1" />
-          <div className="relative">
-            <Bell size={22} className="text-foreground/70" />
-            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-negative rounded-full" />
-          </div>
+          <NotificationBell />
           <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
             <span className="text-xs font-semibold text-foreground">PG</span>
           </div>

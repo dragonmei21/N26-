@@ -5,6 +5,7 @@ import type { MarketStory } from "@/data/marketStories";
 import SourceLogo from "@/components/SourceLogo";
 import { generatePodcast, BASE_URL, HEADERS, type PodcastLength } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useNotifications, PORTFOLIO_SECTION_SEC, ABANDON_DELAY_MS } from "@/context/NotificationContext";
 
 interface AudioSummarySheetProps {
   stories: MarketStory[];
@@ -22,6 +23,22 @@ type PlayState = "idle" | "generating" | "ready" | "playing" | "paused";
 
 const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
   const { toast } = useToast();
+  const { marketState, addNotification } = useNotifications();
+  const abandonTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleAbandonNotification = useCallback((elapsedSec: number) => {
+    if (marketState === "calm") return;
+    if (elapsedSec >= PORTFOLIO_SECTION_SEC) return; // user got far enough
+    if (abandonTimerRef.current) clearTimeout(abandonTimerRef.current);
+    abandonTimerRef.current = setTimeout(() => {
+      addNotification({
+        type: "abandoned_podcast",
+        title: "Important update about your portfolio",
+        body: "You didn't finish today's briefing. Markets are moving and this affects your holdings.",
+        cta: "Resume briefing",
+      });
+    }, ABANDON_DELAY_MS);
+  }, [marketState, addNotification]);
 
   const [selectedStories, setSelectedStories] = useState<Set<string>>(
     new Set(stories.map((s) => s.id))
@@ -56,6 +73,8 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
   };
 
   const stopPlayback = useCallback(() => {
+    const currentElapsed = audioRef.current ? Math.floor(audioRef.current.currentTime) : elapsed;
+    scheduleAbandonNotification(currentElapsed);
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -63,9 +82,11 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
     clearTimer();
     setPlayState("ready");
     setElapsed(0);
-  }, []);
+  }, [elapsed, scheduleAbandonNotification]);
 
   const backToSelect = useCallback(() => {
+    const currentElapsed = audioRef.current ? Math.floor(audioRef.current.currentTime) : elapsed;
+    scheduleAbandonNotification(currentElapsed);
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = "";
@@ -75,7 +96,7 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
     setElapsed(0);
     setTotalDuration(0);
     setPodcastTitle("");
-  }, []);
+  }, [elapsed, scheduleAbandonNotification]);
 
   const handleGenerate = useCallback(async () => {
     if (selectedStories.size === 0) return;
@@ -102,7 +123,13 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
       };
 
       audio.ontimeupdate = () => {
-        setElapsed(Math.floor(audio.currentTime));
+        const sec = Math.floor(audio.currentTime);
+        setElapsed(sec);
+        // User reached portfolio section — cancel any pending abandon notification
+        if (sec >= PORTFOLIO_SECTION_SEC && abandonTimerRef.current) {
+          clearTimeout(abandonTimerRef.current);
+          abandonTimerRef.current = null;
+        }
       };
 
       audio.onended = () => {
@@ -146,16 +173,19 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
     }
   }, [playState]);
 
-  // Cleanup on unmount
+  // Cleanup on unmount — treat sheet close as abandonment
   useEffect(() => {
     return () => {
+      const currentElapsed = audioRef.current ? Math.floor(audioRef.current.currentTime) : 0;
+      scheduleAbandonNotification(currentElapsed);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
       }
       clearTimer();
+      if (abandonTimerRef.current) clearTimeout(abandonTimerRef.current);
     };
-  }, []);
+  }, [scheduleAbandonNotification]);
 
   const formatTime = (s: number) =>
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
