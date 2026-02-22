@@ -26,8 +26,48 @@
         "direction": "up",
         "confidence": "high",
         "plain_english": "Constrained supply plus surging demand pushes NVIDIA GPU prices higher and extends delivery lead times to 6+ months.",
-        "price_data": null,
-        "price_change_pct": 6.2,
+        "price_data": {
+          "type": "timeline_with_event",
+          "title": "NVIDIA \u2014 30 Day Price",
+          "event_label": "Macro Event",
+          "data": {
+            "labels": [
+              "Feb 02",
+              "Feb 03",
+              "Feb 04",
+              "Feb 05",
+              "Feb 06",
+              "Feb 09",
+              "Feb 10",
+              "Feb 11",
+              "Feb 12",
+              "Feb 13",
+              "Feb 17",
+              "Feb 18",
+              "Feb 19",
+              "Feb 20"
+            ],
+            "values": [
+              185.61,
+              180.34,
+              174.19,
+              171.88,
+              185.41,
+              190.04,
+              188.54,
+              190.05,
+              186.94,
+              182.81,
+              184.97,
+              187.98,
+              187.9,
+              189.82
+            ],
+            "event_index": 13,
+            "color": "#00D4A8"
+          }
+        },
+        "price_change_pct": 1.54,
         "event_date": "2026-02-21"
       },
       {
@@ -40,8 +80,48 @@
         "direction": "down",
         "confidence": "medium",
         "plain_english": "Amazon\u2019s AWS is the world\u2019s biggest AI cloud. When chips cost more, cloud margins shrink in the short term.",
-        "price_data": null,
-        "price_change_pct": -1.4,
+        "price_data": {
+          "type": "timeline_with_event",
+          "title": "Amazon \u2014 30 Day Price",
+          "event_label": "Macro Event",
+          "data": {
+            "labels": [
+              "Feb 02",
+              "Feb 03",
+              "Feb 04",
+              "Feb 05",
+              "Feb 06",
+              "Feb 09",
+              "Feb 10",
+              "Feb 11",
+              "Feb 12",
+              "Feb 13",
+              "Feb 17",
+              "Feb 18",
+              "Feb 19",
+              "Feb 20"
+            ],
+            "values": [
+              242.96,
+              238.62,
+              232.99,
+              222.69,
+              210.32,
+              208.72,
+              206.96,
+              204.08,
+              199.6,
+              198.79,
+              201.15,
+              204.79,
+              204.86,
+              210.11
+            ],
+            "event_index": 13,
+            "color": "#F43F5E"
+          }
+        },
+        "price_change_pct": 5.27,
         "event_date": "2026-02-21"
       },
       {
@@ -54,8 +134,48 @@
         "direction": "down",
         "confidence": "medium",
         "plain_english": "Apple\u2019s AI chip ambitions hit a wall. Delays in AI features could slow iPhone upgrade cycles.",
-        "price_data": null,
-        "price_change_pct": -0.9,
+        "price_data": {
+          "type": "timeline_with_event",
+          "title": "Apple \u2014 30 Day Price",
+          "event_label": "Macro Event",
+          "data": {
+            "labels": [
+              "Feb 02",
+              "Feb 03",
+              "Feb 04",
+              "Feb 05",
+              "Feb 06",
+              "Feb 09",
+              "Feb 10",
+              "Feb 11",
+              "Feb 12",
+              "Feb 13",
+              "Feb 17",
+              "Feb 18",
+              "Feb 19",
+              "Feb 20"
+            ],
+            "values": [
+              269.76,
+              269.23,
+              276.23,
+              275.65,
+              277.86,
+              274.62,
+              273.68,
+              275.5,
+              261.73,
+              255.78,
+              263.88,
+              264.35,
+              260.58,
+              264.58
+            ],
+            "event_index": 13,
+            "color": "#F43F5E"
+          }
+        },
+        "price_change_pct": 1.09,
         "event_date": "2026-02-21"
       }
     ]
@@ -102,7 +222,7 @@
         "confidence": "medium",
         "plain_english": "Bond prices fall when rates stay high. German 10-year bunds yield more, making them more attractive than equities for cautious investors.",
         "price_data": null,
-        "price_change_pct": -0.4,
+        "price_change_pct": null,
         "event_date": "2026-02-21"
       }
     ]
@@ -134,8 +254,48 @@
         "direction": "up",
         "confidence": "high",
         "plain_english": "NVIDIA is the bellwether of the AI trade. When it rallies hard, the whole tech market follows.",
-        "price_data": null,
-        "price_change_pct": 11.0,
+        "price_data": {
+          "type": "timeline_with_event",
+          "title": "NVIDIA \u2014 30 Day Price",
+          "event_label": "Macro Event",
+          "data": {
+            "labels": [
+              "Feb 02",
+              "Feb 03",
+              "Feb 04",
+              "Feb 05",
+              "Feb 06",
+              "Feb 09",
+              "Feb 10",
+              "Feb 11",
+              "Feb 12",
+              "Feb 13",
+              "Feb 17",
+              "Feb 18",
+              "Feb 19",
+              "Feb 20"
+            ],
+            "values": [
+              185.61,
+              180.34,
+              174.19,
+              171.88,
+              185.41,
+              190.04,
+              188.54,
+              190.05,
+              186.94,
+              182.81,
+              184.97,
+              187.98,
+              187.9,
+              189.82
+            ],
+            "event_index": 13,
+            "color": "#00D4A8"
+          }
+        },
+        "price_change_pct": 1.54,
         "event_date": "2026-02-21"
       },
       {
@@ -149,7 +309,7 @@
         "confidence": "medium",
         "plain_english": "When geopolitical risk rises, investors buy gold. Higher oil also raises costs across the whole economy.",
         "price_data": null,
-        "price_change_pct": 2.1,
+        "price_change_pct": null,
         "event_date": "2026-02-21"
       }
     ]
@@ -181,8 +341,48 @@
         "direction": "down",
         "confidence": "high",
         "plain_english": "Even the best companies correct. After an enormous run, NVIDIA falls 12% as investors lock in gains.",
-        "price_data": null,
-        "price_change_pct": -12.3,
+        "price_data": {
+          "type": "timeline_with_event",
+          "title": "NVIDIA \u2014 30 Day Price",
+          "event_label": "Macro Event",
+          "data": {
+            "labels": [
+              "Feb 02",
+              "Feb 03",
+              "Feb 04",
+              "Feb 05",
+              "Feb 06",
+              "Feb 09",
+              "Feb 10",
+              "Feb 11",
+              "Feb 12",
+              "Feb 13",
+              "Feb 17",
+              "Feb 18",
+              "Feb 19",
+              "Feb 20"
+            ],
+            "values": [
+              185.61,
+              180.34,
+              174.19,
+              171.88,
+              185.41,
+              190.04,
+              188.54,
+              190.05,
+              186.94,
+              182.81,
+              184.97,
+              187.98,
+              187.9,
+              189.82
+            ],
+            "event_index": 13,
+            "color": "#F43F5E"
+          }
+        },
+        "price_change_pct": 1.54,
         "event_date": "2026-02-21"
       },
       {
@@ -196,7 +396,7 @@
         "confidence": "medium",
         "plain_english": "Crypto and tech stocks tend to move together in a selloff. When fear spikes, speculative assets get sold first.",
         "price_data": null,
-        "price_change_pct": -9.8,
+        "price_change_pct": null,
         "event_date": "2026-02-21"
       }
     ]

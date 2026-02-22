@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   TrendingUp,
   TrendingDown,
+
   Minus,
   ChevronDown,
   ChevronUp,
@@ -96,8 +97,8 @@ const TimelineWithEventChart = ({ step }: { step: PricedCausalStep }) => {
         {step.price_change_pct !== null && (
           <span
             className={`text-xs font-semibold px-2 py-0.5 rounded-full ${step.price_change_pct >= 0
-                ? "bg-emerald-500/20 text-emerald-400"
-                : "bg-red-500/20 text-red-400"
+              ? "bg-emerald-500/20 text-emerald-400"
+              : "bg-red-500/20 text-red-400"
               }`}
           >
             {step.price_change_pct >= 0 ? "+" : ""}
@@ -166,8 +167,11 @@ const EventCard = ({
   onTrace: () => void;
 }) => (
   <div className="bg-card rounded-xl border border-border p-4 mb-3">
-    <div className="flex items-center gap-2 mb-2">
-      <CategoryPill category={event.category} />
+    <div className="flex items-start justify-between mb-2">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">{event.emoji}</span>
+        <CategoryPill category={event.category} />
+      </div>
       <span className="text-xs text-muted-foreground">{event.date}</span>
     </div>
     <h4 className="text-sm font-bold text-foreground mb-1">{event.title}</h4>
@@ -195,7 +199,7 @@ const CausalStepItem = ({
   isOpen: boolean;
   onToggle: () => void;
 }) => (
-  <div className="bg-card rounded-xl border border-border overflow-hidden mb-2">
+  <div className="bg-card rounded-xl border border-border overflow-hidden mb-3">
     <button onClick={onToggle} className="w-full flex items-center gap-3 p-4">
       <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
         <span className="text-xs font-bold text-primary">{step.step_number}</span>
@@ -235,13 +239,13 @@ const CausalStepItem = ({
           transition={{ duration: 0.2 }}
           className="overflow-hidden"
         >
-          <div className="px-4 pb-4 space-y-3">
+          <div className="px-4 pb-4 space-y-4">
             <p className="text-xs text-foreground/80 leading-relaxed">
               {eli10 ? step.plain_english_eli10 : step.plain_english}
             </p>
-            <div className="bg-secondary rounded-lg p-2.5">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Mechanism</p>
-              <p className="text-xs text-foreground/70">{step.mechanism}</p>
+            <div className="bg-secondary rounded-lg p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Mechanism</p>
+              <p className="text-xs text-foreground/70 leading-relaxed">{step.mechanism}</p>
             </div>
             {step.ticker && <TimelineWithEventChart step={step} />}
           </div>
@@ -391,8 +395,8 @@ const MacroTab = () => {
             Back
           </button>
           {chain && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground">ELI10</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-medium text-muted-foreground">ELI10</span>
               <Switch checked={eli10} onCheckedChange={setEli10} />
             </div>
           )}
@@ -425,8 +429,9 @@ const MacroTab = () => {
             {/* Event summary */}
             <div className="bg-card rounded-xl border border-border p-4 mb-4">
               <h3 className="text-base font-bold text-foreground mb-2">{chain.trigger_event}</h3>
-              <p className="text-xs text-muted-foreground mb-3">
-                {chain.trigger_date} · {chain.trigger_source_url}
+              <p className="text-xs text-muted-foreground mb-3 break-all flex flex-col gap-1">
+                <span>{chain.trigger_date}</span>
+                <span className="text-blue-400/80">{chain.trigger_source_url}</span>
               </p>
               <p className="text-xs text-foreground/80 leading-relaxed">
                 {eli10 ? chain.summary_eli10 : chain.summary}
@@ -449,9 +454,9 @@ const MacroTab = () => {
                 <Zap size={14} className="text-primary" />
                 Causal Chain
               </h4>
-              <div className="relative">
-                <div className="absolute left-[17px] top-4 bottom-4 w-px bg-border" />
-                <div className="space-y-0">
+              <div className="relative pl-3">
+                <div className="absolute left-[30px] top-6 bottom-8 w-px bg-border z-0" />
+                <div className="space-y-4 relative z-10">
                   {chain.chain.map((step) => (
                     <CausalStepItem
                       key={step.step_number}
@@ -484,23 +489,18 @@ const MacroTab = () => {
   return (
     <div className="px-4">
       {/* Header card */}
-      <div className="bg-card rounded-xl border border-border p-4 mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Zap size={16} className="text-primary" />
-            Macro Reasoning Engine
-          </h3>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-emerald-400 font-medium">Live</span>
+      <div className="bg-card rounded-xl border border-border px-3 py-2.5 mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <Zap size={14} className="text-primary shrink-0" />
+          <div className="min-w-0">
+            <span className="text-sm font-bold text-foreground">Macro Reasoning Engine</span>
+            <span className="text-[10px] text-muted-foreground italic ml-2">Educational only — not financial advice</span>
           </div>
         </div>
-        <p className="text-xs text-foreground/70 mb-1">
-          See how big news ripples into stocks and your life.
-        </p>
-        <p className="text-[10px] text-muted-foreground italic">
-          Educational only — not financial advice.
-        </p>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[10px] text-emerald-400 font-medium">Live</span>
+        </div>
       </div>
 
       {/* Today's Events — collapsible */}

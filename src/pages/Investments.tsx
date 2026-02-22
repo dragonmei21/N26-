@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Settings, Bell, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
+import { Settings, Info, TriangleIcon, Lightbulb, Headphones, FlaskConical } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 import SourceLogo from "@/components/SourceLogo";
 import TickerInsight from "@/components/TickerInsight";
 import MacroTab from "@/components/MacroTab";
@@ -13,9 +14,29 @@ import StoriesViewer from "@/components/StoriesViewer";
 import AudioSummarySheet from "@/components/AudioSummarySheet";
 import PortfolioSuggestionsSheet from "@/components/PortfolioSuggestionsSheet";
 import { Switch } from "@/components/ui/switch";
+import { useLivePrices } from "@/hooks/useLivePrices";
 
 const regions = ["World", "USA", "Europe", "Emerging"];
 const timeRanges = ["24h", "1W", "1M", "1Y"];
+
+const GRAPH_DATA: Record<string, { points: string; endY: number }> = {
+  "24h": {
+    points: "0,70 20,65 40,60 60,72 80,55 100,50 120,58 140,45 160,48 180,40 200,42 220,35 240,38 260,30 280,25 300,20",
+    endY: 20
+  },
+  "1W": {
+    points: "0,80 30,70 60,75 90,65 120,50 150,55 180,45 210,35 240,25 270,30 300,15",
+    endY: 15
+  },
+  "1M": {
+    points: "0,90 20,85 40,75 60,80 80,60 100,50 120,55 140,40 160,35 180,45 200,30 220,20 240,25 260,15 280,10 300,5",
+    endY: 5
+  },
+  "1Y": {
+    points: "0,50 25,60 50,45 75,55 100,40 125,30 150,35 175,20 200,25 225,15 250,20 275,10 300,2",
+    endY: 2
+  }
+};
 
 const Investments = () => {
   const navigate = useNavigate();
@@ -35,6 +56,47 @@ const Investments = () => {
   };
   const data = tab === "Stocks" ? popularStocks : popularETFs;
 
+  // ── Live prices for portfolio coins ──────────────────────────────────────
+  // CoinGecko IDs mapped from each coin's ticker
+  const COIN_ID_MAP: Record<string, string> = {
+    BTC: "bitcoin",
+    ETH: "ethereum",
+    SHIB: "shiba-inu",
+  };
+  const cgIds = portfolioCoins.map((c) => COIN_ID_MAP[c.ticker]).filter(Boolean);
+  const { prices: livePrices, loading: pricesLoading } = useLivePrices(cgIds);
+
+  const livePortfolioCoins = useMemo(() => {
+    return portfolioCoins.map((coin) => {
+      const cgId = COIN_ID_MAP[coin.ticker];
+      const live = cgId ? livePrices[cgId] : undefined;
+      if (!live) return coin; // fall back to mock while loading
+
+      const eurPrice = live.eur;
+      const change24h = live.eur_24h_change;
+      // Format price: large numbers → no decimals, small → up to 6 dp
+      const formatPrice = (n: number) => {
+        if (n >= 1_000) return `€${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (n >= 1) return `€${n.toFixed(4)}`;
+        return `€${n.toFixed(8)}`;
+      };
+      // Derive a realistic "changeAmount" from today's % move
+      const changeAmt = Math.abs(eurPrice * change24h / 100);
+      const formatAmt = (n: number) => {
+        if (n >= 1) return `€${n.toFixed(2)}`;
+        return `€${n.toFixed(6)}`;
+      };
+
+      return {
+        ...coin,
+        price: formatPrice(eurPrice),
+        change: parseFloat(change24h.toFixed(2)),
+        changeAmount: formatAmt(changeAmt),
+      };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [livePrices]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -47,10 +109,7 @@ const Investments = () => {
         <div className="flex items-center gap-3">
           <Settings size={22} className="text-foreground/70" />
           <div className="w-px h-5 bg-border mx-1" />
-          <div className="relative">
-            <Bell size={22} className="text-foreground/70" />
-            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-negative rounded-full" />
-          </div>
+          <NotificationBell />
           <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
             <span className="text-xs font-semibold text-foreground">PG</span>
           </div>
@@ -218,13 +277,22 @@ const Investments = () => {
           {/* Chart placeholder */}
           <div className="h-40 my-4 flex items-end">
             <svg viewBox="0 0 300 100" className="w-full h-full" preserveAspectRatio="none">
-              <polyline
+              <motion.polyline
                 fill="none"
                 stroke="hsl(var(--primary))"
                 strokeWidth="2"
-                points="0,70 20,65 40,60 60,72 80,55 100,50 120,58 140,45 160,48 180,40 200,42 220,35 240,38 260,30 280,25 300,20"
+                initial={{ points: GRAPH_DATA["1W"].points }}
+                animate={{ points: GRAPH_DATA[timeRange].points }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               />
-              <circle cx="300" cy="20" r="4" fill="hsl(var(--primary))" />
+              <motion.circle
+                cx="300"
+                fill="hsl(var(--primary))"
+                r="4"
+                initial={{ cy: GRAPH_DATA["1W"].endY }}
+                animate={{ cy: GRAPH_DATA[timeRange].endY }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              />
             </svg>
           </div>
 
@@ -247,10 +315,13 @@ const Investments = () => {
             <div className="flex items-center gap-1.5 mb-3">
               <h3 className="text-lg font-bold text-foreground">Your coins</h3>
               <Info size={14} className="text-muted-foreground" />
+              {pricesLoading && (
+                <span className="text-[10px] text-muted-foreground animate-pulse ml-1">Fetching live prices…</span>
+              )}
             </div>
             <div className="bg-card rounded-xl border border-border px-4">
-              {portfolioCoins.map((coin, i) => (
-                <div key={coin.ticker} className={`py-3 ${i < portfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
+              {livePortfolioCoins.map((coin, i) => (
+                <div key={coin.ticker} className={`py-3 ${i < livePortfolioCoins.length - 1 ? "border-b border-border" : ""}`}>
                   <div className="flex items-center gap-3">
                     <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
                     <div className="flex-1 min-w-0">

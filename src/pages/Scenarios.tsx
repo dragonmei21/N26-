@@ -1,9 +1,22 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, TriangleIcon, RotateCcw, Info, History, AlertTriangle } from "lucide-react";
+import { ArrowLeft, TriangleIcon, RotateCcw, Info, History, AlertTriangle, TrendingUp, Landmark, CircleDollarSign, Droplets, DollarSign, BarChart2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { portfolioCoins } from "@/data/mockData";
+import { useLivePrices } from "@/hooks/useLivePrices";
 import { historicalScenarios, type HistoricalScenario } from "@/lib/scenarios/historicalScenarios";
+import SourceLogo from "@/components/SourceLogo";
+
+import type { LucideIcon } from "lucide-react";
+
+const factorIcons: Record<string, LucideIcon> = {
+  inflation: BarChart2,
+  interest_rate: Landmark,
+  gold: CircleDollarSign,
+  oil: Droplets,
+  usd: DollarSign,
+  sp500: TrendingUp,
+};
 
 interface Factor {
   id: string;
@@ -25,7 +38,7 @@ const factors: Factor[] = [
     max: 10,
     step: 0.5,
     defaultValue: 2.4,
-    sensitivity: { ETH: -1.2, BTC: -0.8, SHIB: -2.5, NVDA: -0.6, MSFT: -0.4, AAPL: -0.5, AMZN: -0.7, META: -0.5, TSLA: -0.9, NFLX: -0.3, SAP: -0.3, ASML: -0.4 },
+    sensitivity: { ETH: -1.2, BTC: -0.8, SHIB: -2.5 },
   },
   {
     id: "interest_rate",
@@ -35,7 +48,7 @@ const factors: Factor[] = [
     max: 8,
     step: 0.25,
     defaultValue: 2.75,
-    sensitivity: { ETH: -1.5, BTC: -1.0, SHIB: -3.0, NVDA: -0.8, MSFT: -0.6, AAPL: -0.7, AMZN: -0.9, META: -0.7, TSLA: -1.2, NFLX: -0.5, SAP: -0.5, ASML: -0.6 },
+    sensitivity: { ETH: -1.5, BTC: -1.0, SHIB: -3.0 },
   },
   {
     id: "gold",
@@ -45,7 +58,7 @@ const factors: Factor[] = [
     max: 30,
     step: 1,
     defaultValue: 0,
-    sensitivity: { ETH: -0.3, BTC: 0.1, SHIB: -0.5, NVDA: -0.1, MSFT: -0.1, AAPL: -0.1, AMZN: -0.1, META: -0.1, TSLA: -0.2, NFLX: -0.1, SAP: -0.1, ASML: -0.1 },
+    sensitivity: { ETH: -0.3, BTC: 0.1, SHIB: -0.5 },
   },
   {
     id: "oil",
@@ -55,7 +68,7 @@ const factors: Factor[] = [
     max: 40,
     step: 1,
     defaultValue: 0,
-    sensitivity: { ETH: -0.2, BTC: -0.15, SHIB: -0.4, NVDA: -0.1, MSFT: -0.1, AAPL: -0.1, AMZN: -0.3, META: -0.1, TSLA: 0.2, NFLX: -0.1, SAP: -0.1, ASML: -0.1 },
+    sensitivity: { ETH: -0.2, BTC: -0.15, SHIB: -0.4 },
   },
   {
     id: "usd",
@@ -65,7 +78,7 @@ const factors: Factor[] = [
     max: 15,
     step: 0.5,
     defaultValue: 0,
-    sensitivity: { ETH: -0.9, BTC: -0.7, SHIB: -1.8, NVDA: -0.5, MSFT: -0.4, AAPL: -0.5, AMZN: -0.5, META: -0.4, TSLA: -0.6, NFLX: -0.4, SAP: 0.2, ASML: 0.3 },
+    sensitivity: { ETH: -0.9, BTC: -0.7, SHIB: -1.8 },
   },
   {
     id: "sp500",
@@ -75,7 +88,7 @@ const factors: Factor[] = [
     max: 30,
     step: 1,
     defaultValue: 0,
-    sensitivity: { ETH: 0.6, BTC: 0.4, SHIB: 1.2, NVDA: 1.2, MSFT: 1.0, AAPL: 1.0, AMZN: 1.1, META: 1.1, TSLA: 1.4, NFLX: 0.9, SAP: 0.7, ASML: 0.8 },
+    sensitivity: { ETH: 0.6, BTC: 0.4, SHIB: 1.2 },
   },
 ];
 
@@ -101,6 +114,12 @@ const severityColors: Record<string, string> = {
   High: "bg-destructive/20 text-destructive",
 };
 
+const COIN_ID_MAP: Record<string, string> = {
+  BTC:  "bitcoin",
+  ETH:  "ethereum",
+  SHIB: "shiba-inu",
+};
+
 const Scenarios = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"Custom" | "Historical">("Custom");
@@ -108,6 +127,28 @@ const Scenarios = () => {
     Object.fromEntries(factors.map((f) => [f.id, f.defaultValue]))
   );
   const [activeHistorical, setActiveHistorical] = useState<HistoricalScenario | null>(null);
+
+  // Live prices from CoinGecko (same as Portfolio tab)
+  const cgIds = portfolioCoins.map((c) => COIN_ID_MAP[c.ticker]).filter(Boolean);
+  const { prices: livePrices } = useLivePrices(cgIds);
+
+  const coinsWithLivePrices = useMemo(() => {
+    return portfolioCoins.map((coin) => {
+      const cgId = COIN_ID_MAP[coin.ticker];
+      const live = cgId ? livePrices[cgId] : undefined;
+      if (!live) return coin;
+
+      const eur = live.eur;
+      // Format so parsePrice() works: European style (e.g. €84.230,50 or €1,23)
+      const priceStr =
+        eur >= 1_000
+          ? `€${eur.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          : eur >= 1
+            ? `€${eur.toFixed(2).replace(".", ",")}`
+            : `€${eur.toFixed(6).replace(".", ",")}`;
+      return { ...coin, price: priceStr };
+    });
+  }, [livePrices]);
 
   const handleChange = (id: string, val: number) => {
     setValues((prev) => ({ ...prev, [id]: val }));
@@ -126,7 +167,7 @@ const Scenarios = () => {
   };
 
   const simulatedPortfolio = useMemo(() => {
-    return portfolioCoins.map((coin) => {
+    return coinsWithLivePrices.map((coin) => {
       let changePct: number;
 
       if (activeHistorical && activeHistorical.impactOverrides[coin.ticker] !== undefined) {
@@ -151,9 +192,9 @@ const Scenarios = () => {
         isUp: priceDiff >= 0,
       };
     });
-  }, [values, activeHistorical]);
+  }, [values, activeHistorical, coinsWithLivePrices]);
 
-  const baseTotal = portfolioCoins.reduce((s, c) => s + parsePrice(c.price), 0);
+  const baseTotal = coinsWithLivePrices.reduce((s, c) => s + parsePrice(c.price), 0);
   const simTotal = simulatedPortfolio.reduce((s, c) => s + parsePrice(c.simPrice), 0);
   const totalDiff = simTotal - baseTotal;
   const totalPct = baseTotal > 0 ? ((simTotal - baseTotal) / baseTotal) * 100 : 0;
@@ -185,8 +226,9 @@ const Scenarios = () => {
           <button
             key={t}
             onClick={() => setMode(t)}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${mode === t ? "bg-card text-primary" : "text-muted-foreground"
-              }`}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+              mode === t ? "bg-card text-primary" : "text-muted-foreground"
+            }`}
           >
             {t}
           </button>
@@ -239,16 +281,19 @@ const Scenarios = () => {
                   return (
                     <div
                       key={f.id}
-                      className={`bg-card rounded-xl border p-4 transition-colors ${isChanged ? "border-primary/40" : "border-border"
-                        }`}
+                      className={`bg-card rounded-xl border p-4 transition-colors ${
+                        isChanged ? "border-primary/40" : "border-border"
+                      }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
+                          {(() => { const Icon = factorIcons[f.id]; return Icon ? <Icon size={15} className="text-muted-foreground shrink-0" /> : null; })()}
                           <span className="text-sm font-medium text-foreground">{f.label}</span>
                         </div>
                         <span
-                          className={`text-sm font-semibold ${isChanged ? "text-primary" : "text-muted-foreground"
-                            }`}
+                          className={`text-sm font-semibold ${
+                            isChanged ? "text-primary" : "text-muted-foreground"
+                          }`}
                         >
                           {f.id === "inflation" || f.id === "interest_rate"
                             ? `${values[f.id].toFixed(f.step < 1 ? 2 : 0).replace(".", ",")}${f.unit}`
@@ -298,8 +343,9 @@ const Scenarios = () => {
                 {historicalScenarios.map((scenario) => (
                   <motion.div
                     key={scenario.id}
-                    className={`bg-card rounded-xl border p-4 transition-colors ${activeHistorical?.id === scenario.id ? "border-primary/50" : "border-border"
-                      }`}
+                    className={`bg-card rounded-xl border p-4 transition-colors ${
+                      activeHistorical?.id === scenario.id ? "border-primary/50" : "border-border"
+                    }`}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -310,8 +356,9 @@ const Scenarios = () => {
                         </p>
                       </div>
                       <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-2 ${severityColors[scenario.severity]
-                          }`}
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                          severityColors[scenario.severity]
+                        }`}
                       >
                         {scenario.severity}
                       </span>
@@ -321,12 +368,13 @@ const Scenarios = () => {
                     </p>
                     <button
                       onClick={() => applyHistorical(scenario)}
-                      className={`text-xs font-semibold px-4 py-2 rounded-lg transition-colors ${activeHistorical?.id === scenario.id
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-foreground hover:bg-secondary/80"
-                        }`}
+                      className={`text-xs font-semibold px-4 py-2 rounded-lg transition-colors ${
+                        activeHistorical?.id === scenario.id
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-foreground hover:bg-secondary/80"
+                      }`}
                     >
-                      {activeHistorical?.id === scenario.id ? "Applied" : "Simulate"}
+                      {activeHistorical?.id === scenario.id ? "✓ Applied" : "Simulate"}
                     </button>
                   </motion.div>
                 ))}
@@ -343,14 +391,11 @@ const Scenarios = () => {
           {simulatedPortfolio.map((coin, i) => (
             <div
               key={coin.ticker}
-              className={`flex items-center gap-3 py-3 ${i < simulatedPortfolio.length - 1 ? "border-b border-border" : ""
-                }`}
+              className={`flex items-center gap-3 py-3 ${
+                i < simulatedPortfolio.length - 1 ? "border-b border-border" : ""
+              }`}
             >
-              <div
-                className={`w-10 h-10 rounded-full ${coin.color} flex items-center justify-center shrink-0`}
-              >
-                <span className="text-[10px] font-bold text-white">{coin.ticker.slice(0, 3)}</span>
-              </div>
+              <SourceLogo name={coin.name} domain={coin.domain} fallbackText={coin.ticker} size={40} />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground">{coin.name}</p>
                 <p className="text-xs text-muted-foreground">{coin.ticker}</p>
