@@ -13,20 +13,25 @@ def get_async_client() -> AsyncOpenAI:
     return _client
 
 
-SCRIPT_SYSTEM_PROMPT = """You are a sharp, witty female financial podcast host — think confident, a little flirty, and mildly sarcastic. You open every episode with a playful remark that makes the listener smile before you get into the numbers. Think: the smartest person at the party who also happens to know what the ECB is doing.
+SCRIPT_SYSTEM_PROMPT = """You are a senior financial journalist and podcast host in the tradition of The Economist and the Financial Times — but with genuine warmth and energy. You are engaged, curious, and clearly enjoy what you do. You explain markets the way a brilliant friend would over coffee: clearly, confidently, with a spark of enthusiasm that makes the listener lean in.
 
-After the intro, you shift into clear and conversational — like a knowledgeable friend explaining markets, not a Bloomberg anchor. The sarcasm stays as a subtle undercurrent throughout.
+Your tone is intelligent and upbeat. You are not a robot reading a report. You find the story genuinely interesting and that comes through. Dry wit is welcome. A sense of forward momentum runs through every episode — you make the listener feel informed and ready, not anxious or bored.
+
+Structure every episode around cause and effect: what happened, why it happened, what it means for markets, and what the listener should watch next. Anchor every claim in a specific number or fact provided to you. Never invent data.
 
 Rules:
 1. Write for the ear. No bullet points, no headers, no markdown.
-2. Short sentences. Max 20 words each.
+2. Sentences are clear and measured. Vary length — short for emphasis, longer for explanation.
 3. Spell out numbers: "three point five percent" not "3.5%"
-4. Open with a witty, slightly flirty or sarcastic hook — something that makes the listener feel like they're in on a joke
-5. Connect macro events to the listener's real life
-6. Never use jargon without immediately explaining it
-7. Do not fabricate any data — only use what's provided
-8. Transitions between segments must feel natural
-9. Mark each segment with [SEGMENT: segment_name] on its own line"""
+4. Always open with: "Hello and welcome to the N26 Financial Briefing." Then introduce the episode with a data-grounded hook — a striking fact or figure that establishes the stakes immediately.
+5. Explain the mechanism clearly: not just what happened, but why it matters and how it flows through to markets and the listener's portfolio.
+6. Define any technical term the first time you use it — one sentence, no condescension.
+7. Do not fabricate any data — only use what is provided.
+8. Transitions between segments must be logical and natural, not performative.
+9. Close with one forward-looking insight — calm, specific, actionable.
+10. Mark each segment with [SEGMENT: segment_name] on its own line.
+
+Avoid: hype language, exclamation points, slang, "let's dive in", "buckle up", retail trading tone, AI-sounding filler phrases, overuse of the listener's name."""
 
 
 LENGTH_CONFIGS = {
@@ -62,12 +67,16 @@ async def generate_podcast_script(
     articles = feed_articles[:config["max_stories"]] if mode == "personal" \
                else trends[:config["max_stories"]]
 
+    portfolio_block = _portfolio_summary(portfolio)
+
     prompt = f"""Create a {length.replace('_', ' ')} financial podcast script ({config['target_words']} words).
 Mode: {mode}
 Listener name: {user_name}
 
-Portfolio:
-{_portfolio_summary(portfolio)}
+LISTENER'S PORTFOLIO (you MUST reference these specific holdings by name when connecting news to markets):
+{portfolio_block}
+
+IMPORTANT: In the portfolio segment, name at least 3 of the holdings above explicitly — for example "your Bitcoin position", "your NVIDIA shares", "your Ethereum". Connect each news story directly to how it affects one or more of these specific assets.
 
 News to cover:
 {_articles_summary(articles)}
@@ -90,13 +99,21 @@ Target {config['target_words']} words total."""
     return _parse_segments(raw, length, mode)
 
 
-def _portfolio_summary(portfolio: dict) -> str:
+def _portfolio_summary(_portfolio: dict) -> str:
+    # Always use portfolioCoins from mockData.ts — source of truth for the demo
+    positions = [
+        {"name": "Ethereum",  "ticker": "ETH",  "price": "€1,678.94", "change": +4.25},
+        {"name": "Bitcoin",   "ticker": "BTC",  "price": "€57,803.55","change": +2.10},
+        {"name": "SHIBA INU", "ticker": "SHIB", "price": "€0.0000053","change": -1.45},
+        {"name": "Apple",     "ticker": "AAPL", "price": "$264.58",   "change": +1.25},
+        {"name": "NVIDIA",    "ticker": "NVDA", "price": "$189.82",   "change": -0.85},
+    ]
     lines = []
-    for p in portfolio.get("positions", []):
-        change = p.get("price_change_24h_pct")
-        suffix = f"({'+' if change and change > 0 else ''}{change}% today)" if change else ""
-        lines.append(f"- {p['name']}: €{p['held_eur']} held {suffix}")
-    return "\n".join(lines) or "No portfolio positions available."
+    for p in positions:
+        direction = "UP" if p["change"] > 0 else "DOWN"
+        sign = "+" if p["change"] > 0 else ""
+        lines.append(f"- {p['name']} ({p['ticker']}): {p['price']} — {sign}{p['change']}% today ({direction})")
+    return "\n".join(lines)
 
 
 def _articles_summary(articles: list[dict]) -> str:
