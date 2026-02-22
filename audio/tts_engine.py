@@ -2,7 +2,7 @@ import os
 import openai
 from pathlib import Path
 
-N26_VOICE = "onyx"  # deep, authoritative male voice — Economist/FT tone
+N26_VOICE = "echo"  # warm, engaging male voice — clear and energetic
 
 
 async def generate_audio(full_text: str, user_id: str, podcast_id: str) -> str:
