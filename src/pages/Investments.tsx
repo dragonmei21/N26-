@@ -19,6 +19,25 @@ import { useLivePrices } from "@/hooks/useLivePrices";
 const regions = ["World", "USA", "Europe", "Emerging"];
 const timeRanges = ["24h", "1W", "1M", "1Y"];
 
+const GRAPH_DATA: Record<string, { points: string; endY: number }> = {
+  "24h": {
+    points: "0,70 20,65 40,60 60,72 80,55 100,50 120,58 140,45 160,48 180,40 200,42 220,35 240,38 260,30 280,25 300,20",
+    endY: 20
+  },
+  "1W": {
+    points: "0,80 30,70 60,75 90,65 120,50 150,55 180,45 210,35 240,25 270,30 300,15",
+    endY: 15
+  },
+  "1M": {
+    points: "0,90 20,85 40,75 60,80 80,60 100,50 120,55 140,40 160,35 180,45 200,30 220,20 240,25 260,15 280,10 300,5",
+    endY: 5
+  },
+  "1Y": {
+    points: "0,50 25,60 50,45 75,55 100,40 125,30 150,35 175,20 200,25 225,15 250,20 275,10 300,2",
+    endY: 2
+  }
+};
+
 const Investments = () => {
   const navigate = useNavigate();
   const [topTab, setTopTab] = useState<"Explore" | "Portfolio" | "Macro">("Explore");
@@ -27,21 +46,21 @@ const Investments = () => {
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
   const [activeStorySource, setActiveStorySource] = useState<"market" | "portfolio">("market");
   const [showAudioSheet, setShowAudioSheet] = useState(false);
-const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [aiEnabled, setAiEnabled] = useState<boolean>(() => {
     try { return localStorage.getItem("aiEnabled") !== "false"; } catch { return true; }
   });
   const toggleAI = (value: boolean) => {
     setAiEnabled(value);
-    try { localStorage.setItem("aiEnabled", String(value)); } catch {}
+    try { localStorage.setItem("aiEnabled", String(value)); } catch { }
   };
   const data = tab === "Stocks" ? popularStocks : popularETFs;
 
   // ── Live prices for portfolio coins ──────────────────────────────────────
   // CoinGecko IDs mapped from each coin's ticker
   const COIN_ID_MAP: Record<string, string> = {
-    BTC:  "bitcoin",
-    ETH:  "ethereum",
+    BTC: "bitcoin",
+    ETH: "ethereum",
     SHIB: "shiba-inu",
   };
   const cgIds = portfolioCoins.map((c) => COIN_ID_MAP[c.ticker]).filter(Boolean);
@@ -50,15 +69,15 @@ const [showSuggestions, setShowSuggestions] = useState(false);
   const livePortfolioCoins = useMemo(() => {
     return portfolioCoins.map((coin) => {
       const cgId = COIN_ID_MAP[coin.ticker];
-      const live  = cgId ? livePrices[cgId] : undefined;
+      const live = cgId ? livePrices[cgId] : undefined;
       if (!live) return coin; // fall back to mock while loading
 
-      const eurPrice    = live.eur;
-      const change24h   = live.eur_24h_change;
+      const eurPrice = live.eur;
+      const change24h = live.eur_24h_change;
       // Format price: large numbers → no decimals, small → up to 6 dp
       const formatPrice = (n: number) => {
         if (n >= 1_000) return `€${n.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        if (n >= 1)     return `€${n.toFixed(4)}`;
+        if (n >= 1) return `€${n.toFixed(4)}`;
         return `€${n.toFixed(8)}`;
       };
       // Derive a realistic "changeAmount" from today's % move
@@ -70,12 +89,12 @@ const [showSuggestions, setShowSuggestions] = useState(false);
 
       return {
         ...coin,
-        price:        formatPrice(eurPrice),
-        change:       parseFloat(change24h.toFixed(2)),
+        price: formatPrice(eurPrice),
+        change: parseFloat(change24h.toFixed(2)),
         changeAmount: formatAmt(changeAmt),
       };
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [livePrices]);
 
   return (
@@ -103,9 +122,8 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           <button
             key={t}
             onClick={() => setTopTab(t)}
-            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-              topTab === t ? "bg-card text-primary" : "text-muted-foreground"
-            }`}
+            className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${topTab === t ? "bg-card text-primary" : "text-muted-foreground"
+              }`}
           >
             {t}
           </button>
@@ -198,9 +216,8 @@ const [showSuggestions, setShowSuggestions] = useState(false);
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-                    tab === t ? "bg-card text-primary" : "text-muted-foreground"
-                  }`}
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${tab === t ? "bg-card text-primary" : "text-muted-foreground"
+                    }`}
                 >
                   {t}
                 </button>
@@ -260,13 +277,22 @@ const [showSuggestions, setShowSuggestions] = useState(false);
           {/* Chart placeholder */}
           <div className="h-40 my-4 flex items-end">
             <svg viewBox="0 0 300 100" className="w-full h-full" preserveAspectRatio="none">
-              <polyline
+              <motion.polyline
                 fill="none"
                 stroke="hsl(var(--primary))"
                 strokeWidth="2"
-                points="0,70 20,65 40,60 60,72 80,55 100,50 120,58 140,45 160,48 180,40 200,42 220,35 240,38 260,30 280,25 300,20"
+                initial={{ points: GRAPH_DATA["1W"].points }}
+                animate={{ points: GRAPH_DATA[timeRange].points }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               />
-              <circle cx="300" cy="20" r="4" fill="hsl(var(--primary))" />
+              <motion.circle
+                cx="300"
+                fill="hsl(var(--primary))"
+                r="4"
+                initial={{ cy: GRAPH_DATA["1W"].endY }}
+                animate={{ cy: GRAPH_DATA[timeRange].endY }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              />
             </svg>
           </div>
 
@@ -276,9 +302,8 @@ const [showSuggestions, setShowSuggestions] = useState(false);
               <button
                 key={t}
                 onClick={() => setTimeRange(t)}
-                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
-                  timeRange === t ? "bg-card text-primary" : "text-muted-foreground"
-                }`}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${timeRange === t ? "bg-card text-primary" : "text-muted-foreground"
+                  }`}
               >
                 {t}
               </button>
