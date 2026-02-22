@@ -2,7 +2,7 @@ import os
 import openai
 from pathlib import Path
 
-N26_VOICE = "echo"  # warm, engaging male voice — clear and energetic
+N26_VOICE = "nova"  # warm, professional — matches N26 brand
 
 
 async def generate_audio(full_text: str, user_id: str, podcast_id: str) -> str:

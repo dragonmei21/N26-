@@ -26,7 +26,7 @@ const NotificationContext = createContext<NotificationContextValue | null>(null)
 // ── Demo: market is in "hype" so notifications trigger ──────────────────
 const DEMO_MARKET_STATE: MarketState = "hype";
 const PORTFOLIO_SECTION_SEC = 90; // seconds — demo threshold
-const ABANDON_DELAY_MS = 5_000; // 5 seconds (demo-friendly)
+const ABANDON_DELAY_MS = 180_000; // 3 minutes
 
 export { PORTFOLIO_SECTION_SEC, ABANDON_DELAY_MS };
 

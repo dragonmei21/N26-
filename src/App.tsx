@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NotificationProvider } from "@/context/NotificationContext";
-import NotificationBanner from "@/components/NotificationBanner";
 import { UIProvider } from "@/context/UIContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
@@ -24,7 +23,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <NotificationBanner />
       <BrowserRouter>
         <div className="max-w-md mx-auto relative min-h-screen bg-background">
           <Routes>

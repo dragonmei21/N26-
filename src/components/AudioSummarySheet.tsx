@@ -177,13 +177,13 @@ const AudioSummarySheet = ({ stories, onClose }: AudioSummarySheetProps) => {
   useEffect(() => {
     return () => {
       const currentElapsed = audioRef.current ? Math.floor(audioRef.current.currentTime) : 0;
+      scheduleAbandonNotification(currentElapsed);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
       }
       clearTimer();
-      // Schedule abandon AFTER clearing audio — don't cancel it
-      scheduleAbandonNotification(currentElapsed);
+      if (abandonTimerRef.current) clearTimeout(abandonTimerRef.current);
     };
   }, [scheduleAbandonNotification]);
 
