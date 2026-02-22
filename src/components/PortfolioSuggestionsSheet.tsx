@@ -290,11 +290,41 @@ const PortfolioSuggestionsSheet = ({ onClose }: PortfolioSuggestionsSheetProps) 
               <Globe size={16} className="text-primary" />
               <h4 className="text-sm font-bold text-foreground">{txt.region.title}</h4>
             </div>
-            <BarChart items={insights.regionExposure.map((r) => ({ label: r.label, percent: r.percent }))} />
-            <div className="mt-3 flex items-start gap-2 bg-card rounded-lg p-3">
-              <Lightbulb size={14} className="text-primary shrink-0 mt-0.5" />
-              <p className="text-xs text-muted-foreground">{tip("region")}</p>
+            <div className="space-y-3">
+              {insights.regionComparison.map(({ label, current, target }) => {
+                const diff = target - current;
+                return (
+                  <div key={label}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-muted-foreground w-20 truncate">{label}</span>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <span className="text-foreground font-medium">{current}%</span>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="font-semibold text-foreground">{target}%</span>
+                        {diff !== 0 && (
+                          <span className={diff > 0 ? "text-positive" : "text-negative"}>
+                            ({diff > 0 ? "+" : ""}{diff}%)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="relative h-2 bg-card rounded-full overflow-hidden">
+                      <div
+                        className="absolute inset-y-0 left-0 bg-primary opacity-40 rounded-full transition-all duration-500"
+                        style={{ width: `${current}%` }}
+                      />
+                      <div
+                        className="absolute top-0 bottom-0 w-0.5 bg-primary opacity-80 transition-all duration-500"
+                        style={{ left: `${target}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
+            <p className="text-[10px] text-muted-foreground mt-2 italic">
+              {eli10 ? "Filled bar = now · Line = where it should be" : "Shaded = current · Line = target"}
+            </p>
           </div>
 
           {/* Sector exposure */}
@@ -303,11 +333,41 @@ const PortfolioSuggestionsSheet = ({ onClose }: PortfolioSuggestionsSheetProps) 
               <PieChart size={16} className="text-primary" />
               <h4 className="text-sm font-bold text-foreground">{txt.sector.title}</h4>
             </div>
-            <BarChart items={insights.sectorExposure.map((s) => ({ label: s.label, percent: s.percent }))} />
-            <div className="mt-3 flex items-start gap-2 bg-card rounded-lg p-3">
-              <Lightbulb size={14} className="text-primary shrink-0 mt-0.5" />
-              <p className="text-xs text-muted-foreground">{tip("sector")}</p>
+            <div className="space-y-3">
+              {insights.sectorComparison.map(({ label, current, target }) => {
+                const diff = target - current;
+                return (
+                  <div key={label}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-muted-foreground w-36 truncate">{label}</span>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <span className="text-foreground font-medium">{current}%</span>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="font-semibold text-foreground">{target}%</span>
+                        {diff !== 0 && (
+                          <span className={diff > 0 ? "text-positive" : "text-negative"}>
+                            ({diff > 0 ? "+" : ""}{diff}%)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="relative h-2 bg-card rounded-full overflow-hidden">
+                      <div
+                        className="absolute inset-y-0 left-0 bg-violet-500 opacity-40 rounded-full transition-all duration-500"
+                        style={{ width: `${current}%` }}
+                      />
+                      <div
+                        className="absolute top-0 bottom-0 w-0.5 bg-violet-500 opacity-80 transition-all duration-500"
+                        style={{ left: `${target}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
+            <p className="text-[10px] text-muted-foreground mt-2 italic">
+              {eli10 ? "Filled bar = now · Line = where it should be" : "Shaded = current · Line = target"}
+            </p>
           </div>
 
           {/* Concentration */}

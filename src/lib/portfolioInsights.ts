@@ -19,6 +19,12 @@ export interface AssetClassSplit {
   safePct: number;
 }
 
+export interface ComparisonItem {
+  label: string;
+  current: number;
+  target: number;
+}
+
 export interface PortfolioInsights {
   totalValue: number;
   regionExposure: ExposureItem[];
@@ -32,6 +38,8 @@ export interface PortfolioInsights {
   currentSplit: AssetClassSplit;
   targetSplit: AssetClassSplit;
   suggestions: string[];
+  regionComparison: ComparisonItem[];
+  sectorComparison: ComparisonItem[];
 }
 
 function groupBy(holdings: PortfolioHolding[], key: "region" | "sector"): ExposureItem[] {
@@ -120,6 +128,38 @@ export function computeInsights(
     leverageReason = `Your risk exposure aligns well with a ${riskProfile} profile.`;
   }
 
+  // Region comparison
+  const targetRegions: Record<string, Record<string, number>> = {
+    Conservative: { USA: 55, Europe: 30, Global: 15 },
+    Balanced:     { USA: 40, Europe: 20, Global: 40 },
+    Growth:       { USA: 30, Europe: 10, Global: 60 },
+  };
+  const regionTargetMap = targetRegions[riskProfile];
+  const allRegionLabels = new Set([...regionExposure.map((r) => r.label), ...Object.keys(regionTargetMap)]);
+  const regionComparison: ComparisonItem[] = Array.from(allRegionLabels)
+    .map((label) => ({
+      label,
+      current: Math.round(regionExposure.find((r) => r.label === label)?.percent ?? 0),
+      target:  regionTargetMap[label] ?? 0,
+    }))
+    .sort((a, b) => b.current - a.current);
+
+  // Sector comparison
+  const targetSectors: Record<string, Record<string, number>> = {
+    Conservative: { Technology: 20, Crypto: 5,  "Consumer Discretionary": 10, Diversified: 35, Commodities: 25, Healthcare: 5 },
+    Balanced:     { Technology: 35, Crypto: 20, "Consumer Discretionary": 15, Diversified: 20, Commodities: 10 },
+    Growth:       { Technology: 40, Crypto: 40, "Consumer Discretionary": 15, Diversified: 5,  Commodities: 0  },
+  };
+  const sectorTargetMap = targetSectors[riskProfile];
+  const allSectorLabels = new Set([...sectorExposure.map((s) => s.label), ...Object.keys(sectorTargetMap)]);
+  const sectorComparison: ComparisonItem[] = Array.from(allSectorLabels)
+    .map((label) => ({
+      label,
+      current: Math.round(sectorExposure.find((s) => s.label === label)?.percent ?? 0),
+      target:  sectorTargetMap[label] ?? 0,
+    }))
+    .sort((a, b) => b.current - a.current);
+
   // Per-profile actionable suggestions
   const cryptoDiff = targetSplit.cryptoPct - currentSplit.cryptoPct;
   const stockDiff  = targetSplit.stockPct  - currentSplit.stockPct;
@@ -168,5 +208,7 @@ export function computeInsights(
     currentSplit,
     targetSplit,
     suggestions,
+    regionComparison,
+    sectorComparison,
   };
 }
