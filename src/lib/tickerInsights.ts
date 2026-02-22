@@ -48,6 +48,30 @@ const insightMap: Record<string, (timeframe: string) => TickerInsightData> = {
       { name: "Shibarium Explorer", domain: "shibarium.io" },
     ],
   }),
+  AAPL: (tf) => ({
+    shortSummary: `Up ${tf} following strong iPhone upgrade cycle data and continued Services revenue growth.`,
+    drivers: [
+      "Services segment hits new all-time high, widening gross margins and boosting recurring revenue",
+      "Robust demand for the newest AI-powered iPhone models in key international markets",
+      "Continued stock buyback programs reaffirming strong capital return strategy to shareholders",
+    ],
+    sources: [
+      { name: "Portfolio Analysis" },
+      { name: "Yahoo Finance", domain: "finance.yahoo.com" },
+    ],
+  }),
+  NVDA: (tf) => ({
+    shortSummary: `Up ${tf} as next-gen Blackwell GPU shipments accelerate amidst surging hyperscaler AI demand.`,
+    drivers: [
+      "Unprecedented demand from major cloud providers expanding their AI infrastructure",
+      "Data Center revenue beats expectations again, cementing market dominance in AI compute",
+      "New enterprise partnerships driving sovereign AI investments globally",
+    ],
+    sources: [
+      { name: "Portfolio Analysis" },
+      { name: "Bloomberg", domain: "bloomberg.com" },
+    ],
+  }),
 };
 
 const fallback: TickerInsightData = {
